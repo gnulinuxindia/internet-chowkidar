@@ -3,8 +3,15 @@ package handler
 
 import "github.com/gnulinuxindia/internet-chowkidar/pkg/domain/service"
 
-func ProvideBlocksHandler() BlocksHandler {
-	return &blocksHandlerImpl{}
+func ProvideBlocksHandler(
+	blocksService service.BlocksService,
+	sitesService service.SitesService,
+) BlocksHandler {
+	return &blocksHandlerImpl{
+		blocksService: blocksService,
+
+		sitesService: sitesService,
+	}
 }
 
 func ProvideCategoryHandler() CategoryHandler {

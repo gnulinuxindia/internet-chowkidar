@@ -12,10 +12,11 @@ type SitesService interface {
 }
 
 type sitesServiceImpl struct {
-	repo repository.SitesRepository
+	sitesRepository repository.SitesRepository
+	blocksRepository repository.BlocksRepository
 }
 
 func (s *sitesServiceImpl) GetAllSites(ctx context.Context, params genapi.ListSitesParams) ([]genapi.Site, error) {
 	// TODO: add validation and business logic etc
-	return s.repo.GetAllSites(ctx, params)
+	return s.sitesRepository.GetAllSites(ctx, params)
 }

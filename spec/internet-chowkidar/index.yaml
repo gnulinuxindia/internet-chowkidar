@@ -370,11 +370,14 @@ components:
       required:
         - site_id
         - isp_id
+        - is_blocked
       properties:
         site_id:
           type: integer
         isp_id:
           type: integer
+        is_blocked:
+          type: boolean
 
     AbuseReport:
       type: object

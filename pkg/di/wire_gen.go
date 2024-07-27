@@ -26,9 +26,6 @@ import (
 
 // handlers
 func InjectHandlers() (*api.Handlers, error) {
-	blocksHandler := handler.ProvideBlocksHandler()
-	categoryHandler := handler.ProvideCategoryHandler()
-	healthHandler := handler.ProvideHealthHandler()
 	configConfig, err := config.ProvideConfig()
 	if err != nil {
 		return nil, err
@@ -41,12 +38,17 @@ func InjectHandlers() (*api.Handlers, error) {
 	if err != nil {
 		return nil, err
 	}
+	blocksRepository := repository.ProvideBlocksRepository(client)
+	blocksService := service.ProvideBlocksService(blocksRepository)
+	sitesRepository := repository.ProvideSitesRepository(client)
+	sitesService := service.ProvideSitesService(sitesRepository, blocksRepository)
+	blocksHandler := handler.ProvideBlocksHandler(blocksService, sitesService)
+	categoryHandler := handler.ProvideCategoryHandler()
+	healthHandler := handler.ProvideHealthHandler()
 	ispRepository := repository.ProvideIspRepository(client)
 	ispService := service.ProvideIspService(ispRepository)
 	ispHandler := handler.ProvideIspHandler(ispService)
 	reportsHandler := handler.ProvideReportsHandler()
-	sitesRepository := repository.ProvideSitesRepository(client)
-	sitesService := service.ProvideSitesService(sitesRepository)
 	sitesHandler := handler.ProvideSitesHandler(sitesService)
 	handlers := &api.Handlers{
 		BlocksHandler:   blocksHandler,
@@ -60,9 +62,6 @@ func InjectHandlers() (*api.Handlers, error) {
 }
 
 func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
-	blocksHandler := handler.ProvideBlocksHandler()
-	categoryHandler := handler.ProvideCategoryHandler()
-	healthHandler := handler.ProvideHealthHandler()
 	configConfig, err := config.ProvideConfig()
 	if err != nil {
 		return nil, err
@@ -75,12 +74,17 @@ func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
 	if err != nil {
 		return nil, err
 	}
+	blocksRepository := repository.ProvideBlocksRepository(client)
+	blocksService := service.ProvideBlocksService(blocksRepository)
+	sitesRepository := repository.ProvideSitesRepository(client)
+	sitesService := service.ProvideSitesService(sitesRepository, blocksRepository)
+	blocksHandler := handler.ProvideBlocksHandler(blocksService, sitesService)
+	categoryHandler := handler.ProvideCategoryHandler()
+	healthHandler := handler.ProvideHealthHandler()
 	ispRepository := repository.ProvideIspRepository(client)
 	ispService := service.ProvideIspService(ispRepository)
 	ispHandler := handler.ProvideIspHandler(ispService)
 	reportsHandler := handler.ProvideReportsHandler()
-	sitesRepository := repository.ProvideSitesRepository(client)
-	sitesService := service.ProvideSitesService(sitesRepository)
 	sitesHandler := handler.ProvideSitesHandler(sitesService)
 	handlers := &api.Handlers{
 		BlocksHandler:   blocksHandler,
@@ -107,13 +111,16 @@ func InjectServices() (*di.Services, error) {
 	if err != nil {
 		return nil, err
 	}
+	blocksRepository := repository.ProvideBlocksRepository(client)
+	blocksService := service.ProvideBlocksService(blocksRepository)
 	ispRepository := repository.ProvideIspRepository(client)
 	ispService := service.ProvideIspService(ispRepository)
 	sitesRepository := repository.ProvideSitesRepository(client)
-	sitesService := service.ProvideSitesService(sitesRepository)
+	sitesService := service.ProvideSitesService(sitesRepository, blocksRepository)
 	services := &di.Services{
-		IspService:   ispService,
-		SitesService: sitesService,
+		BlocksService: blocksService,
+		IspService:    ispService,
+		SitesService:  sitesService,
 	}
 	return services, nil
 }
@@ -131,13 +138,16 @@ func InjectMockServices(ctrl *gomock.Controller) (*di.Services, error) {
 	if err != nil {
 		return nil, err
 	}
+	blocksRepository := repository.ProvideBlocksRepository(client)
+	blocksService := service.ProvideBlocksService(blocksRepository)
 	ispRepository := repository.ProvideIspRepository(client)
 	ispService := service.ProvideIspService(ispRepository)
 	sitesRepository := repository.ProvideSitesRepository(client)
-	sitesService := service.ProvideSitesService(sitesRepository)
+	sitesService := service.ProvideSitesService(sitesRepository, blocksRepository)
 	services := &di.Services{
-		IspService:   ispService,
-		SitesService: sitesService,
+		BlocksService: blocksService,
+		IspService:    ispService,
+		SitesService:  sitesService,
 	}
 	return services, nil
 }

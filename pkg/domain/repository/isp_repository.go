@@ -10,6 +10,7 @@ import (
 type IspRepository interface {
 	CreateISP(ctx context.Context, isp *genapi.ISPInput) (*ent.Isps, error)
 	GetAllISPs(ctx context.Context, params genapi.ListISPsParams) ([]genapi.ISP, error)
+	GetISPByID(ctx context.Context, id int) (*ent.Isps, error)
 }
 
 type ispRepositoryImpl struct {
@@ -51,4 +52,8 @@ func (i *ispRepositoryImpl) GetAllISPs(ctx context.Context, params genapi.ListIS
 		})
 	}
 	return res, nil
+}
+
+func (i *ispRepositoryImpl) GetISPByID(ctx context.Context, id int) (*ent.Isps, error) {
+	return i.db.Isps.Get(ctx, id)
 }

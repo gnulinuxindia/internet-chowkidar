@@ -531,11 +531,16 @@ func (s *BlockInput) encodeFields(e *jx.Encoder) {
 		e.FieldStart("isp_id")
 		e.Int(s.IspID)
 	}
+	{
+		e.FieldStart("is_blocked")
+		e.Bool(s.IsBlocked)
+	}
 }
 
-var jsonFieldsNameOfBlockInput = [2]string{
+var jsonFieldsNameOfBlockInput = [3]string{
 	0: "site_id",
 	1: "isp_id",
+	2: "is_blocked",
 }
 
 // Decode decodes BlockInput from json.
@@ -571,6 +576,18 @@ func (s *BlockInput) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"isp_id\"")
 			}
+		case "is_blocked":
+			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				v, err := d.Bool()
+				s.IsBlocked = bool(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"is_blocked\"")
+			}
 		default:
 			return d.Skip()
 		}
@@ -581,7 +598,7 @@ func (s *BlockInput) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000011,
+		0b00000111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

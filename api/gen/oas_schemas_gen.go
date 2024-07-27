@@ -250,8 +250,9 @@ func (s *Block) SetUpdatedAt(val OptDateTime) {
 
 // Ref: #/components/schemas/BlockInput
 type BlockInput struct {
-	SiteID int `json:"site_id"`
-	IspID  int `json:"isp_id"`
+	SiteID    int  `json:"site_id"`
+	IspID     int  `json:"isp_id"`
+	IsBlocked bool `json:"is_blocked"`
 }
 
 // GetSiteID returns the value of SiteID.
@@ -264,6 +265,11 @@ func (s *BlockInput) GetIspID() int {
 	return s.IspID
 }
 
+// GetIsBlocked returns the value of IsBlocked.
+func (s *BlockInput) GetIsBlocked() bool {
+	return s.IsBlocked
+}
+
 // SetSiteID sets the value of SiteID.
 func (s *BlockInput) SetSiteID(val int) {
 	s.SiteID = val
@@ -272,6 +278,11 @@ func (s *BlockInput) SetSiteID(val int) {
 // SetIspID sets the value of IspID.
 func (s *BlockInput) SetIspID(val int) {
 	s.IspID = val
+}
+
+// SetIsBlocked sets the value of IsBlocked.
+func (s *BlockInput) SetIsBlocked(val bool) {
+	s.IsBlocked = val
 }
 
 // Ref: #/components/schemas/Category

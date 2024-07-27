@@ -5,11 +5,14 @@ import (
 
 	genapi "github.com/gnulinuxindia/internet-chowkidar/api/gen"
 	"github.com/gnulinuxindia/internet-chowkidar/ent"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
 	"github.com/go-errors/errors"
 )
 
 type SitesRepository interface {
 	GetAllSites(ctx context.Context, params genapi.ListSitesParams) ([]genapi.Site, error)
+	GetSiteByDomain(ctx context.Context, domain string) (*ent.Sites, error)
+	GetSiteByID(ctx context.Context, id int) (*ent.Sites, error)
 }
 
 type sitesRepositoryImpl struct {
@@ -17,12 +20,21 @@ type sitesRepositoryImpl struct {
 }
 
 func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.ListSitesParams) ([]genapi.Site, error) {
-	blocks, err := s.db.Blocks.Query().
+	query := s.db.Blocks.Query().
 		WithIsp().
 		WithSite().
 		Limit(params.Limit.Or(50)).
-		Offset(params.Offset.Or(0)).
-		All(ctx)
+		Offset(params.Offset.Or(0))
+
+	if params.Order.Set {
+		if params.Order.Value == genapi.ListSitesOrderAsc {
+			query = query.Order(ent.Asc(params.Sort.Or("id")))
+		} else {
+			query = query.Order(ent.Desc(params.Sort.Or("id")))
+		}
+	}
+
+	blocks, err := query.All(ctx)
 	if err != nil {
 		return nil, errors.Wrap(err, 0)
 	}
@@ -59,4 +71,14 @@ func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.Lis
 	}
 
 	return nil, nil
+}
+
+func (s *sitesRepositoryImpl) GetSiteByDomain(ctx context.Context, domain string) (*ent.Sites, error) {
+	return s.db.Sites.Query().
+		Where(sites.DomainEQ(domain)).
+		First(ctx)
+}
+
+func (s *sitesRepositoryImpl) GetSiteByID(ctx context.Context, id int) (*ent.Sites, error) {
+	return s.db.Sites.Get(ctx, id)
 }
