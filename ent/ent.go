@@ -12,7 +12,10 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/blocks"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/counter"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/isps"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -73,7 +76,10 @@ var (
 func checkColumn(table, column string) error {
 	initCheck.Do(func() {
 		columnCheck = sql.NewColumnCheck(map[string]func(string) bool{
+			blocks.Table:  blocks.ValidColumn,
 			counter.Table: counter.ValidColumn,
+			isps.Table:    isps.ValidColumn,
+			sites.Table:   sites.ValidColumn,
 		})
 	})
 	return columnCheck(table, column)

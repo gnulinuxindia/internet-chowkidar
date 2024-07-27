@@ -9,6 +9,18 @@ import (
 	"github.com/gnulinuxindia/internet-chowkidar/ent"
 )
 
+// The BlocksFunc type is an adapter to allow the use of ordinary
+// function as Blocks mutator.
+type BlocksFunc func(context.Context, *ent.BlocksMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f BlocksFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.BlocksMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BlocksMutation", m)
+}
+
 // The CounterFunc type is an adapter to allow the use of ordinary
 // function as Counter mutator.
 type CounterFunc func(context.Context, *ent.CounterMutation) (ent.Value, error)
@@ -19,6 +31,30 @@ func (f CounterFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, err
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CounterMutation", m)
+}
+
+// The IspsFunc type is an adapter to allow the use of ordinary
+// function as Isps mutator.
+type IspsFunc func(context.Context, *ent.IspsMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f IspsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.IspsMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.IspsMutation", m)
+}
+
+// The SitesFunc type is an adapter to allow the use of ordinary
+// function as Sites mutator.
+type SitesFunc func(context.Context, *ent.SitesMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SitesFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SitesMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SitesMutation", m)
 }
 
 // Condition is a hook condition function.

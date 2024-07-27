@@ -1,5 +1,5 @@
-# go-template
-This repository contains the code for our fully featured go-template, from which we can start new Go projects.
+# Internet Chowkidar
+This repository contains the code for internet chowkidar, a web application that allows users to monitor any blocks, bans, or restrictions on the internet by their ISP. The application is built using Go and PostgreSQL.
 
 ## Features
 - **Logging**: Structured logging with [slog](https://pkg.go.dev/golang.org/x/exp/slog)

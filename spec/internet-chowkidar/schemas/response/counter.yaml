@@ -1,7 +1,0 @@
-type: object
-required:
-  - count
-properties:
-  count:
-    description: ok
-    type: number

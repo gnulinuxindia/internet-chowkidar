@@ -15,6 +15,7 @@ import (
 	semconv "go.opentelemetry.io/otel/semconv/v1.19.0"
 	"go.opentelemetry.io/otel/trace"
 
+	"github.com/ogen-go/ogen/conv"
 	ht "github.com/ogen-go/ogen/http"
 	"github.com/ogen-go/ogen/otelogen"
 	"github.com/ogen-go/ogen/uri"
@@ -69,7 +70,7 @@ type Invoker interface {
 	// List all ISPs.
 	//
 	// GET /isps
-	ListISPs(ctx context.Context) ([]ISP, error)
+	ListISPs(ctx context.Context, params ListISPsParams) ([]ISP, error)
 	// ListSiteSuggestions invokes listSiteSuggestions operation.
 	//
 	// List all site suggestions.
@@ -81,7 +82,7 @@ type Invoker interface {
 	// List all sites.
 	//
 	// GET /sites
-	ListSites(ctx context.Context) ([]Site, error)
+	ListSites(ctx context.Context, params ListSitesParams) ([]Site, error)
 }
 
 // Client implements OAS client.
@@ -656,12 +657,12 @@ func (c *Client) sendListBlocks(ctx context.Context) (res []Block, err error) {
 // List all ISPs.
 //
 // GET /isps
-func (c *Client) ListISPs(ctx context.Context) ([]ISP, error) {
-	res, err := c.sendListISPs(ctx)
+func (c *Client) ListISPs(ctx context.Context, params ListISPsParams) ([]ISP, error) {
+	res, err := c.sendListISPs(ctx, params)
 	return res, err
 }
 
-func (c *Client) sendListISPs(ctx context.Context) (res []ISP, err error) {
+func (c *Client) sendListISPs(ctx context.Context, params ListISPsParams) (res []ISP, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listISPs"),
 		semconv.HTTPMethodKey.String("GET"),
@@ -700,6 +701,78 @@ func (c *Client) sendListISPs(ctx context.Context) (res []ISP, err error) {
 	var pathParts [1]string
 	pathParts[0] = "/isps"
 	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeQueryParams"
+	q := uri.NewQueryEncoder()
+	{
+		// Encode "limit" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "limit",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Limit.Get(); ok {
+				return e.EncodeValue(conv.IntToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "offset" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "offset",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Offset.Get(); ok {
+				return e.EncodeValue(conv.IntToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "sort" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "sort",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Sort.Get(); ok {
+				return e.EncodeValue(conv.StringToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "order" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "order",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Order.Get(); ok {
+				return e.EncodeValue(conv.StringToString(string(val)))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	u.RawQuery = q.Values().Encode()
 
 	stage = "EncodeRequest"
 	r, err := ht.NewRequest(ctx, "GET", u)
@@ -800,12 +873,12 @@ func (c *Client) sendListSiteSuggestions(ctx context.Context) (res []SiteSuggest
 // List all sites.
 //
 // GET /sites
-func (c *Client) ListSites(ctx context.Context) ([]Site, error) {
-	res, err := c.sendListSites(ctx)
+func (c *Client) ListSites(ctx context.Context, params ListSitesParams) ([]Site, error) {
+	res, err := c.sendListSites(ctx, params)
 	return res, err
 }
 
-func (c *Client) sendListSites(ctx context.Context) (res []Site, err error) {
+func (c *Client) sendListSites(ctx context.Context, params ListSitesParams) (res []Site, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listSites"),
 		semconv.HTTPMethodKey.String("GET"),
@@ -844,6 +917,95 @@ func (c *Client) sendListSites(ctx context.Context) (res []Site, err error) {
 	var pathParts [1]string
 	pathParts[0] = "/sites"
 	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeQueryParams"
+	q := uri.NewQueryEncoder()
+	{
+		// Encode "tag" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "tag",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Tag.Get(); ok {
+				return e.EncodeValue(conv.StringToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "limit" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "limit",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Limit.Get(); ok {
+				return e.EncodeValue(conv.IntToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "offset" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "offset",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Offset.Get(); ok {
+				return e.EncodeValue(conv.IntToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "sort" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "sort",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Sort.Get(); ok {
+				return e.EncodeValue(conv.StringToString(val))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	{
+		// Encode "order" parameter.
+		cfg := uri.QueryParameterEncodingConfig{
+			Name:    "order",
+			Style:   uri.QueryStyleForm,
+			Explode: true,
+		}
+
+		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
+			if val, ok := params.Order.Get(); ok {
+				return e.EncodeValue(conv.StringToString(string(val)))
+			}
+			return nil
+		}); err != nil {
+			return res, errors.Wrap(err, "encode query")
+		}
+	}
+	u.RawQuery = q.Values().Encode()
 
 	stage = "EncodeRequest"
 	r, err := ht.NewRequest(ctx, "GET", u)

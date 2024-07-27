@@ -7,15 +7,14 @@ import (
 )
 
 type IspHandler interface {
-	ListISPs(ctx context.Context) ([]genapi.ISP, error)
+	ListISPs(ctx context.Context, params genapi.ListISPsParams) ([]genapi.ISP, error)
 	CreateISP(ctx context.Context, req *genapi.ISPInput) (*genapi.ISP, error)
 }
 
 type ispHandlerImpl struct {
 }
 
-
-func (i *ispHandlerImpl) ListISPs(ctx context.Context) ([]genapi.ISP, error) {
+func (i *ispHandlerImpl) ListISPs(ctx context.Context, params genapi.ListISPsParams) ([]genapi.ISP, error) {
 	panic("not implemented")
 }
 

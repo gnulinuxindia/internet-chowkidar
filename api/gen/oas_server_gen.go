@@ -55,7 +55,7 @@ type Handler interface {
 	// List all ISPs.
 	//
 	// GET /isps
-	ListISPs(ctx context.Context) ([]ISP, error)
+	ListISPs(ctx context.Context, params ListISPsParams) ([]ISP, error)
 	// ListSiteSuggestions implements listSiteSuggestions operation.
 	//
 	// List all site suggestions.
@@ -67,7 +67,7 @@ type Handler interface {
 	// List all sites.
 	//
 	// GET /sites
-	ListSites(ctx context.Context) ([]Site, error)
+	ListSites(ctx context.Context, params ListSitesParams) ([]Site, error)
 }
 
 // Server implements http server based on OpenAPI v3 specification and

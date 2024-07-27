@@ -381,6 +381,88 @@ func (s *ISPInput) SetName(val string) {
 	s.Name = val
 }
 
+type ListISPsOrder string
+
+const (
+	ListISPsOrderAsc  ListISPsOrder = "asc"
+	ListISPsOrderDesc ListISPsOrder = "desc"
+)
+
+// AllValues returns all ListISPsOrder values.
+func (ListISPsOrder) AllValues() []ListISPsOrder {
+	return []ListISPsOrder{
+		ListISPsOrderAsc,
+		ListISPsOrderDesc,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s ListISPsOrder) MarshalText() ([]byte, error) {
+	switch s {
+	case ListISPsOrderAsc:
+		return []byte(s), nil
+	case ListISPsOrderDesc:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *ListISPsOrder) UnmarshalText(data []byte) error {
+	switch ListISPsOrder(data) {
+	case ListISPsOrderAsc:
+		*s = ListISPsOrderAsc
+		return nil
+	case ListISPsOrderDesc:
+		*s = ListISPsOrderDesc
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
+type ListSitesOrder string
+
+const (
+	ListSitesOrderAsc  ListSitesOrder = "asc"
+	ListSitesOrderDesc ListSitesOrder = "desc"
+)
+
+// AllValues returns all ListSitesOrder values.
+func (ListSitesOrder) AllValues() []ListSitesOrder {
+	return []ListSitesOrder{
+		ListSitesOrderAsc,
+		ListSitesOrderDesc,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s ListSitesOrder) MarshalText() ([]byte, error) {
+	switch s {
+	case ListSitesOrderAsc:
+		return []byte(s), nil
+	case ListSitesOrderDesc:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *ListSitesOrder) UnmarshalText(data []byte) error {
+	switch ListSitesOrder(data) {
+	case ListSitesOrderAsc:
+		*s = ListSitesOrderAsc
+		return nil
+	case ListSitesOrderDesc:
+		*s = ListSitesOrderDesc
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
 // NewOptAbuseReportStatus returns new OptAbuseReportStatus with value set to v.
 func NewOptAbuseReportStatus(v AbuseReportStatus) OptAbuseReportStatus {
 	return OptAbuseReportStatus{
@@ -565,6 +647,98 @@ func (o OptInt) Or(d int) int {
 	return d
 }
 
+// NewOptListISPsOrder returns new OptListISPsOrder with value set to v.
+func NewOptListISPsOrder(v ListISPsOrder) OptListISPsOrder {
+	return OptListISPsOrder{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptListISPsOrder is optional ListISPsOrder.
+type OptListISPsOrder struct {
+	Value ListISPsOrder
+	Set   bool
+}
+
+// IsSet returns true if OptListISPsOrder was set.
+func (o OptListISPsOrder) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptListISPsOrder) Reset() {
+	var v ListISPsOrder
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptListISPsOrder) SetTo(v ListISPsOrder) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptListISPsOrder) Get() (v ListISPsOrder, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptListISPsOrder) Or(d ListISPsOrder) ListISPsOrder {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptListSitesOrder returns new OptListSitesOrder with value set to v.
+func NewOptListSitesOrder(v ListSitesOrder) OptListSitesOrder {
+	return OptListSitesOrder{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptListSitesOrder is optional ListSitesOrder.
+type OptListSitesOrder struct {
+	Value ListSitesOrder
+	Set   bool
+}
+
+// IsSet returns true if OptListSitesOrder was set.
+func (o OptListSitesOrder) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptListSitesOrder) Reset() {
+	var v ListSitesOrder
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptListSitesOrder) SetTo(v ListSitesOrder) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptListSitesOrder) Get() (v ListSitesOrder, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptListSitesOrder) Or(d ListSitesOrder) ListSitesOrder {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
 // NewOptSiteSuggestionStatus returns new OptSiteSuggestionStatus with value set to v.
 func NewOptSiteSuggestionStatus(v SiteSuggestionStatus) OptSiteSuggestionStatus {
 	return OptSiteSuggestionStatus{
@@ -659,49 +833,93 @@ func (o OptString) Or(d string) string {
 
 // Ref: #/components/schemas/Site
 type Site struct {
-	ID        OptInt      `json:"id"`
-	Domain    OptString   `json:"domain"`
-	CreatedAt OptDateTime `json:"created_at"`
-	UpdatedAt OptDateTime `json:"updated_at"`
+	ID             int       `json:"id"`
+	Domain         string    `json:"domain"`
+	Tags           []string  `json:"tags"`
+	BlockReports   int       `json:"block_reports"`
+	UnblockReports int       `json:"unblock_reports"`
+	LastReportedAt time.Time `json:"last_reported_at"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
 }
 
 // GetID returns the value of ID.
-func (s *Site) GetID() OptInt {
+func (s *Site) GetID() int {
 	return s.ID
 }
 
 // GetDomain returns the value of Domain.
-func (s *Site) GetDomain() OptString {
+func (s *Site) GetDomain() string {
 	return s.Domain
 }
 
+// GetTags returns the value of Tags.
+func (s *Site) GetTags() []string {
+	return s.Tags
+}
+
+// GetBlockReports returns the value of BlockReports.
+func (s *Site) GetBlockReports() int {
+	return s.BlockReports
+}
+
+// GetUnblockReports returns the value of UnblockReports.
+func (s *Site) GetUnblockReports() int {
+	return s.UnblockReports
+}
+
+// GetLastReportedAt returns the value of LastReportedAt.
+func (s *Site) GetLastReportedAt() time.Time {
+	return s.LastReportedAt
+}
+
 // GetCreatedAt returns the value of CreatedAt.
-func (s *Site) GetCreatedAt() OptDateTime {
+func (s *Site) GetCreatedAt() time.Time {
 	return s.CreatedAt
 }
 
 // GetUpdatedAt returns the value of UpdatedAt.
-func (s *Site) GetUpdatedAt() OptDateTime {
+func (s *Site) GetUpdatedAt() time.Time {
 	return s.UpdatedAt
 }
 
 // SetID sets the value of ID.
-func (s *Site) SetID(val OptInt) {
+func (s *Site) SetID(val int) {
 	s.ID = val
 }
 
 // SetDomain sets the value of Domain.
-func (s *Site) SetDomain(val OptString) {
+func (s *Site) SetDomain(val string) {
 	s.Domain = val
 }
 
+// SetTags sets the value of Tags.
+func (s *Site) SetTags(val []string) {
+	s.Tags = val
+}
+
+// SetBlockReports sets the value of BlockReports.
+func (s *Site) SetBlockReports(val int) {
+	s.BlockReports = val
+}
+
+// SetUnblockReports sets the value of UnblockReports.
+func (s *Site) SetUnblockReports(val int) {
+	s.UnblockReports = val
+}
+
+// SetLastReportedAt sets the value of LastReportedAt.
+func (s *Site) SetLastReportedAt(val time.Time) {
+	s.LastReportedAt = val
+}
+
 // SetCreatedAt sets the value of CreatedAt.
-func (s *Site) SetCreatedAt(val OptDateTime) {
+func (s *Site) SetCreatedAt(val time.Time) {
 	s.CreatedAt = val
 }
 
 // SetUpdatedAt sets the value of UpdatedAt.
-func (s *Site) SetUpdatedAt(val OptDateTime) {
+func (s *Site) SetUpdatedAt(val time.Time) {
 	s.UpdatedAt = val
 }
 

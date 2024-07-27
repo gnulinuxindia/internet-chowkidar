@@ -9,11 +9,44 @@ paths:
     get:
       summary: List all sites
       operationId: listSites
+      parameters:
+        - in: query
+          name: tag
+          schema:
+            type: string
+          description: Filter sites by tag
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 50
+          description: Number of sites to return
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            default: 0
+          description: Number of sites to skip
+        - in: query
+          name: sort
+          schema:
+            type: string
+            default: 'id'
+          description: Sort sites by field
+        - in: query
+          name: order
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+          description: Sort order
       responses:
         '200':
           description: Successful response
           content:
-            application/json:    
+            application/json:
               schema:
                 type: array
                 items:
@@ -39,6 +72,34 @@ paths:
     get:
       summary: List all ISPs
       operationId: listISPs
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 50
+          description: Number of ISPs to return
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            default: 0
+          description: Number of ISPs to skip
+        - in: query
+          name: sort
+          schema:
+            type: string
+            default: 'id'
+          description: Sort ISPs by field
+        - in: query
+          name: order
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+          description: Sort order
       responses:
         '200':
           description: Successful response
@@ -159,11 +220,31 @@ components:
   schemas:
     Site:
       type: object
+      required:
+        - id
+        - domain
+        - tags
+        - block_reports
+        - unblock_reports
+        - last_reported_at
+        - created_at
+        - updated_at
       properties:
         id:
           type: integer
         domain:
           type: string
+        tags:
+          type: array
+          items:
+            type: string
+        block_reports:
+          type: integer
+        unblock_reports:
+          type: integer
+        last_reported_at:
+          type: string
+          format: date-time
         created_at:
           type: string
           format: date-time

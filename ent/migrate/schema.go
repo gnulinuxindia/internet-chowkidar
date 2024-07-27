@@ -8,6 +8,27 @@ import (
 )
 
 var (
+	// BlocksColumns holds the columns for the "blocks" table.
+	BlocksColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "ip", Type: field.TypeString, Unique: true},
+		{Name: "domain", Type: field.TypeString},
+	}
+	// BlocksTable holds the schema information for the "blocks" table.
+	BlocksTable = &schema.Table{
+		Name:       "blocks",
+		Columns:    BlocksColumns,
+		PrimaryKey: []*schema.Column{BlocksColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "blocks_ip",
+				Unique:  true,
+				Columns: []*schema.Column{BlocksColumns[3]},
+			},
+		},
+	}
 	// CountersColumns holds the columns for the "counters" table.
 	CountersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -19,9 +40,47 @@ var (
 		Columns:    CountersColumns,
 		PrimaryKey: []*schema.Column{CountersColumns[0]},
 	}
+	// IspsColumns holds the columns for the "isps" table.
+	IspsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "latitude", Type: field.TypeFloat64},
+		{Name: "longitude", Type: field.TypeFloat64},
+		{Name: "name", Type: field.TypeString},
+	}
+	// IspsTable holds the schema information for the "isps" table.
+	IspsTable = &schema.Table{
+		Name:       "isps",
+		Columns:    IspsColumns,
+		PrimaryKey: []*schema.Column{IspsColumns[0]},
+	}
+	// SitesColumns holds the columns for the "sites" table.
+	SitesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "domain", Type: field.TypeString, Unique: true},
+	}
+	// SitesTable holds the schema information for the "sites" table.
+	SitesTable = &schema.Table{
+		Name:       "sites",
+		Columns:    SitesColumns,
+		PrimaryKey: []*schema.Column{SitesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "sites_domain",
+				Unique:  true,
+				Columns: []*schema.Column{SitesColumns[3]},
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
+		BlocksTable,
 		CountersTable,
+		IspsTable,
+		SitesTable,
 	}
 )
 

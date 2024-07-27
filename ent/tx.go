@@ -12,8 +12,14 @@ import (
 // Tx is a transactional client that is created by calling Client.Tx().
 type Tx struct {
 	config
+	// Blocks is the client for interacting with the Blocks builders.
+	Blocks *BlocksClient
 	// Counter is the client for interacting with the Counter builders.
 	Counter *CounterClient
+	// Isps is the client for interacting with the Isps builders.
+	Isps *IspsClient
+	// Sites is the client for interacting with the Sites builders.
+	Sites *SitesClient
 
 	// lazily loaded.
 	client     *Client
@@ -145,7 +151,10 @@ func (tx *Tx) Client() *Client {
 }
 
 func (tx *Tx) init() {
+	tx.Blocks = NewBlocksClient(tx.config)
 	tx.Counter = NewCounterClient(tx.config)
+	tx.Isps = NewIspsClient(tx.config)
+	tx.Sites = NewSitesClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.
@@ -155,7 +164,7 @@ func (tx *Tx) init() {
 // of them in order to commit or rollback the transaction.
 //
 // If a closed transaction is embedded in one of the generated entities, and the entity
-// applies a query, for example: Counter.QueryXXX(), the query will be executed
+// applies a query, for example: Blocks.QueryXXX(), the query will be executed
 // through the driver which created this transaction.
 //
 // Note that txDriver is not goroutine safe.

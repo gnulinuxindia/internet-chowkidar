@@ -12,8 +12,9 @@ import (
 	"github.com/gnulinuxindia/internet-chowkidar/internal/db"
 	"github.com/gnulinuxindia/internet-chowkidar/internal/tracing"
 	domainProvider "github.com/gnulinuxindia/internet-chowkidar/pkg/domain/provider"
-	"go.uber.org/mock/gomock"
+	"github.com/gnulinuxindia/internet-chowkidar/pkg/domain/repository"
 	"go.opentelemetry.io/otel/sdk/trace"
+	"go.uber.org/mock/gomock"
 
 	"github.com/google/wire"
 )
@@ -46,7 +47,6 @@ var tracingSet = wire.NewSet(
 	config.ProvideConfig,
 	tracing.ProvideTracerProvider,
 )
-
 
 // handlers
 func InjectHandlers() (*api.Handlers, error) {
@@ -104,4 +104,9 @@ func InjectRawDb() (*sql.DB, error) {
 func InjectConfig() (*config.Config, error) {
 	wire.Build(config.ProvideConfig)
 	return &config.Config{}, nil
+}
+
+func InjectTxHandler() (*repository.TxHandler, error) {
+	wire.Build(dbSet, repository.NewTxHandler)
+	return &repository.TxHandler{}, nil
 }

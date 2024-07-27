@@ -3,18 +3,68 @@
 package ent
 
 import (
+	"time"
+
+	"github.com/gnulinuxindia/internet-chowkidar/ent/blocks"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/counter"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/isps"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/schema"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
 )
 
 // The init function reads all schema descriptors with runtime code
 // (default values, validators, hooks and policies) and stitches it
 // to their package variables.
 func init() {
+	blocksMixin := schema.Blocks{}.Mixin()
+	blocksMixinFields0 := blocksMixin[0].Fields()
+	_ = blocksMixinFields0
+	blocksFields := schema.Blocks{}.Fields()
+	_ = blocksFields
+	// blocksDescCreatedAt is the schema descriptor for created_at field.
+	blocksDescCreatedAt := blocksMixinFields0[0].Descriptor()
+	// blocks.DefaultCreatedAt holds the default value on creation for the created_at field.
+	blocks.DefaultCreatedAt = blocksDescCreatedAt.Default.(func() time.Time)
+	// blocksDescUpdatedAt is the schema descriptor for updated_at field.
+	blocksDescUpdatedAt := blocksMixinFields0[1].Descriptor()
+	// blocks.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	blocks.DefaultUpdatedAt = blocksDescUpdatedAt.Default.(func() time.Time)
+	// blocks.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	blocks.UpdateDefaultUpdatedAt = blocksDescUpdatedAt.UpdateDefault.(func() time.Time)
 	counterFields := schema.Counter{}.Fields()
 	_ = counterFields
 	// counterDescCount is the schema descriptor for count field.
 	counterDescCount := counterFields[0].Descriptor()
 	// counter.DefaultCount holds the default value on creation for the count field.
 	counter.DefaultCount = counterDescCount.Default.(int)
+	ispsMixin := schema.Isps{}.Mixin()
+	ispsMixinFields0 := ispsMixin[0].Fields()
+	_ = ispsMixinFields0
+	ispsFields := schema.Isps{}.Fields()
+	_ = ispsFields
+	// ispsDescCreatedAt is the schema descriptor for created_at field.
+	ispsDescCreatedAt := ispsMixinFields0[0].Descriptor()
+	// isps.DefaultCreatedAt holds the default value on creation for the created_at field.
+	isps.DefaultCreatedAt = ispsDescCreatedAt.Default.(func() time.Time)
+	// ispsDescUpdatedAt is the schema descriptor for updated_at field.
+	ispsDescUpdatedAt := ispsMixinFields0[1].Descriptor()
+	// isps.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	isps.DefaultUpdatedAt = ispsDescUpdatedAt.Default.(func() time.Time)
+	// isps.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	isps.UpdateDefaultUpdatedAt = ispsDescUpdatedAt.UpdateDefault.(func() time.Time)
+	sitesMixin := schema.Sites{}.Mixin()
+	sitesMixinFields0 := sitesMixin[0].Fields()
+	_ = sitesMixinFields0
+	sitesFields := schema.Sites{}.Fields()
+	_ = sitesFields
+	// sitesDescCreatedAt is the schema descriptor for created_at field.
+	sitesDescCreatedAt := sitesMixinFields0[0].Descriptor()
+	// sites.DefaultCreatedAt holds the default value on creation for the created_at field.
+	sites.DefaultCreatedAt = sitesDescCreatedAt.Default.(func() time.Time)
+	// sitesDescUpdatedAt is the schema descriptor for updated_at field.
+	sitesDescUpdatedAt := sitesMixinFields0[1].Descriptor()
+	// sites.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	sites.DefaultUpdatedAt = sitesDescUpdatedAt.Default.(func() time.Time)
+	// sites.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	sites.UpdateDefaultUpdatedAt = sitesDescUpdatedAt.UpdateDefault.(func() time.Time)
 }

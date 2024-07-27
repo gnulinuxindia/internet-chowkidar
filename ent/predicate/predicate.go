@@ -6,5 +6,14 @@ import (
 	"entgo.io/ent/dialect/sql"
 )
 
+// Blocks is the predicate function for blocks builders.
+type Blocks func(*sql.Selector)
+
 // Counter is the predicate function for counter builders.
 type Counter func(*sql.Selector)
+
+// Isps is the predicate function for isps builders.
+type Isps func(*sql.Selector)
+
+// Sites is the predicate function for sites builders.
+type Sites func(*sql.Selector)

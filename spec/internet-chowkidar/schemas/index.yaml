@@ -1,4 +1,0 @@
-CounterResponse:
-  $ref: ./response/counter.yaml
-IncrementRequest:
-  $ref: ./request/increment.yaml

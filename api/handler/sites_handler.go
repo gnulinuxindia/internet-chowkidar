@@ -8,7 +8,7 @@ import (
 )
 
 type SitesHandler interface {
-	ListSites(ctx context.Context) ([]genapi.Site, error)
+	ListSites(ctx context.Context, params genapi.ListSitesParams) ([]genapi.Site, error)
 	ListSiteSuggestions(ctx context.Context) ([]genapi.SiteSuggestion, error)
 	CreateSite(ctx context.Context, req *genapi.SiteInput) (*genapi.Site, error)
 	CreateSiteSuggestion(ctx context.Context, req *genapi.SiteSuggestionInput) (*genapi.SiteSuggestion, error)
@@ -18,7 +18,7 @@ type sitesHandlerImpl struct {
 	sitesService service.SitesService
 }
 
-func (s *sitesHandlerImpl) ListSites(ctx context.Context) ([]genapi.Site, error) {
+func (s *sitesHandlerImpl) ListSites(ctx context.Context, params genapi.ListSitesParams) ([]genapi.Site, error) {
 	panic("not implemented")
 }
 

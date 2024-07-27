@@ -81,7 +81,7 @@ func (UnimplementedHandler) ListBlocks(ctx context.Context) (r []Block, _ error)
 // List all ISPs.
 //
 // GET /isps
-func (UnimplementedHandler) ListISPs(ctx context.Context) (r []ISP, _ error) {
+func (UnimplementedHandler) ListISPs(ctx context.Context, params ListISPsParams) (r []ISP, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -99,6 +99,6 @@ func (UnimplementedHandler) ListSiteSuggestions(ctx context.Context) (r []SiteSu
 // List all sites.
 //
 // GET /sites
-func (UnimplementedHandler) ListSites(ctx context.Context) (r []Site, _ error) {
+func (UnimplementedHandler) ListSites(ctx context.Context, params ListSitesParams) (r []Site, _ error) {
 	return r, ht.ErrNotImplemented
 }
