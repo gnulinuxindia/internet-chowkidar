@@ -1,0 +1,42 @@
+package utils
+
+import (
+	"context"
+	"fmt"
+
+	"github.com/gnulinuxindia/internet-chowkidar/ent"
+
+	"github.com/go-errors/errors"
+	"golang.org/x/exp/slog"
+)
+
+// https://entgo.io/docs/transactions/#best-practices
+func WithTx(ctx context.Context, client *ent.Client, fn func(tx *ent.Tx) error) error {
+	tx, err := client.Tx(ctx)
+	if err != nil {
+		return errors.Wrap(err, 0)
+	}
+
+	defer func() {
+		if v := recover(); v != nil {
+			err := tx.Rollback()
+			if err != nil {
+				slog.Error("failed to rollback transaction")
+			}
+			panic(v)
+		}
+	}()
+
+	if err := fn(tx); err != nil {
+		if rerr := tx.Rollback(); rerr != nil {
+			err = fmt.Errorf("%w: rolling back transaction: %v", err, rerr)
+		}
+		return err
+	}
+
+	if err := tx.Commit(); err != nil {
+		return fmt.Errorf("committing transaction: %w", err)
+	}
+
+	return nil
+}

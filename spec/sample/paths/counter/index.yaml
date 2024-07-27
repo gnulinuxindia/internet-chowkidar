@@ -1,0 +1,10 @@
+get:
+  summary: "Get current counter value"
+  operationId: getCurrentCount
+  responses:
+    "200":
+      description: "OK"
+      content:
+        application/json:
+          schema:
+            $ref: "../../schemas/response/counter.yaml"

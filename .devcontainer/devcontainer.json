@@ -1,0 +1,27 @@
+{
+    "name": "Go Dev Environment",
+    "forwardPorts": [8000, 9000],
+    "remoteUser": "goalist",
+    "customizations": {
+      "vscode": {
+        "extensions": [
+            "golang.go",
+            "mtxr.sqltools",
+            "visualstudioexptteam.vscodeintellicode",
+            "redhat.vscode-yaml",
+            "42Crunch.vscode-openapi"
+        ],
+        "settings": {
+          "terminal.integrated.defaultProfile.linux": "zsh",
+          "debug.node.autoAttach": "disabled"
+        }
+      }
+    },
+    "dockerComposeFile": "./docker-compose.yaml",
+    "service": "devenv",
+    "workspaceFolder": "/workspace",
+    "shutdownAction": "stopCompose",
+    "mounts": [
+      "source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/goalist/.ssh,type=bind,consistency=cached"
+    ]
+  }

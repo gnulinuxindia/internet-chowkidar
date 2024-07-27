@@ -1,0 +1,5 @@
+{
+  "go.testTags": "test,buildtools",
+  "go.buildTags": "test,wireinject,buildtools",
+  "go.lintFlags": ["-tags", "test", "buildtools"]
+}

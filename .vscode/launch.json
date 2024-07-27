@@ -1,0 +1,14 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    // example config ↓
+    // {
+    //   "name": "server",
+    //   "type": "go",
+    //   "request": "launch",
+    //   "mode": "auto",
+    //   "program": "main.go",
+    //   "args": ["api"]
+    // }
+  ]
+}

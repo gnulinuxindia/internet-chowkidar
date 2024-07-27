@@ -1,0 +1,5 @@
+type: object
+properties:
+  amount:
+    description: an optional amount to increment by
+    type: integer

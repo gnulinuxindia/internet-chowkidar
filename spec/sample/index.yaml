@@ -1,0 +1,18 @@
+openapi: "3.0.3"
+info:
+  description: "github.com/goalistdeveloper/go-template"
+  version: "1.0.0"
+  title: "github.com/goalistdeveloper/go-template"
+servers:
+  - url: "http://localhost:9000"
+    variables:
+      basePath:
+        default: /api/v1
+paths:
+  /counter:
+    $ref: ./paths/counter/index.yaml
+  /increment:
+    $ref: ./paths/increment/index.yaml
+components:
+  schemas:
+    $ref: ./schemas/index.yaml
