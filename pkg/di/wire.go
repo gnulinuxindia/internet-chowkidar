@@ -12,7 +12,7 @@ import (
 	"github.com/gnulinuxindia/internet-chowkidar/internal/db"
 	"github.com/gnulinuxindia/internet-chowkidar/internal/tracing"
 	domainProvider "github.com/gnulinuxindia/internet-chowkidar/pkg/domain/provider"
-	"github.com/golang/mock/gomock"
+	"go.uber.org/mock/gomock"
 	"go.opentelemetry.io/otel/sdk/trace"
 
 	"github.com/google/wire"
@@ -21,6 +21,11 @@ import (
 var dbSet = wire.NewSet(
 	db.ProvideDB,
 	db.ProvideRawDB,
+	config.ProvideConfig,
+)
+
+var mockDbSet = wire.NewSet(
+	db.ProvideDB,
 	config.ProvideConfig,
 )
 
@@ -41,6 +46,7 @@ var tracingSet = wire.NewSet(
 	tracing.ProvideTracerProvider,
 )
 
+
 // handlers
 func InjectHandlers() (*api.Handlers, error) {
 	wire.Build(concreteSet, dbSet)
@@ -48,7 +54,7 @@ func InjectHandlers() (*api.Handlers, error) {
 }
 
 func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
-	wire.Build(mockSet, dbSet)
+	wire.Build(mockSet, mockDbSet)
 	return &api.Handlers{}, nil
 }
 
@@ -59,7 +65,7 @@ func InjectServices() (*domainProvider.Services, error) {
 }
 
 func InjectMockServices(ctrl *gomock.Controller) (*domainProvider.Services, error) {
-	wire.Build(mockSet, dbSet)
+	wire.Build(mockSet, mockDbSet)
 	return &domainProvider.Services{}, nil
 }
 
@@ -70,7 +76,7 @@ func InjectRepository() (*domainProvider.Repositories, error) {
 }
 
 func InjectMockRepository(ctrl *gomock.Controller) (*domainProvider.Repositories, error) {
-	wire.Build(mockSet, dbSet)
+	wire.Build(mockSet, mockDbSet)
 	return &domainProvider.Repositories{}, nil
 }
 
@@ -78,6 +84,10 @@ func InjectMockRepository(ctrl *gomock.Controller) (*domainProvider.Repositories
 func InjectDb() (*ent.Client, error) {
 	wire.Build(dbSet)
 	return &ent.Client{}, nil
+}
+
+func InjectMockDb() (*ent.Client, error) {
+	panic(wire.Build(mockDbSet))
 }
 
 func InjectTracerProvider() (*trace.TracerProvider, error) {
@@ -88,4 +98,9 @@ func InjectTracerProvider() (*trace.TracerProvider, error) {
 func InjectRawDb() (*sql.DB, error) {
 	wire.Build(dbSet)
 	return &sql.DB{}, nil
+}
+
+func InjectConfig() (*config.Config, error) {
+	wire.Build(config.ProvideConfig)
+	return &config.Config{}, nil
 }

@@ -10,12 +10,18 @@ type Handlers struct {
 	handler.CounterHandler
 }
 
+type MockHandlers struct {
+}
+
 var HandlerSet = wire.NewSet(
 	handler.ProvideCounterHandler,
 	wire.Struct(new(Handlers), "*"),
 )
 
+var MockHandlersInstance MockHandlers = MockHandlers{}
+
 var MockHandlerSet = wire.NewSet(
 	handler.ProvideCounterHandler,
 	wire.Struct(new(Handlers), "*"),
+	wire.Struct(new(MockHandlers), "*"),
 )

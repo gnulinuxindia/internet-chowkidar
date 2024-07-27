@@ -22,11 +22,14 @@ type Config struct {
 	DatabaseDriver string `koanf:"DATABASE_DRIVER"`
 
 	// used by tracing
-	ServiceName    string `koanf:"SERVICE_NAME"`
-	ServiceVersion string `koanf:"SERVICE_VERSION"`
+	ServiceName     string `koanf:"SERVICE_NAME"`
+	ServiceVersion  string `koanf:"SERVICE_VERSION"`
+	TracingExporter string `koanf:"TRACING_EXPORTER"`
 
 	// general
-	Env string `koanf:"ENV"`
+	Env    string `koanf:"ENV"`
+	Port   string `koanf:"PORT"`
+	Listen string `koanf:"LISTEN"`
 }
 
 var Conf *Config
@@ -35,15 +38,18 @@ var k = koanf.New(".")
 
 var allowedDBTypes = []string{
 	"sqlite3",
-	"mysql",
+	"postgres",
 }
 
 var defaultConfigProvider = confmap.Provider(map[string]any{
-	"DATABASE_URL":    "file:sqlite.db?mode=rwc&cache=shared&_fk=1",
-	"DATABASE_DRIVER": "sqlite3",
-	"SERVICE_NAME":    "go-template",
+	"DATABASE_URL":    "postgres://postgres:postgres@localhost:5432/inetc",
+	"DATABASE_DRIVER": "postgres",
+	"SERVICE_NAME":    "internet-chowkidar",
 	"SERVICE_VERSION": "0.1.0",
+	"TRACING_EXPORTER": "http",
 	"ENV":             "local",
+	"PORT":             "9000",
+	"LISTEN":           "0.0.0.0",
 }, "")
 
 func ProvideConfig() (*Config, error) {

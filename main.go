@@ -15,15 +15,26 @@ import (
 	"github.com/gnulinuxindia/internet-chowkidar/pkg/di"
 	"github.com/gnulinuxindia/internet-chowkidar/utils"
 
-	"github.com/fatih/color"
-	"github.com/go-errors/errors"
 	_ "github.com/gnulinuxindia/internet-chowkidar/migrations" // necessary to register migrations
+	"github.com/go-errors/errors"
 )
 
 func main() {
 	ctx := context.Background()
 
-	// ─── auto-migrate ────────────────────────────────────────────────
+	// custom logger
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	slog.SetDefault(logger)
+
+	slog.Info("starting server")
+
+	// config
+	conf, err := di.InjectConfig()
+	if err != nil {
+		handleErr(err)
+	}
+
+	// auto-migrate
 	rawDb, err := di.InjectRawDb()
 	if err != nil {
 		handleErr(err)
@@ -35,13 +46,13 @@ func main() {
 		handleErr(err)
 	}
 
-	// ─── Configure Tracer Provider ────────────────────────────────────────
+	// Configure Tracer Provider
 	tp, err := di.InjectTracerProvider()
 	if err != nil {
 		handleErr(err)
 	}
 
-	// ─── start http server ────────────────────────────────────────────────
+	// start http server
 	handlers, err := di.InjectHandlers()
 	if err != nil {
 		handleErr(err)
@@ -65,12 +76,12 @@ func main() {
 
 	httpServer := http.Server{
 		ReadHeaderTimeout: time.Second,
-		Addr:              ":9000",
+		Addr:              fmt.Sprintf("%s:%s", conf.Listen, conf.Port),
 		Handler:           server,
 	}
 
 	go func() {
-		fmt.Printf("%s running server on %s\n", color.YellowString("[info]"), "localhost:9000")
+		slog.Info("running server on", "addr", httpServer.Addr)
 		err := httpServer.ListenAndServe()
 		if err != nil && !errors.Is(err, http.ErrServerClosed) {
 			handleErr(err)

@@ -17,9 +17,9 @@ import (
 	"github.com/gnulinuxindia/internet-chowkidar/pkg/domain/provider"
 	"github.com/gnulinuxindia/internet-chowkidar/pkg/domain/repository"
 	"github.com/gnulinuxindia/internet-chowkidar/pkg/domain/service"
-	"github.com/golang/mock/gomock"
 	"github.com/google/wire"
 	"go.opentelemetry.io/otel/sdk/trace"
+	"go.uber.org/mock/gomock"
 )
 
 // Injectors from wire.go:
@@ -148,6 +148,18 @@ func InjectDb() (*ent.Client, error) {
 	return client, nil
 }
 
+func InjectMockDb() (*ent.Client, error) {
+	configConfig, err := config.ProvideConfig()
+	if err != nil {
+		return nil, err
+	}
+	client, err := db.ProvideDB(configConfig)
+	if err != nil {
+		return nil, err
+	}
+	return client, nil
+}
+
 func InjectTracerProvider() (*trace.TracerProvider, error) {
 	configConfig, err := config.ProvideConfig()
 	if err != nil {
@@ -172,9 +184,19 @@ func InjectRawDb() (*sql.DB, error) {
 	return sqlDB, nil
 }
 
+func InjectConfig() (*config.Config, error) {
+	configConfig, err := config.ProvideConfig()
+	if err != nil {
+		return nil, err
+	}
+	return configConfig, nil
+}
+
 // wire.go:
 
 var dbSet = wire.NewSet(db.ProvideDB, db.ProvideRawDB, config.ProvideConfig)
+
+var mockDbSet = wire.NewSet(db.ProvideDB, config.ProvideConfig)
 
 var concreteSet = wire.NewSet(api.HandlerSet, di.RepositorySet, di.ServiceSet)
 

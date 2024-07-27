@@ -10,12 +10,18 @@ type Repositories struct {
 	repository.CounterRepository
 }
 
+type MockRepositories struct {
+}
+
 var RepositorySet = wire.NewSet(
 	repository.ProvideCounterRepository,
 	wire.Struct(new(Repositories), "*"),
 )
 
+var MockRepositoriesInstance MockRepositories = MockRepositories{}
+
 var MockRepositorySet = wire.NewSet(
 	repository.ProvideCounterRepository,
 	wire.Struct(new(Repositories), "*"),
+	wire.Struct(new(MockRepositories), "*"),
 )

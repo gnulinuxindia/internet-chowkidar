@@ -4,13 +4,17 @@ package di
 import (
 	"github.com/gnulinuxindia/internet-chowkidar/pkg/domain/service"
 	mock_service "github.com/gnulinuxindia/internet-chowkidar/pkg/domain/service/mock"
-	"github.com/golang/mock/gomock"
 	"github.com/google/wire"
+	"go.uber.org/mock/gomock"
 )
 
 type Services struct {
 	service.CounterService
 	service.EmailService
+}
+
+type MockServices struct {
+	*mock_service.MockEmailService
 }
 
 var ServiceSet = wire.NewSet(
@@ -20,11 +24,15 @@ var ServiceSet = wire.NewSet(
 )
 
 func ProvideMockEmailService(ctrl *gomock.Controller) service.EmailService {
-	return mock_service.NewMockEmailService(ctrl)
+	MockServicesInstance.MockEmailService = mock_service.NewMockEmailService(ctrl)
+	return MockServicesInstance.MockEmailService
 }
+
+var MockServicesInstance MockServices = MockServices{}
 
 var MockServiceSet = wire.NewSet(
 	service.ProvideCounterService,
 	ProvideMockEmailService,
 	wire.Struct(new(Services), "*"),
+	wire.Struct(new(MockServices), "*"),
 )
