@@ -25,9 +25,9 @@ services:
       context: ../
       dockerfile: ./docker/Dockerfile
     ports:
-      - "8080:8080"
+      - "9969:9969"
     environment:
-      - PORT=8080
+      - PORT=9969
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/inetc
       - DATABASE_DRIVER=postgres
       - TRACING_HOST=jaeger
