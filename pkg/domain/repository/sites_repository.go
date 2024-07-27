@@ -92,29 +92,8 @@ func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.Lis
 		return nil, errors.Wrap(err, 0)
 	}
 
-	query := tx.Blocks.Query().
-		WithIsp().
-		WithSite().
-		Limit(params.Limit.Or(50)).
-		Offset(params.Offset.Or(0))
-
-	if params.Order.Set {
-		if params.Order.Value == genapi.ListSitesOrderAsc {
-			query = query.Order(ent.Asc(params.Sort.Or("id")))
-		} else {
-			query = query.Order(ent.Desc(params.Sort.Or("id")))
-		}
-	}
-
-	blocks, err := query.All(ctx)
-	if err != nil {
-		return nil, errors.Wrap(err, 0)
-	}
-
-	slog.Debug("blocks", "blocks", blocks)
-
 	// get all sites in the database
-	siteQuery := tx.Sites.Query().WithCategories()
+	query := tx.Sites.Query().WithCategories().WithBlocks()
 	if params.Category.Set {
 		catNames := strings.Split(params.Category.Or(""), ",")
 		for i, cat := range catNames {
@@ -125,12 +104,20 @@ func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.Lis
 		for i, cat := range catNames {
 			predicates[i] = categories.NameEQ(cat)
 		}
-		siteQuery = siteQuery.Where(
+		query = query.Where(
 			sites.HasCategoriesWith(categories.NameIn(catNames...)),
 		)
 	}
 
-	dbSites, err := siteQuery.All(ctx)
+	if params.Order.Set {
+		if params.Order.Value == genapi.ListSitesOrderAsc {
+			query = query.Order(ent.Asc(params.Sort.Or("id")))
+		} else {
+			query = query.Order(ent.Desc(params.Sort.Or("id")))
+		}
+	}
+
+	dbSites, err := query.All(ctx)
 	if err != nil {
 		slog.Error("failed to get sites", "error", err)
 		return nil, rollback(tx, errors.Wrap(err, 0))
@@ -153,40 +140,41 @@ func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.Lis
 				filteredSites = append(filteredSites, s)
 			}
 		}
+	} else {
+		filteredSites = dbSites
 	}
 
 	// create a map of sites
 	sites := map[string]*genapi.Site{}
-	for _, dbSite := range filteredSites {
-
+	for _, site := range filteredSites {
 		// convert the categories to a slice of strings
-		c := make([]string, len(dbSite.Edges.Categories))
-		for i, category := range dbSite.Edges.Categories {
+		c := make([]string, len(site.Edges.Categories))
+		for i, category := range site.Edges.Categories {
 			c[i] = category.Name
 		}
 
 		// map domain to site struct
-		sites[dbSite.Domain] = &genapi.Site{
-			ID:         dbSite.ID,
-			Domain:     dbSite.Domain,
+		sites[site.Domain] = &genapi.Site{
+			ID:         site.ID,
+			Domain:     site.Domain,
 			Categories: c,
-			CreatedAt:  dbSite.CreatedAt,
-			UpdatedAt:  dbSite.UpdatedAt,
+			CreatedAt:  site.CreatedAt,
+			UpdatedAt:  site.UpdatedAt,
 		}
 	}
 
-	for _, block := range blocks {
-		site := block.Edges.Site
-
-		if _, ok := sites[site.Domain]; ok {
-			// Update the existing site
-			// Add the block and unblock reports
-			sites[site.Domain].BlockReports += block.BlockReports
-			sites[site.Domain].UnblockReports += block.UnblockReports
-
-			// Update the last reported at
-			if sites[site.Domain].LastReportedAt.Before(block.LastReportedAt) {
-				sites[site.Domain].LastReportedAt = block.LastReportedAt
+	for _, site := range filteredSites {
+		for _, block := range site.Edges.Blocks {
+			if _, ok := sites[site.Domain]; ok {
+				// Update the existing site
+				// Add the block and unblock reports
+				sites[site.Domain].BlockReports += block.BlockReports
+				sites[site.Domain].UnblockReports += block.UnblockReports
+	
+				// Update the last reported at
+				if sites[site.Domain].LastReportedAt.Before(block.LastReportedAt) {
+					sites[site.Domain].LastReportedAt = block.LastReportedAt
+				}
 			}
 		}
 	}
