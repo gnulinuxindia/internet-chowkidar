@@ -8,5 +8,6 @@ RUN go build -o main .
 FROM debian:bookworm-slim
 WORKDIR /app
 COPY --from=builder /app/main .
+COPY migrations ./migrations
 EXPOSE 9000
 CMD ["./main"]
