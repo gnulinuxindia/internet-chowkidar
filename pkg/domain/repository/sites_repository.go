@@ -3,10 +3,12 @@ package repository
 import (
 	"context"
 	"log/slog"
+	"strings"
 
 	genapi "github.com/gnulinuxindia/internet-chowkidar/api/gen"
 	"github.com/gnulinuxindia/internet-chowkidar/ent"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/categories"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/predicate"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
 	"github.com/go-errors/errors"
 )
@@ -112,15 +114,50 @@ func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.Lis
 	slog.Debug("blocks", "blocks", blocks)
 
 	// get all sites in the database
-	dbSites, err := tx.Sites.Query().WithCategories().All(ctx)
+	siteQuery := tx.Sites.Query().WithCategories()
+	if params.Category.Set {
+		catNames := strings.Split(params.Category.Or(""), ",")
+		for i, cat := range catNames {
+			catNames[i] = strings.TrimSpace(cat)
+		}
+
+		predicates := make([]predicate.Categories, len(catNames))
+		for i, cat := range catNames {
+			predicates[i] = categories.NameEQ(cat)
+		}
+		siteQuery = siteQuery.Where(
+			sites.HasCategoriesWith(categories.NameIn(catNames...)),
+		)
+	}
+
+	dbSites, err := siteQuery.All(ctx)
 	if err != nil {
 		slog.Error("failed to get sites", "error", err)
 		return nil, rollback(tx, errors.Wrap(err, 0))
 	}
 
+	var filteredSites []*ent.Sites
+	if params.Category.Set {
+		catNames := strings.Split(params.Category.Or(""), ",")
+		for i, cat := range catNames {
+			catNames[i] = strings.TrimSpace(cat)
+		}
+
+		for _, s := range dbSites {
+			cats, err := s.QueryCategories().Where(categories.NameIn(catNames...)).All(ctx)
+			if err != nil {
+				slog.Error("failed to get categories", "error", err)
+				return nil, rollback(tx, errors.Wrap(err, 0))
+			}
+			if len(cats) == len(catNames) {
+				filteredSites = append(filteredSites, s)
+			}
+		}
+	}
+
 	// create a map of sites
 	sites := map[string]*genapi.Site{}
-	for _, dbSite := range dbSites {
+	for _, dbSite := range filteredSites {
 
 		// convert the categories to a slice of strings
 		c := make([]string, len(dbSite.Edges.Categories))
@@ -151,9 +188,6 @@ func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.Lis
 			if sites[site.Domain].LastReportedAt.Before(block.LastReportedAt) {
 				sites[site.Domain].LastReportedAt = block.LastReportedAt
 			}
-		} else {
-			// An invariant has been violated
-			slog.Warn("site not found: THIS SHOULD NEVER HAPPEN", "site", site.Domain)
 		}
 	}
 
