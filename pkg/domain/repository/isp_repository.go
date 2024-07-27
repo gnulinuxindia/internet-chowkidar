@@ -25,7 +25,19 @@ func (i *ispRepositoryImpl) CreateISP(ctx context.Context, isp *genapi.ISPInput)
 }
 
 func (i *ispRepositoryImpl) GetAllISPs(ctx context.Context, params genapi.ListISPsParams) ([]genapi.ISP, error) {
-	isps, err := i.db.Isps.Query().All(ctx)
+	query := i.db.Isps.Query().
+		Limit(params.Limit.Or(50)).
+		Offset(params.Offset.Or(0))
+
+	if params.Order.Set {
+		if params.Order.Value == genapi.ListISPsOrderAsc {
+			query = query.Order(ent.Asc(params.Sort.Or("id")))
+		} else {
+			query = query.Order(ent.Desc(params.Sort.Or("id")))
+		}
+	}
+
+	isps, err := query.All(ctx)
 	if err != nil {
 		return nil, err
 	}
