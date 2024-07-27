@@ -1306,12 +1306,14 @@ func (s *Site) encodeFields(e *jx.Encoder) {
 		e.Str(s.Domain)
 	}
 	{
-		e.FieldStart("tags")
-		e.ArrStart()
-		for _, elem := range s.Tags {
-			e.Str(elem)
+		if s.Categories != nil {
+			e.FieldStart("categories")
+			e.ArrStart()
+			for _, elem := range s.Categories {
+				e.Str(elem)
+			}
+			e.ArrEnd()
 		}
-		e.ArrEnd()
 	}
 	{
 		e.FieldStart("block_reports")
@@ -1338,7 +1340,7 @@ func (s *Site) encodeFields(e *jx.Encoder) {
 var jsonFieldsNameOfSite = [8]string{
 	0: "id",
 	1: "domain",
-	2: "tags",
+	2: "categories",
 	3: "block_reports",
 	4: "unblock_reports",
 	5: "last_reported_at",
@@ -1379,10 +1381,9 @@ func (s *Site) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"domain\"")
 			}
-		case "tags":
-			requiredBitSet[0] |= 1 << 2
+		case "categories":
 			if err := func() error {
-				s.Tags = make([]string, 0)
+				s.Categories = make([]string, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
 					var elem string
 					v, err := d.Str()
@@ -1390,14 +1391,14 @@ func (s *Site) Decode(d *jx.Decoder) error {
 					if err != nil {
 						return err
 					}
-					s.Tags = append(s.Tags, elem)
+					s.Categories = append(s.Categories, elem)
 					return nil
 				}); err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"tags\"")
+				return errors.Wrap(err, "decode field \"categories\"")
 			}
 		case "block_reports":
 			requiredBitSet[0] |= 1 << 3
@@ -1469,7 +1470,7 @@ func (s *Site) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b11111111,
+		0b11111011,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -1675,10 +1676,19 @@ func (s *SiteInput) encodeFields(e *jx.Encoder) {
 		e.FieldStart("domain")
 		e.Str(s.Domain)
 	}
+	{
+		e.FieldStart("categories")
+		e.ArrStart()
+		for _, elem := range s.Categories {
+			e.Str(elem)
+		}
+		e.ArrEnd()
+	}
 }
 
-var jsonFieldsNameOfSiteInput = [1]string{
+var jsonFieldsNameOfSiteInput = [2]string{
 	0: "domain",
+	1: "categories",
 }
 
 // Decode decodes SiteInput from json.
@@ -1702,6 +1712,26 @@ func (s *SiteInput) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"domain\"")
 			}
+		case "categories":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				s.Categories = make([]string, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem string
+					v, err := d.Str()
+					elem = string(v)
+					if err != nil {
+						return err
+					}
+					s.Categories = append(s.Categories, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"categories\"")
+			}
 		default:
 			return d.Skip()
 		}
@@ -1712,7 +1742,7 @@ func (s *SiteInput) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000001,
+		0b00000011,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

@@ -6,6 +6,7 @@ import (
 
 	genapi "github.com/gnulinuxindia/internet-chowkidar/api/gen"
 	"github.com/gnulinuxindia/internet-chowkidar/ent"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/categories"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
 	"github.com/go-errors/errors"
 )
@@ -22,13 +23,74 @@ type sitesRepositoryImpl struct {
 }
 
 func (s *sitesRepositoryImpl) CreateSite(ctx context.Context, req *genapi.SiteInput) (*ent.Sites, error) {
-	return s.db.Sites.Create().
+	tx, err := s.db.Tx(ctx)
+	if err != nil {
+		slog.Error("failed to start transaction", "error", err)
+		return nil, errors.Wrap(err, 0)
+	}
+
+	// find existing categories
+	categories, err := tx.Categories.Query().Where(
+		categories.NameIn(req.Categories...),
+	).All(ctx)
+	if err != nil {
+		slog.Error("failed to get categories", "error", err)
+		return nil, rollback(tx, errors.Wrap(err, 0))
+	}
+
+	// check if all categories are found
+	if len(categories) != len(req.Categories) {
+		slog.Warn("categories not found, will attempt to create automatically", "categories", req.Categories)
+
+		// find the missing categories
+		missingCategories := []string{}
+		for _, category := range req.Categories {
+			found := false
+			for _, c := range categories {
+				if c.Name == category {
+					found = true
+					break
+				}
+			}
+			if !found {
+				missingCategories = append(missingCategories, category)
+			}
+		}
+
+		// create the missing categories
+		newCategories, err := tx.Categories.MapCreateBulk(missingCategories, func(cc *ent.CategoriesCreate, i int) {
+			cc.SetName(missingCategories[i])
+		}).Save(ctx)
+		if err != nil {
+			slog.Error("failed to create missing categories", "error", err)
+			return nil, rollback(tx, errors.Wrap(err, 0))
+		}
+
+		// append the new categories to the existing categories
+		categories = append(categories, newCategories...)
+	}
+
+	// create the site
+	site, err := tx.Sites.Create().
 		SetDomain(req.Domain).
+		AddCategories(categories...).
 		Save(ctx)
+	if err != nil {
+		slog.Error("failed to create site", "error", err)
+		return nil, rollback(tx, errors.Wrap(err, 0))
+	}
+
+	return site, tx.Commit()
 }
 
 func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.ListSitesParams) ([]genapi.Site, error) {
-	query := s.db.Blocks.Query().
+	tx, err := s.db.Tx(ctx)
+	if err != nil {
+		slog.Error("failed to start transaction", "error", err)
+		return nil, errors.Wrap(err, 0)
+	}
+
+	query := tx.Blocks.Query().
 		WithIsp().
 		WithSite().
 		Limit(params.Limit.Or(50)).
@@ -49,29 +111,70 @@ func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.Lis
 
 	slog.Debug("blocks", "blocks", blocks)
 
+	// get all sites in the database
+	dbSites, err := tx.Sites.Query().WithCategories().All(ctx)
+	if err != nil {
+		slog.Error("failed to get sites", "error", err)
+		return nil, rollback(tx, errors.Wrap(err, 0))
+	}
+
+	// create a map of sites
 	sites := map[string]*genapi.Site{}
+	for _, dbSite := range dbSites {
+
+		// convert the categories to a slice of strings
+		c := make([]string, len(dbSite.Edges.Categories))
+		for i, category := range dbSite.Edges.Categories {
+			c[i] = category.Name
+		}
+
+		sites[dbSite.Domain] = &genapi.Site{
+			ID:         dbSite.ID,
+			Domain:     dbSite.Domain,
+			Categories: c,
+			CreatedAt:  dbSite.CreatedAt,
+			UpdatedAt:  dbSite.UpdatedAt,
+		}
+	}
+			
 
 	for _, block := range blocks {
-		if _, ok := sites[block.Edges.Site.Domain]; !ok {
+		site := block.Edges.Site
+
+		if _, ok := sites[site.Domain]; !ok {
+
+			// Get the site categories
+			categories, err := site.QueryCategories().All(ctx)
+			if err != nil {
+				// no need to be a fatal error, just log it
+				slog.Error("failed to get site categories", "error", err)
+			}
+
+			c := make([]string, len(categories))
+			for i, category := range categories {
+				c[i] = category.Name
+			}
+
 			// Add the site to the map
-			sites[block.Edges.Site.Domain] = &genapi.Site{
-				ID:             block.Edges.Site.ID,
-				Domain:         block.Edges.Site.Domain,
+			sites[site.Domain] = &genapi.Site{
+				ID:             site.ID,
+				Domain:         site.Domain,
 				BlockReports:   block.BlockReports,
 				UnblockReports: block.UnblockReports,
 				LastReportedAt: block.LastReportedAt,
-				CreatedAt: 	block.Edges.Site.CreatedAt,
-				UpdatedAt: 	block.Edges.Site.UpdatedAt,
+				Categories:     c,
+				CreatedAt:      site.CreatedAt,
+				UpdatedAt:      site.UpdatedAt,
 			}
 		} else {
 			// Update the existing site
 			// Add the block and unblock reports
-			sites[block.Edges.Site.Domain].BlockReports += block.BlockReports
-			sites[block.Edges.Site.Domain].UnblockReports += block.UnblockReports
+			sites[site.Domain].BlockReports += block.BlockReports
+			sites[site.Domain].UnblockReports += block.UnblockReports
 
 			// Update the last reported at
-			if sites[block.Edges.Site.Domain].LastReportedAt.Before(block.LastReportedAt) {
-				sites[block.Edges.Site.Domain].LastReportedAt = block.LastReportedAt
+			if sites[site.Domain].LastReportedAt.Before(block.LastReportedAt) {
+				sites[site.Domain].LastReportedAt = block.LastReportedAt
 			}
 		}
 	}

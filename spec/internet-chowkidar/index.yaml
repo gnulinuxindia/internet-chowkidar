@@ -280,7 +280,7 @@ components:
           type: integer
         domain:
           type: string
-        tags:
+        categories:
           type: array
           items:
             type: string
@@ -302,9 +302,14 @@ components:
       type: object
       required:
         - domain
+        - categories
       properties:
         domain:
           type: string
+        categories:
+          type: array
+          items:
+            type: string
     
     SiteCreate:
       type: object

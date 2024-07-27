@@ -897,7 +897,7 @@ func (o OptString) Or(d string) string {
 type Site struct {
 	ID             int       `json:"id"`
 	Domain         string    `json:"domain"`
-	Tags           []string  `json:"tags"`
+	Categories     []string  `json:"categories"`
 	BlockReports   int       `json:"block_reports"`
 	UnblockReports int       `json:"unblock_reports"`
 	LastReportedAt time.Time `json:"last_reported_at"`
@@ -915,9 +915,9 @@ func (s *Site) GetDomain() string {
 	return s.Domain
 }
 
-// GetTags returns the value of Tags.
-func (s *Site) GetTags() []string {
-	return s.Tags
+// GetCategories returns the value of Categories.
+func (s *Site) GetCategories() []string {
+	return s.Categories
 }
 
 // GetBlockReports returns the value of BlockReports.
@@ -955,9 +955,9 @@ func (s *Site) SetDomain(val string) {
 	s.Domain = val
 }
 
-// SetTags sets the value of Tags.
-func (s *Site) SetTags(val []string) {
-	s.Tags = val
+// SetCategories sets the value of Categories.
+func (s *Site) SetCategories(val []string) {
+	s.Categories = val
 }
 
 // SetBlockReports sets the value of BlockReports.
@@ -1035,7 +1035,8 @@ func (s *SiteCreate) SetUpdatedAt(val time.Time) {
 
 // Ref: #/components/schemas/SiteInput
 type SiteInput struct {
-	Domain string `json:"domain"`
+	Domain     string   `json:"domain"`
+	Categories []string `json:"categories"`
 }
 
 // GetDomain returns the value of Domain.
@@ -1043,9 +1044,19 @@ func (s *SiteInput) GetDomain() string {
 	return s.Domain
 }
 
+// GetCategories returns the value of Categories.
+func (s *SiteInput) GetCategories() []string {
+	return s.Categories
+}
+
 // SetDomain sets the value of Domain.
 func (s *SiteInput) SetDomain(val string) {
 	s.Domain = val
+}
+
+// SetCategories sets the value of Categories.
+func (s *SiteInput) SetCategories(val []string) {
+	s.Categories = val
 }
 
 // Ref: #/components/schemas/SiteSuggestion
