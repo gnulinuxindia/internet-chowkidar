@@ -36,7 +36,7 @@ type Handler interface {
 	//
 	// Create a new site suggestion.
 	//
-	// POST /site-suggestions
+	// POST /sites/suggestions
 	CreateSiteSuggestion(ctx context.Context, req *SiteSuggestionInput) (*SiteSuggestion, error)
 	// ListAbuseReports implements listAbuseReports operation.
 	//
@@ -60,7 +60,7 @@ type Handler interface {
 	//
 	// List all site suggestions.
 	//
-	// GET /site-suggestions
+	// GET /sites/suggestions
 	ListSiteSuggestions(ctx context.Context) ([]SiteSuggestion, error)
 	// ListSites implements listSites operation.
 	//

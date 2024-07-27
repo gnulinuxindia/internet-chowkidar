@@ -53,7 +53,7 @@ func (UnimplementedHandler) CreateSite(ctx context.Context, req *SiteInput) (r *
 //
 // Create a new site suggestion.
 //
-// POST /site-suggestions
+// POST /sites/suggestions
 func (UnimplementedHandler) CreateSiteSuggestion(ctx context.Context, req *SiteSuggestionInput) (r *SiteSuggestion, _ error) {
 	return r, ht.ErrNotImplemented
 }
@@ -89,7 +89,7 @@ func (UnimplementedHandler) ListISPs(ctx context.Context) (r []ISP, _ error) {
 //
 // List all site suggestions.
 //
-// GET /site-suggestions
+// GET /sites/suggestions
 func (UnimplementedHandler) ListSiteSuggestions(ctx context.Context) (r []SiteSuggestion, _ error) {
 	return r, ht.ErrNotImplemented
 }

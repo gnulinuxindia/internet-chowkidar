@@ -448,12 +448,12 @@ func (s *Server) handleCreateSiteRequest(args [0]string, argsEscaped bool, w htt
 //
 // Create a new site suggestion.
 //
-// POST /site-suggestions
+// POST /sites/suggestions
 func (s *Server) handleCreateSiteSuggestionRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("createSiteSuggestion"),
 		semconv.HTTPMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/site-suggestions"),
+		semconv.HTTPRouteKey.String("/sites/suggestions"),
 	}
 
 	// Start a span for this request.
@@ -815,12 +815,12 @@ func (s *Server) handleListISPsRequest(args [0]string, argsEscaped bool, w http.
 //
 // List all site suggestions.
 //
-// GET /site-suggestions
+// GET /sites/suggestions
 func (s *Server) handleListSiteSuggestionsRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listSiteSuggestions"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/site-suggestions"),
+		semconv.HTTPRouteKey.String("/sites/suggestions"),
 	}
 
 	// Start a span for this request.

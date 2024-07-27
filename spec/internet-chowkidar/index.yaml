@@ -125,7 +125,7 @@ paths:
               schema:
                 $ref: '#/components/schemas/AbuseReport'
 
-  /site-suggestions:
+  /sites/suggestions:
     get:
       summary: List all site suggestions
       operationId: listSiteSuggestions

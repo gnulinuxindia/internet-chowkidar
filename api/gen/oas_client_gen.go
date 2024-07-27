@@ -50,7 +50,7 @@ type Invoker interface {
 	//
 	// Create a new site suggestion.
 	//
-	// POST /site-suggestions
+	// POST /sites/suggestions
 	CreateSiteSuggestion(ctx context.Context, request *SiteSuggestionInput) (*SiteSuggestion, error)
 	// ListAbuseReports invokes listAbuseReports operation.
 	//
@@ -74,7 +74,7 @@ type Invoker interface {
 	//
 	// List all site suggestions.
 	//
-	// GET /site-suggestions
+	// GET /sites/suggestions
 	ListSiteSuggestions(ctx context.Context) ([]SiteSuggestion, error)
 	// ListSites invokes listSites operation.
 	//
@@ -436,7 +436,7 @@ func (c *Client) sendCreateSite(ctx context.Context, request *SiteInput) (res *S
 //
 // Create a new site suggestion.
 //
-// POST /site-suggestions
+// POST /sites/suggestions
 func (c *Client) CreateSiteSuggestion(ctx context.Context, request *SiteSuggestionInput) (*SiteSuggestion, error) {
 	res, err := c.sendCreateSiteSuggestion(ctx, request)
 	return res, err
@@ -446,7 +446,7 @@ func (c *Client) sendCreateSiteSuggestion(ctx context.Context, request *SiteSugg
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("createSiteSuggestion"),
 		semconv.HTTPMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/site-suggestions"),
+		semconv.HTTPRouteKey.String("/sites/suggestions"),
 	}
 
 	// Run stopwatch.
@@ -479,7 +479,7 @@ func (c *Client) sendCreateSiteSuggestion(ctx context.Context, request *SiteSugg
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [1]string
-	pathParts[0] = "/site-suggestions"
+	pathParts[0] = "/sites/suggestions"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeRequest"
@@ -727,7 +727,7 @@ func (c *Client) sendListISPs(ctx context.Context) (res []ISP, err error) {
 //
 // List all site suggestions.
 //
-// GET /site-suggestions
+// GET /sites/suggestions
 func (c *Client) ListSiteSuggestions(ctx context.Context) ([]SiteSuggestion, error) {
 	res, err := c.sendListSiteSuggestions(ctx)
 	return res, err
@@ -737,7 +737,7 @@ func (c *Client) sendListSiteSuggestions(ctx context.Context) (res []SiteSuggest
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("listSiteSuggestions"),
 		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/site-suggestions"),
+		semconv.HTTPRouteKey.String("/sites/suggestions"),
 	}
 
 	// Run stopwatch.
@@ -770,7 +770,7 @@ func (c *Client) sendListSiteSuggestions(ctx context.Context) (res []SiteSuggest
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [1]string
-	pathParts[0] = "/site-suggestions"
+	pathParts[0] = "/sites/suggestions"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeRequest"

@@ -129,21 +129,30 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 
 				elem = origElem
-			case 's': // Prefix: "site"
+			case 's': // Prefix: "sites"
 				origElem := elem
-				if l := len("site"); len(elem) >= l && elem[0:l] == "site" {
+				if l := len("sites"); len(elem) >= l && elem[0:l] == "sites" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
 				if len(elem) == 0 {
-					break
+					switch r.Method {
+					case "GET":
+						s.handleListSitesRequest([0]string{}, elemIsEscaped, w, r)
+					case "POST":
+						s.handleCreateSiteRequest([0]string{}, elemIsEscaped, w, r)
+					default:
+						s.notAllowed(w, r, "GET,POST")
+					}
+
+					return
 				}
 				switch elem[0] {
-				case '-': // Prefix: "-suggestions"
+				case '/': // Prefix: "/suggestions"
 					origElem := elem
-					if l := len("-suggestions"); len(elem) >= l && elem[0:l] == "-suggestions" {
+					if l := len("/suggestions"); len(elem) >= l && elem[0:l] == "/suggestions" {
 						elem = elem[l:]
 					} else {
 						break
@@ -156,29 +165,6 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 							s.handleListSiteSuggestionsRequest([0]string{}, elemIsEscaped, w, r)
 						case "POST":
 							s.handleCreateSiteSuggestionRequest([0]string{}, elemIsEscaped, w, r)
-						default:
-							s.notAllowed(w, r, "GET,POST")
-						}
-
-						return
-					}
-
-					elem = origElem
-				case 's': // Prefix: "s"
-					origElem := elem
-					if l := len("s"); len(elem) >= l && elem[0:l] == "s" {
-						elem = elem[l:]
-					} else {
-						break
-					}
-
-					if len(elem) == 0 {
-						// Leaf node.
-						switch r.Method {
-						case "GET":
-							s.handleListSitesRequest([0]string{}, elemIsEscaped, w, r)
-						case "POST":
-							s.handleCreateSiteRequest([0]string{}, elemIsEscaped, w, r)
 						default:
 							s.notAllowed(w, r, "GET,POST")
 						}
@@ -387,21 +373,40 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				}
 
 				elem = origElem
-			case 's': // Prefix: "site"
+			case 's': // Prefix: "sites"
 				origElem := elem
-				if l := len("site"); len(elem) >= l && elem[0:l] == "site" {
+				if l := len("sites"); len(elem) >= l && elem[0:l] == "sites" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
 				if len(elem) == 0 {
-					break
+					switch method {
+					case "GET":
+						r.name = "ListSites"
+						r.summary = "List all sites"
+						r.operationID = "listSites"
+						r.pathPattern = "/sites"
+						r.args = args
+						r.count = 0
+						return r, true
+					case "POST":
+						r.name = "CreateSite"
+						r.summary = "Create a new site"
+						r.operationID = "createSite"
+						r.pathPattern = "/sites"
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
+					}
 				}
 				switch elem[0] {
-				case '-': // Prefix: "-suggestions"
+				case '/': // Prefix: "/suggestions"
 					origElem := elem
-					if l := len("-suggestions"); len(elem) >= l && elem[0:l] == "-suggestions" {
+					if l := len("/suggestions"); len(elem) >= l && elem[0:l] == "/suggestions" {
 						elem = elem[l:]
 					} else {
 						break
@@ -414,7 +419,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = "ListSiteSuggestions"
 							r.summary = "List all site suggestions"
 							r.operationID = "listSiteSuggestions"
-							r.pathPattern = "/site-suggestions"
+							r.pathPattern = "/sites/suggestions"
 							r.args = args
 							r.count = 0
 							return r, true
@@ -423,41 +428,7 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 							r.name = "CreateSiteSuggestion"
 							r.summary = "Create a new site suggestion"
 							r.operationID = "createSiteSuggestion"
-							r.pathPattern = "/site-suggestions"
-							r.args = args
-							r.count = 0
-							return r, true
-						default:
-							return
-						}
-					}
-
-					elem = origElem
-				case 's': // Prefix: "s"
-					origElem := elem
-					if l := len("s"); len(elem) >= l && elem[0:l] == "s" {
-						elem = elem[l:]
-					} else {
-						break
-					}
-
-					if len(elem) == 0 {
-						switch method {
-						case "GET":
-							// Leaf: ListSites
-							r.name = "ListSites"
-							r.summary = "List all sites"
-							r.operationID = "listSites"
-							r.pathPattern = "/sites"
-							r.args = args
-							r.count = 0
-							return r, true
-						case "POST":
-							// Leaf: CreateSite
-							r.name = "CreateSite"
-							r.summary = "Create a new site"
-							r.operationID = "createSite"
-							r.pathPattern = "/sites"
+							r.pathPattern = "/sites/suggestions"
 							r.args = args
 							r.count = 0
 							return r, true
