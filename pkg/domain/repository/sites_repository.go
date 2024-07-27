@@ -60,6 +60,8 @@ func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.Lis
 				BlockReports:   block.BlockReports,
 				UnblockReports: block.UnblockReports,
 				LastReportedAt: block.LastReportedAt,
+				CreatedAt: 	block.Edges.Site.CreatedAt,
+				UpdatedAt: 	block.Edges.Site.UpdatedAt,
 			}
 		} else {
 			// Update the existing site
@@ -80,7 +82,7 @@ func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.Lis
 		result = append(result, *site)
 	}
 
-	return nil, nil
+	return result, nil
 }
 
 func (s *sitesRepositoryImpl) GetSiteByDomain(ctx context.Context, domain string) (*ent.Sites, error) {

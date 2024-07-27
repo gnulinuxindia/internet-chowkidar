@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"time"
 
 	genapi "github.com/gnulinuxindia/internet-chowkidar/api/gen"
 	"github.com/gnulinuxindia/internet-chowkidar/pkg/domain/dto"
@@ -27,6 +28,7 @@ func (b *blocksServiceImpl) CreateBlock(ctx context.Context, req *genapi.BlockIn
 		IspID: req.IspID,
 		SiteID: req.SiteID,
 		IsBlocked: req.IsBlocked,
+		LastReportedAt: time.Now(),
 	}
 
 	eb, err := b.blocksRepo.CreateBlock(ctx, blockDto)
