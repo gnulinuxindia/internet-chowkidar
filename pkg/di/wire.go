@@ -26,6 +26,7 @@ var dbSet = wire.NewSet(
 
 var mockDbSet = wire.NewSet(
 	db.ProvideDB,
+	db.ProvideRawDB,
 	config.ProvideConfig,
 )
 

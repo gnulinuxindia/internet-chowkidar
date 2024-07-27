@@ -33,7 +33,11 @@ func InjectHandlers() (*api.Handlers, error) {
 	if err != nil {
 		return nil, err
 	}
-	client, err := db.ProvideDB(configConfig)
+	sqlDB, err := db.ProvideRawDB(configConfig)
+	if err != nil {
+		return nil, err
+	}
+	client, err := db.ProvideDB(sqlDB, configConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -57,7 +61,11 @@ func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
 	if err != nil {
 		return nil, err
 	}
-	client, err := db.ProvideDB(configConfig)
+	sqlDB, err := db.ProvideRawDB(configConfig)
+	if err != nil {
+		return nil, err
+	}
+	client, err := db.ProvideDB(sqlDB, configConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -79,7 +87,11 @@ func InjectServices() (*di.Services, error) {
 	if err != nil {
 		return nil, err
 	}
-	client, err := db.ProvideDB(configConfig)
+	sqlDB, err := db.ProvideRawDB(configConfig)
+	if err != nil {
+		return nil, err
+	}
+	client, err := db.ProvideDB(sqlDB, configConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -96,7 +108,11 @@ func InjectMockServices(ctrl *gomock.Controller) (*di.Services, error) {
 	if err != nil {
 		return nil, err
 	}
-	client, err := db.ProvideDB(configConfig)
+	sqlDB, err := db.ProvideRawDB(configConfig)
+	if err != nil {
+		return nil, err
+	}
+	client, err := db.ProvideDB(sqlDB, configConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -114,7 +130,11 @@ func InjectRepository() (*di.Repositories, error) {
 	if err != nil {
 		return nil, err
 	}
-	client, err := db.ProvideDB(configConfig)
+	sqlDB, err := db.ProvideRawDB(configConfig)
+	if err != nil {
+		return nil, err
+	}
+	client, err := db.ProvideDB(sqlDB, configConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -138,7 +158,11 @@ func InjectMockRepository(ctrl *gomock.Controller) (*di.Repositories, error) {
 	if err != nil {
 		return nil, err
 	}
-	client, err := db.ProvideDB(configConfig)
+	sqlDB, err := db.ProvideRawDB(configConfig)
+	if err != nil {
+		return nil, err
+	}
+	client, err := db.ProvideDB(sqlDB, configConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -163,7 +187,11 @@ func InjectDb() (*ent.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	client, err := db.ProvideDB(configConfig)
+	sqlDB, err := db.ProvideRawDB(configConfig)
+	if err != nil {
+		return nil, err
+	}
+	client, err := db.ProvideDB(sqlDB, configConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -175,7 +203,11 @@ func InjectMockDb() (*ent.Client, error) {
 	if err != nil {
 		return nil, err
 	}
-	client, err := db.ProvideDB(configConfig)
+	sqlDB, err := db.ProvideRawDB(configConfig)
+	if err != nil {
+		return nil, err
+	}
+	client, err := db.ProvideDB(sqlDB, configConfig)
 	if err != nil {
 		return nil, err
 	}
@@ -218,7 +250,7 @@ func InjectConfig() (*config.Config, error) {
 
 var dbSet = wire.NewSet(db.ProvideDB, db.ProvideRawDB, config.ProvideConfig)
 
-var mockDbSet = wire.NewSet(db.ProvideDB, config.ProvideConfig)
+var mockDbSet = wire.NewSet(db.ProvideDB, db.ProvideRawDB, config.ProvideConfig)
 
 var concreteSet = wire.NewSet(api.HandlerSet, di.RepositorySet, di.ServiceSet)
 

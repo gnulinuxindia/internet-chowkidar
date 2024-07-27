@@ -42,12 +42,12 @@ var allowedDBTypes = []string{
 }
 
 var defaultConfigProvider = confmap.Provider(map[string]any{
-	"DATABASE_URL":    "postgres://postgres:postgres@localhost:5432/inetc",
-	"DATABASE_DRIVER": "postgres",
-	"SERVICE_NAME":    "internet-chowkidar",
-	"SERVICE_VERSION": "0.1.0",
+	"DATABASE_URL":     "postgres://postgres:postgres@localhost:5432/inetc",
+	"DATABASE_DRIVER":  "postgres",
+	"SERVICE_NAME":     "internet-chowkidar",
+	"SERVICE_VERSION":  "0.1.0",
 	"TRACING_EXPORTER": "http",
-	"ENV":             "local",
+	"ENV":              "debug",
 	"PORT":             "9000",
 	"LISTEN":           "0.0.0.0",
 }, "")

@@ -55,17 +55,14 @@ func main() {
 	// start http server
 	handlers, err := di.InjectHandlers()
 	if err != nil {
+		slog.Error("error creating handlers", "err", err)
 		handleErr(err)
 	}
 
 	var server *genapi.Server
 	if server, err = genapi.NewServer(
 		handlers,
-
-		// tracer
 		genapi.WithTracerProvider(tp),
-
-		// middleware
 		genapi.WithMiddleware(
 			middleware.PanicCapture(),
 			middleware.InfoRec(),

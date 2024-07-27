@@ -1,5 +1,15 @@
-version: "3"
 services:
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: inetc
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - inetc-db-data:/var/lib/postgresql/data
+
   jaeger:
     image: jaegertracing/all-in-one:latest
     ports:
@@ -9,3 +19,6 @@ services:
       - "4318:4318" # OTLP HTTP receiver
     environment:
       - COLLECTOR_ZIPKIN_HTTP_PORT=9411
+
+volumes:
+  inetc-db-data:
