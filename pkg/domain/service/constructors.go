@@ -3,17 +3,10 @@ package service
 
 import "github.com/gnulinuxindia/internet-chowkidar/pkg/domain/repository"
 
-func ProvideCounterService(
-	counterRepository repository.CounterRepository,
-	emailService EmailService,
-) CounterService {
-	return &counterServiceImpl{
-		counterRepository: counterRepository,
-
-		emailService: emailService,
+func ProvideSitesService(
+	repo repository.SitesRepository,
+) SitesService {
+	return &sitesServiceImpl{
+		repo: repo,
 	}
-}
-
-func ProvideEmailService() EmailService {
-	return &emailServiceImpl{}
 }

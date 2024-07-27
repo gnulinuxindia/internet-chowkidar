@@ -7,21 +7,33 @@ import (
 )
 
 type Repositories struct {
+	repository.BlocksRepository
 	repository.CounterRepository
+	repository.IspRepository
+	repository.ReportsRepository
+	repository.SitesRepository
 }
 
 type MockRepositories struct {
 }
 
 var RepositorySet = wire.NewSet(
+	repository.ProvideBlocksRepository,
 	repository.ProvideCounterRepository,
+	repository.ProvideIspRepository,
+	repository.ProvideReportsRepository,
+	repository.ProvideSitesRepository,
 	wire.Struct(new(Repositories), "*"),
 )
 
 var MockRepositoriesInstance MockRepositories = MockRepositories{}
 
 var MockRepositorySet = wire.NewSet(
+	repository.ProvideBlocksRepository,
 	repository.ProvideCounterRepository,
+	repository.ProvideIspRepository,
+	repository.ProvideReportsRepository,
+	repository.ProvideSitesRepository,
 	wire.Struct(new(Repositories), "*"),
 	wire.Struct(new(MockRepositories), "*"),
 )

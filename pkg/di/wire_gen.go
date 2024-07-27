@@ -27,6 +27,8 @@ import (
 // handlers
 func InjectHandlers() (*api.Handlers, error) {
 	blocksHandler := handler.ProvideBlocksHandler()
+	ispHandler := handler.ProvideIspHandler()
+	reportsHandler := handler.ProvideReportsHandler()
 	configConfig, err := config.ProvideConfig()
 	if err != nil {
 		return nil, err
@@ -35,16 +37,13 @@ func InjectHandlers() (*api.Handlers, error) {
 	if err != nil {
 		return nil, err
 	}
-	counterRepository := repository.ProvideCounterRepository(client)
-	emailService := service.ProvideEmailService()
-	counterService := service.ProvideCounterService(counterRepository, emailService)
-	counterHandler := handler.ProvideCounterHandler(counterService)
-	ispHandler := handler.ProvideIspHandler()
-	sitesHandler := handler.ProvideSitesHandler()
+	sitesRepository := repository.ProvideSitesRepository(client)
+	sitesService := service.ProvideSitesService(sitesRepository)
+	sitesHandler := handler.ProvideSitesHandler(sitesService)
 	handlers := &api.Handlers{
 		BlocksHandler:  blocksHandler,
-		CounterHandler: counterHandler,
 		IspHandler:     ispHandler,
+		ReportsHandler: reportsHandler,
 		SitesHandler:   sitesHandler,
 	}
 	return handlers, nil
@@ -52,6 +51,8 @@ func InjectHandlers() (*api.Handlers, error) {
 
 func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
 	blocksHandler := handler.ProvideBlocksHandler()
+	ispHandler := handler.ProvideIspHandler()
+	reportsHandler := handler.ProvideReportsHandler()
 	configConfig, err := config.ProvideConfig()
 	if err != nil {
 		return nil, err
@@ -60,16 +61,13 @@ func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
 	if err != nil {
 		return nil, err
 	}
-	counterRepository := repository.ProvideCounterRepository(client)
-	emailService := di.ProvideMockEmailService(ctrl)
-	counterService := service.ProvideCounterService(counterRepository, emailService)
-	counterHandler := handler.ProvideCounterHandler(counterService)
-	ispHandler := handler.ProvideIspHandler()
-	sitesHandler := handler.ProvideSitesHandler()
+	sitesRepository := repository.ProvideSitesRepository(client)
+	sitesService := service.ProvideSitesService(sitesRepository)
+	sitesHandler := handler.ProvideSitesHandler(sitesService)
 	handlers := &api.Handlers{
 		BlocksHandler:  blocksHandler,
-		CounterHandler: counterHandler,
 		IspHandler:     ispHandler,
+		ReportsHandler: reportsHandler,
 		SitesHandler:   sitesHandler,
 	}
 	return handlers, nil
@@ -85,12 +83,10 @@ func InjectServices() (*di.Services, error) {
 	if err != nil {
 		return nil, err
 	}
-	counterRepository := repository.ProvideCounterRepository(client)
-	emailService := service.ProvideEmailService()
-	counterService := service.ProvideCounterService(counterRepository, emailService)
+	sitesRepository := repository.ProvideSitesRepository(client)
+	sitesService := service.ProvideSitesService(sitesRepository)
 	services := &di.Services{
-		CounterService: counterService,
-		EmailService:   emailService,
+		SitesService: sitesService,
 	}
 	return services, nil
 }
@@ -104,12 +100,10 @@ func InjectMockServices(ctrl *gomock.Controller) (*di.Services, error) {
 	if err != nil {
 		return nil, err
 	}
-	counterRepository := repository.ProvideCounterRepository(client)
-	emailService := di.ProvideMockEmailService(ctrl)
-	counterService := service.ProvideCounterService(counterRepository, emailService)
+	sitesRepository := repository.ProvideSitesRepository(client)
+	sitesService := service.ProvideSitesService(sitesRepository)
 	services := &di.Services{
-		CounterService: counterService,
-		EmailService:   emailService,
+		SitesService: sitesService,
 	}
 	return services, nil
 }
@@ -124,9 +118,17 @@ func InjectRepository() (*di.Repositories, error) {
 	if err != nil {
 		return nil, err
 	}
+	blocksRepository := repository.ProvideBlocksRepository(client)
 	counterRepository := repository.ProvideCounterRepository(client)
+	ispRepository := repository.ProvideIspRepository(client)
+	reportsRepository := repository.ProvideReportsRepository(client)
+	sitesRepository := repository.ProvideSitesRepository(client)
 	repositories := &di.Repositories{
+		BlocksRepository:  blocksRepository,
 		CounterRepository: counterRepository,
+		IspRepository:     ispRepository,
+		ReportsRepository: reportsRepository,
+		SitesRepository:   sitesRepository,
 	}
 	return repositories, nil
 }
@@ -140,9 +142,17 @@ func InjectMockRepository(ctrl *gomock.Controller) (*di.Repositories, error) {
 	if err != nil {
 		return nil, err
 	}
+	blocksRepository := repository.ProvideBlocksRepository(client)
 	counterRepository := repository.ProvideCounterRepository(client)
+	ispRepository := repository.ProvideIspRepository(client)
+	reportsRepository := repository.ProvideReportsRepository(client)
+	sitesRepository := repository.ProvideSitesRepository(client)
 	repositories := &di.Repositories{
+		BlocksRepository:  blocksRepository,
 		CounterRepository: counterRepository,
+		IspRepository:     ispRepository,
+		ReportsRepository: reportsRepository,
+		SitesRepository:   sitesRepository,
 	}
 	return repositories, nil
 }

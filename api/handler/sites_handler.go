@@ -4,6 +4,7 @@ import (
 	"context"
 
 	genapi "github.com/gnulinuxindia/internet-chowkidar/api/gen"
+	"github.com/gnulinuxindia/internet-chowkidar/pkg/domain/service"
 )
 
 type SitesHandler interface {
@@ -14,7 +15,7 @@ type SitesHandler interface {
 }
 
 type sitesHandlerImpl struct {
-
+	sitesService service.SitesService
 }
 
 func (s *sitesHandlerImpl) ListSites(ctx context.Context) ([]genapi.Site, error) {
