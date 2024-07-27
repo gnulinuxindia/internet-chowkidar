@@ -21,6 +21,18 @@ func (f BlocksFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, erro
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.BlocksMutation", m)
 }
 
+// The CategoriesFunc type is an adapter to allow the use of ordinary
+// function as Categories mutator.
+type CategoriesFunc func(context.Context, *ent.CategoriesMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f CategoriesFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.CategoriesMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.CategoriesMutation", m)
+}
+
 // The CounterFunc type is an adapter to allow the use of ordinary
 // function as Counter mutator.
 type CounterFunc func(context.Context, *ent.CounterMutation) (ent.Value, error)
@@ -55,6 +67,18 @@ func (f SitesFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error
 		return f(ctx, mv)
 	}
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SitesMutation", m)
+}
+
+// The SitesCategoriesFunc type is an adapter to allow the use of ordinary
+// function as SitesCategories mutator.
+type SitesCategoriesFunc func(context.Context, *ent.SitesCategoriesMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SitesCategoriesFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SitesCategoriesMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SitesCategoriesMutation", m)
 }
 
 // Condition is a hook condition function.

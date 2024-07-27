@@ -12,8 +12,10 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/blocks"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/categories"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/predicate"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/sitescategories"
 )
 
 // SitesUpdate is the builder for updating Sites entities.
@@ -64,6 +66,36 @@ func (su *SitesUpdate) AddBlocks(b ...*Blocks) *SitesUpdate {
 	return su.AddBlockIDs(ids...)
 }
 
+// AddCategoryIDs adds the "categories" edge to the Categories entity by IDs.
+func (su *SitesUpdate) AddCategoryIDs(ids ...int) *SitesUpdate {
+	su.mutation.AddCategoryIDs(ids...)
+	return su
+}
+
+// AddCategories adds the "categories" edges to the Categories entity.
+func (su *SitesUpdate) AddCategories(c ...*Categories) *SitesUpdate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return su.AddCategoryIDs(ids...)
+}
+
+// AddSitesCategoryIDs adds the "sites_categories" edge to the SitesCategories entity by IDs.
+func (su *SitesUpdate) AddSitesCategoryIDs(ids ...int) *SitesUpdate {
+	su.mutation.AddSitesCategoryIDs(ids...)
+	return su
+}
+
+// AddSitesCategories adds the "sites_categories" edges to the SitesCategories entity.
+func (su *SitesUpdate) AddSitesCategories(s ...*SitesCategories) *SitesUpdate {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return su.AddSitesCategoryIDs(ids...)
+}
+
 // Mutation returns the SitesMutation object of the builder.
 func (su *SitesUpdate) Mutation() *SitesMutation {
 	return su.mutation
@@ -88,6 +120,48 @@ func (su *SitesUpdate) RemoveBlocks(b ...*Blocks) *SitesUpdate {
 		ids[i] = b[i].ID
 	}
 	return su.RemoveBlockIDs(ids...)
+}
+
+// ClearCategories clears all "categories" edges to the Categories entity.
+func (su *SitesUpdate) ClearCategories() *SitesUpdate {
+	su.mutation.ClearCategories()
+	return su
+}
+
+// RemoveCategoryIDs removes the "categories" edge to Categories entities by IDs.
+func (su *SitesUpdate) RemoveCategoryIDs(ids ...int) *SitesUpdate {
+	su.mutation.RemoveCategoryIDs(ids...)
+	return su
+}
+
+// RemoveCategories removes "categories" edges to Categories entities.
+func (su *SitesUpdate) RemoveCategories(c ...*Categories) *SitesUpdate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return su.RemoveCategoryIDs(ids...)
+}
+
+// ClearSitesCategories clears all "sites_categories" edges to the SitesCategories entity.
+func (su *SitesUpdate) ClearSitesCategories() *SitesUpdate {
+	su.mutation.ClearSitesCategories()
+	return su
+}
+
+// RemoveSitesCategoryIDs removes the "sites_categories" edge to SitesCategories entities by IDs.
+func (su *SitesUpdate) RemoveSitesCategoryIDs(ids ...int) *SitesUpdate {
+	su.mutation.RemoveSitesCategoryIDs(ids...)
+	return su
+}
+
+// RemoveSitesCategories removes "sites_categories" edges to SitesCategories entities.
+func (su *SitesUpdate) RemoveSitesCategories(s ...*SitesCategories) *SitesUpdate {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return su.RemoveSitesCategoryIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -186,6 +260,96 @@ func (su *SitesUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
+	if su.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   sites.CategoriesTable,
+			Columns: sites.CategoriesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categories.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.RemovedCategoriesIDs(); len(nodes) > 0 && !su.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   sites.CategoriesTable,
+			Columns: sites.CategoriesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categories.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.CategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   sites.CategoriesTable,
+			Columns: sites.CategoriesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categories.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if su.mutation.SitesCategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   sites.SitesCategoriesTable,
+			Columns: []string{sites.SitesCategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sitescategories.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.RemovedSitesCategoriesIDs(); len(nodes) > 0 && !su.mutation.SitesCategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   sites.SitesCategoriesTable,
+			Columns: []string{sites.SitesCategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sitescategories.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.SitesCategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   sites.SitesCategoriesTable,
+			Columns: []string{sites.SitesCategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sitescategories.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, su.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{sites.Label}
@@ -241,6 +405,36 @@ func (suo *SitesUpdateOne) AddBlocks(b ...*Blocks) *SitesUpdateOne {
 	return suo.AddBlockIDs(ids...)
 }
 
+// AddCategoryIDs adds the "categories" edge to the Categories entity by IDs.
+func (suo *SitesUpdateOne) AddCategoryIDs(ids ...int) *SitesUpdateOne {
+	suo.mutation.AddCategoryIDs(ids...)
+	return suo
+}
+
+// AddCategories adds the "categories" edges to the Categories entity.
+func (suo *SitesUpdateOne) AddCategories(c ...*Categories) *SitesUpdateOne {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return suo.AddCategoryIDs(ids...)
+}
+
+// AddSitesCategoryIDs adds the "sites_categories" edge to the SitesCategories entity by IDs.
+func (suo *SitesUpdateOne) AddSitesCategoryIDs(ids ...int) *SitesUpdateOne {
+	suo.mutation.AddSitesCategoryIDs(ids...)
+	return suo
+}
+
+// AddSitesCategories adds the "sites_categories" edges to the SitesCategories entity.
+func (suo *SitesUpdateOne) AddSitesCategories(s ...*SitesCategories) *SitesUpdateOne {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return suo.AddSitesCategoryIDs(ids...)
+}
+
 // Mutation returns the SitesMutation object of the builder.
 func (suo *SitesUpdateOne) Mutation() *SitesMutation {
 	return suo.mutation
@@ -265,6 +459,48 @@ func (suo *SitesUpdateOne) RemoveBlocks(b ...*Blocks) *SitesUpdateOne {
 		ids[i] = b[i].ID
 	}
 	return suo.RemoveBlockIDs(ids...)
+}
+
+// ClearCategories clears all "categories" edges to the Categories entity.
+func (suo *SitesUpdateOne) ClearCategories() *SitesUpdateOne {
+	suo.mutation.ClearCategories()
+	return suo
+}
+
+// RemoveCategoryIDs removes the "categories" edge to Categories entities by IDs.
+func (suo *SitesUpdateOne) RemoveCategoryIDs(ids ...int) *SitesUpdateOne {
+	suo.mutation.RemoveCategoryIDs(ids...)
+	return suo
+}
+
+// RemoveCategories removes "categories" edges to Categories entities.
+func (suo *SitesUpdateOne) RemoveCategories(c ...*Categories) *SitesUpdateOne {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return suo.RemoveCategoryIDs(ids...)
+}
+
+// ClearSitesCategories clears all "sites_categories" edges to the SitesCategories entity.
+func (suo *SitesUpdateOne) ClearSitesCategories() *SitesUpdateOne {
+	suo.mutation.ClearSitesCategories()
+	return suo
+}
+
+// RemoveSitesCategoryIDs removes the "sites_categories" edge to SitesCategories entities by IDs.
+func (suo *SitesUpdateOne) RemoveSitesCategoryIDs(ids ...int) *SitesUpdateOne {
+	suo.mutation.RemoveSitesCategoryIDs(ids...)
+	return suo
+}
+
+// RemoveSitesCategories removes "sites_categories" edges to SitesCategories entities.
+func (suo *SitesUpdateOne) RemoveSitesCategories(s ...*SitesCategories) *SitesUpdateOne {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return suo.RemoveSitesCategoryIDs(ids...)
 }
 
 // Where appends a list predicates to the SitesUpdate builder.
@@ -386,6 +622,96 @@ func (suo *SitesUpdateOne) sqlSave(ctx context.Context) (_node *Sites, err error
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   sites.CategoriesTable,
+			Columns: sites.CategoriesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categories.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.RemovedCategoriesIDs(); len(nodes) > 0 && !suo.mutation.CategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   sites.CategoriesTable,
+			Columns: sites.CategoriesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categories.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.CategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   sites.CategoriesTable,
+			Columns: sites.CategoriesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categories.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if suo.mutation.SitesCategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   sites.SitesCategoriesTable,
+			Columns: []string{sites.SitesCategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sitescategories.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.RemovedSitesCategoriesIDs(); len(nodes) > 0 && !suo.mutation.SitesCategoriesCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   sites.SitesCategoriesTable,
+			Columns: []string{sites.SitesCategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sitescategories.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.SitesCategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   sites.SitesCategoriesTable,
+			Columns: []string{sites.SitesCategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sitescategories.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

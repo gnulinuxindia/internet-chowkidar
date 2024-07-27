@@ -46,6 +46,26 @@ var (
 			},
 		},
 	}
+	// CategoriesColumns holds the columns for the "categories" table.
+	CategoriesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "name", Type: field.TypeString, Unique: true},
+	}
+	// CategoriesTable holds the schema information for the "categories" table.
+	CategoriesTable = &schema.Table{
+		Name:       "categories",
+		Columns:    CategoriesColumns,
+		PrimaryKey: []*schema.Column{CategoriesColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "categories_name",
+				Unique:  true,
+				Columns: []*schema.Column{CategoriesColumns[3]},
+			},
+		},
+	}
 	// CountersColumns holds the columns for the "counters" table.
 	CountersColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -92,16 +112,53 @@ var (
 			},
 		},
 	}
+	// SitesCategoriesColumns holds the columns for the "sites_categories" table.
+	SitesCategoriesColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "sites_id", Type: field.TypeInt},
+		{Name: "categories_id", Type: field.TypeInt},
+	}
+	// SitesCategoriesTable holds the schema information for the "sites_categories" table.
+	SitesCategoriesTable = &schema.Table{
+		Name:       "sites_categories",
+		Columns:    SitesCategoriesColumns,
+		PrimaryKey: []*schema.Column{SitesCategoriesColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "sites_categories_sites_sites",
+				Columns:    []*schema.Column{SitesCategoriesColumns[1]},
+				RefColumns: []*schema.Column{SitesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "sites_categories_categories_categories",
+				Columns:    []*schema.Column{SitesCategoriesColumns[2]},
+				RefColumns: []*schema.Column{CategoriesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
+		Indexes: []*schema.Index{
+			{
+				Name:    "sitescategories_sites_id_categories_id",
+				Unique:  true,
+				Columns: []*schema.Column{SitesCategoriesColumns[1], SitesCategoriesColumns[2]},
+			},
+		},
+	}
 	// Tables holds all the tables in the schema.
 	Tables = []*schema.Table{
 		BlocksTable,
+		CategoriesTable,
 		CountersTable,
 		IspsTable,
 		SitesTable,
+		SitesCategoriesTable,
 	}
 )
 
 func init() {
 	BlocksTable.ForeignKeys[0].RefTable = IspsTable
 	BlocksTable.ForeignKeys[1].RefTable = SitesTable
+	SitesCategoriesTable.ForeignKeys[0].RefTable = SitesTable
+	SitesCategoriesTable.ForeignKeys[1].RefTable = CategoriesTable
 }

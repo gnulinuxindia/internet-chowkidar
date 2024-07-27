@@ -16,9 +16,11 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/blocks"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/categories"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/counter"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/isps"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/sitescategories"
 )
 
 // Client is the client that holds all ent builders.
@@ -28,12 +30,16 @@ type Client struct {
 	Schema *migrate.Schema
 	// Blocks is the client for interacting with the Blocks builders.
 	Blocks *BlocksClient
+	// Categories is the client for interacting with the Categories builders.
+	Categories *CategoriesClient
 	// Counter is the client for interacting with the Counter builders.
 	Counter *CounterClient
 	// Isps is the client for interacting with the Isps builders.
 	Isps *IspsClient
 	// Sites is the client for interacting with the Sites builders.
 	Sites *SitesClient
+	// SitesCategories is the client for interacting with the SitesCategories builders.
+	SitesCategories *SitesCategoriesClient
 }
 
 // NewClient creates a new client configured with the given options.
@@ -46,9 +52,11 @@ func NewClient(opts ...Option) *Client {
 func (c *Client) init() {
 	c.Schema = migrate.NewSchema(c.driver)
 	c.Blocks = NewBlocksClient(c.config)
+	c.Categories = NewCategoriesClient(c.config)
 	c.Counter = NewCounterClient(c.config)
 	c.Isps = NewIspsClient(c.config)
 	c.Sites = NewSitesClient(c.config)
+	c.SitesCategories = NewSitesCategoriesClient(c.config)
 }
 
 type (
@@ -139,12 +147,14 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 	cfg := c.config
 	cfg.driver = tx
 	return &Tx{
-		ctx:     ctx,
-		config:  cfg,
-		Blocks:  NewBlocksClient(cfg),
-		Counter: NewCounterClient(cfg),
-		Isps:    NewIspsClient(cfg),
-		Sites:   NewSitesClient(cfg),
+		ctx:             ctx,
+		config:          cfg,
+		Blocks:          NewBlocksClient(cfg),
+		Categories:      NewCategoriesClient(cfg),
+		Counter:         NewCounterClient(cfg),
+		Isps:            NewIspsClient(cfg),
+		Sites:           NewSitesClient(cfg),
+		SitesCategories: NewSitesCategoriesClient(cfg),
 	}, nil
 }
 
@@ -162,12 +172,14 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 	cfg := c.config
 	cfg.driver = &txDriver{tx: tx, drv: c.driver}
 	return &Tx{
-		ctx:     ctx,
-		config:  cfg,
-		Blocks:  NewBlocksClient(cfg),
-		Counter: NewCounterClient(cfg),
-		Isps:    NewIspsClient(cfg),
-		Sites:   NewSitesClient(cfg),
+		ctx:             ctx,
+		config:          cfg,
+		Blocks:          NewBlocksClient(cfg),
+		Categories:      NewCategoriesClient(cfg),
+		Counter:         NewCounterClient(cfg),
+		Isps:            NewIspsClient(cfg),
+		Sites:           NewSitesClient(cfg),
+		SitesCategories: NewSitesCategoriesClient(cfg),
 	}, nil
 }
 
@@ -196,19 +208,21 @@ func (c *Client) Close() error {
 // Use adds the mutation hooks to all the entity clients.
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
-	c.Blocks.Use(hooks...)
-	c.Counter.Use(hooks...)
-	c.Isps.Use(hooks...)
-	c.Sites.Use(hooks...)
+	for _, n := range []interface{ Use(...Hook) }{
+		c.Blocks, c.Categories, c.Counter, c.Isps, c.Sites, c.SitesCategories,
+	} {
+		n.Use(hooks...)
+	}
 }
 
 // Intercept adds the query interceptors to all the entity clients.
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
-	c.Blocks.Intercept(interceptors...)
-	c.Counter.Intercept(interceptors...)
-	c.Isps.Intercept(interceptors...)
-	c.Sites.Intercept(interceptors...)
+	for _, n := range []interface{ Intercept(...Interceptor) }{
+		c.Blocks, c.Categories, c.Counter, c.Isps, c.Sites, c.SitesCategories,
+	} {
+		n.Intercept(interceptors...)
+	}
 }
 
 // Mutate implements the ent.Mutator interface.
@@ -216,12 +230,16 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 	switch m := m.(type) {
 	case *BlocksMutation:
 		return c.Blocks.mutate(ctx, m)
+	case *CategoriesMutation:
+		return c.Categories.mutate(ctx, m)
 	case *CounterMutation:
 		return c.Counter.mutate(ctx, m)
 	case *IspsMutation:
 		return c.Isps.mutate(ctx, m)
 	case *SitesMutation:
 		return c.Sites.mutate(ctx, m)
+	case *SitesCategoriesMutation:
+		return c.SitesCategories.mutate(ctx, m)
 	default:
 		return nil, fmt.Errorf("ent: unknown mutation type %T", m)
 	}
@@ -389,6 +407,171 @@ func (c *BlocksClient) mutate(ctx context.Context, m *BlocksMutation) (Value, er
 		return (&BlocksDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
 	default:
 		return nil, fmt.Errorf("ent: unknown Blocks mutation op: %q", m.Op())
+	}
+}
+
+// CategoriesClient is a client for the Categories schema.
+type CategoriesClient struct {
+	config
+}
+
+// NewCategoriesClient returns a client for the Categories from the given config.
+func NewCategoriesClient(c config) *CategoriesClient {
+	return &CategoriesClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `categories.Hooks(f(g(h())))`.
+func (c *CategoriesClient) Use(hooks ...Hook) {
+	c.hooks.Categories = append(c.hooks.Categories, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `categories.Intercept(f(g(h())))`.
+func (c *CategoriesClient) Intercept(interceptors ...Interceptor) {
+	c.inters.Categories = append(c.inters.Categories, interceptors...)
+}
+
+// Create returns a builder for creating a Categories entity.
+func (c *CategoriesClient) Create() *CategoriesCreate {
+	mutation := newCategoriesMutation(c.config, OpCreate)
+	return &CategoriesCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of Categories entities.
+func (c *CategoriesClient) CreateBulk(builders ...*CategoriesCreate) *CategoriesCreateBulk {
+	return &CategoriesCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *CategoriesClient) MapCreateBulk(slice any, setFunc func(*CategoriesCreate, int)) *CategoriesCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &CategoriesCreateBulk{err: fmt.Errorf("calling to CategoriesClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*CategoriesCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &CategoriesCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for Categories.
+func (c *CategoriesClient) Update() *CategoriesUpdate {
+	mutation := newCategoriesMutation(c.config, OpUpdate)
+	return &CategoriesUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *CategoriesClient) UpdateOne(ca *Categories) *CategoriesUpdateOne {
+	mutation := newCategoriesMutation(c.config, OpUpdateOne, withCategories(ca))
+	return &CategoriesUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *CategoriesClient) UpdateOneID(id int) *CategoriesUpdateOne {
+	mutation := newCategoriesMutation(c.config, OpUpdateOne, withCategoriesID(id))
+	return &CategoriesUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for Categories.
+func (c *CategoriesClient) Delete() *CategoriesDelete {
+	mutation := newCategoriesMutation(c.config, OpDelete)
+	return &CategoriesDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *CategoriesClient) DeleteOne(ca *Categories) *CategoriesDeleteOne {
+	return c.DeleteOneID(ca.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *CategoriesClient) DeleteOneID(id int) *CategoriesDeleteOne {
+	builder := c.Delete().Where(categories.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &CategoriesDeleteOne{builder}
+}
+
+// Query returns a query builder for Categories.
+func (c *CategoriesClient) Query() *CategoriesQuery {
+	return &CategoriesQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeCategories},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a Categories entity by its id.
+func (c *CategoriesClient) Get(ctx context.Context, id int) (*Categories, error) {
+	return c.Query().Where(categories.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *CategoriesClient) GetX(ctx context.Context, id int) *Categories {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QuerySites queries the sites edge of a Categories.
+func (c *CategoriesClient) QuerySites(ca *Categories) *SitesQuery {
+	query := (&SitesClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(categories.Table, categories.FieldID, id),
+			sqlgraph.To(sites.Table, sites.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, true, categories.SitesTable, categories.SitesPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySitesCategories queries the sites_categories edge of a Categories.
+func (c *CategoriesClient) QuerySitesCategories(ca *Categories) *SitesCategoriesQuery {
+	query := (&SitesCategoriesClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := ca.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(categories.Table, categories.FieldID, id),
+			sqlgraph.To(sitescategories.Table, sitescategories.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, categories.SitesCategoriesTable, categories.SitesCategoriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *CategoriesClient) Hooks() []Hook {
+	return c.hooks.Categories
+}
+
+// Interceptors returns the client interceptors.
+func (c *CategoriesClient) Interceptors() []Interceptor {
+	return c.inters.Categories
+}
+
+func (c *CategoriesClient) mutate(ctx context.Context, m *CategoriesMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&CategoriesCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&CategoriesUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&CategoriesUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&CategoriesDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown Categories mutation op: %q", m.Op())
 	}
 }
 
@@ -798,6 +981,38 @@ func (c *SitesClient) QueryBlocks(s *Sites) *BlocksQuery {
 	return query
 }
 
+// QueryCategories queries the categories edge of a Sites.
+func (c *SitesClient) QueryCategories(s *Sites) *CategoriesQuery {
+	query := (&CategoriesClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(sites.Table, sites.FieldID, id),
+			sqlgraph.To(categories.Table, categories.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, sites.CategoriesTable, sites.CategoriesPrimaryKey...),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySitesCategories queries the sites_categories edge of a Sites.
+func (c *SitesClient) QuerySitesCategories(s *Sites) *SitesCategoriesQuery {
+	query := (&SitesCategoriesClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(sites.Table, sites.FieldID, id),
+			sqlgraph.To(sitescategories.Table, sitescategories.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, sites.SitesCategoriesTable, sites.SitesCategoriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *SitesClient) Hooks() []Hook {
 	return c.hooks.Sites
@@ -823,12 +1038,177 @@ func (c *SitesClient) mutate(ctx context.Context, m *SitesMutation) (Value, erro
 	}
 }
 
+// SitesCategoriesClient is a client for the SitesCategories schema.
+type SitesCategoriesClient struct {
+	config
+}
+
+// NewSitesCategoriesClient returns a client for the SitesCategories from the given config.
+func NewSitesCategoriesClient(c config) *SitesCategoriesClient {
+	return &SitesCategoriesClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `sitescategories.Hooks(f(g(h())))`.
+func (c *SitesCategoriesClient) Use(hooks ...Hook) {
+	c.hooks.SitesCategories = append(c.hooks.SitesCategories, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `sitescategories.Intercept(f(g(h())))`.
+func (c *SitesCategoriesClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SitesCategories = append(c.inters.SitesCategories, interceptors...)
+}
+
+// Create returns a builder for creating a SitesCategories entity.
+func (c *SitesCategoriesClient) Create() *SitesCategoriesCreate {
+	mutation := newSitesCategoriesMutation(c.config, OpCreate)
+	return &SitesCategoriesCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SitesCategories entities.
+func (c *SitesCategoriesClient) CreateBulk(builders ...*SitesCategoriesCreate) *SitesCategoriesCreateBulk {
+	return &SitesCategoriesCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SitesCategoriesClient) MapCreateBulk(slice any, setFunc func(*SitesCategoriesCreate, int)) *SitesCategoriesCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SitesCategoriesCreateBulk{err: fmt.Errorf("calling to SitesCategoriesClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SitesCategoriesCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SitesCategoriesCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SitesCategories.
+func (c *SitesCategoriesClient) Update() *SitesCategoriesUpdate {
+	mutation := newSitesCategoriesMutation(c.config, OpUpdate)
+	return &SitesCategoriesUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SitesCategoriesClient) UpdateOne(sc *SitesCategories) *SitesCategoriesUpdateOne {
+	mutation := newSitesCategoriesMutation(c.config, OpUpdateOne, withSitesCategories(sc))
+	return &SitesCategoriesUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SitesCategoriesClient) UpdateOneID(id int) *SitesCategoriesUpdateOne {
+	mutation := newSitesCategoriesMutation(c.config, OpUpdateOne, withSitesCategoriesID(id))
+	return &SitesCategoriesUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SitesCategories.
+func (c *SitesCategoriesClient) Delete() *SitesCategoriesDelete {
+	mutation := newSitesCategoriesMutation(c.config, OpDelete)
+	return &SitesCategoriesDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SitesCategoriesClient) DeleteOne(sc *SitesCategories) *SitesCategoriesDeleteOne {
+	return c.DeleteOneID(sc.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SitesCategoriesClient) DeleteOneID(id int) *SitesCategoriesDeleteOne {
+	builder := c.Delete().Where(sitescategories.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SitesCategoriesDeleteOne{builder}
+}
+
+// Query returns a query builder for SitesCategories.
+func (c *SitesCategoriesClient) Query() *SitesCategoriesQuery {
+	return &SitesCategoriesQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSitesCategories},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a SitesCategories entity by its id.
+func (c *SitesCategoriesClient) Get(ctx context.Context, id int) (*SitesCategories, error) {
+	return c.Query().Where(sitescategories.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SitesCategoriesClient) GetX(ctx context.Context, id int) *SitesCategories {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// QuerySites queries the sites edge of a SitesCategories.
+func (c *SitesCategoriesClient) QuerySites(sc *SitesCategories) *SitesQuery {
+	query := (&SitesClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := sc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(sitescategories.Table, sitescategories.FieldID, id),
+			sqlgraph.To(sites.Table, sites.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, sitescategories.SitesTable, sitescategories.SitesColumn),
+		)
+		fromV = sqlgraph.Neighbors(sc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryCategories queries the categories edge of a SitesCategories.
+func (c *SitesCategoriesClient) QueryCategories(sc *SitesCategories) *CategoriesQuery {
+	query := (&CategoriesClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := sc.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(sitescategories.Table, sitescategories.FieldID, id),
+			sqlgraph.To(categories.Table, categories.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, false, sitescategories.CategoriesTable, sitescategories.CategoriesColumn),
+		)
+		fromV = sqlgraph.Neighbors(sc.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// Hooks returns the client hooks.
+func (c *SitesCategoriesClient) Hooks() []Hook {
+	return c.hooks.SitesCategories
+}
+
+// Interceptors returns the client interceptors.
+func (c *SitesCategoriesClient) Interceptors() []Interceptor {
+	return c.inters.SitesCategories
+}
+
+func (c *SitesCategoriesClient) mutate(ctx context.Context, m *SitesCategoriesMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SitesCategoriesCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SitesCategoriesUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SitesCategoriesUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SitesCategoriesDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SitesCategories mutation op: %q", m.Op())
+	}
+}
+
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Blocks, Counter, Isps, Sites []ent.Hook
+		Blocks, Categories, Counter, Isps, Sites, SitesCategories []ent.Hook
 	}
 	inters struct {
-		Blocks, Counter, Isps, Sites []ent.Interceptor
+		Blocks, Categories, Counter, Isps, Sites, SitesCategories []ent.Interceptor
 	}
 )

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/gnulinuxindia/internet-chowkidar/ent/blocks"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/categories"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/counter"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/isps"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/schema"
@@ -39,6 +40,21 @@ func init() {
 	blocksDescUnblockReports := blocksFields[3].Descriptor()
 	// blocks.DefaultUnblockReports holds the default value on creation for the unblock_reports field.
 	blocks.DefaultUnblockReports = blocksDescUnblockReports.Default.(int)
+	categoriesMixin := schema.Categories{}.Mixin()
+	categoriesMixinFields0 := categoriesMixin[0].Fields()
+	_ = categoriesMixinFields0
+	categoriesFields := schema.Categories{}.Fields()
+	_ = categoriesFields
+	// categoriesDescCreatedAt is the schema descriptor for created_at field.
+	categoriesDescCreatedAt := categoriesMixinFields0[0].Descriptor()
+	// categories.DefaultCreatedAt holds the default value on creation for the created_at field.
+	categories.DefaultCreatedAt = categoriesDescCreatedAt.Default.(func() time.Time)
+	// categoriesDescUpdatedAt is the schema descriptor for updated_at field.
+	categoriesDescUpdatedAt := categoriesMixinFields0[1].Descriptor()
+	// categories.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	categories.DefaultUpdatedAt = categoriesDescUpdatedAt.Default.(func() time.Time)
+	// categories.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	categories.UpdateDefaultUpdatedAt = categoriesDescUpdatedAt.UpdateDefault.(func() time.Time)
 	counterFields := schema.Counter{}.Fields()
 	_ = counterFields
 	// counterDescCount is the schema descriptor for count field.

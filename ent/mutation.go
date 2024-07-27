@@ -12,10 +12,12 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/blocks"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/categories"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/counter"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/isps"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/predicate"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/sitescategories"
 )
 
 const (
@@ -27,10 +29,12 @@ const (
 	OpUpdateOne = ent.OpUpdateOne
 
 	// Node types.
-	TypeBlocks  = "Blocks"
-	TypeCounter = "Counter"
-	TypeIsps    = "Isps"
-	TypeSites   = "Sites"
+	TypeBlocks          = "Blocks"
+	TypeCategories      = "Categories"
+	TypeCounter         = "Counter"
+	TypeIsps            = "Isps"
+	TypeSites           = "Sites"
+	TypeSitesCategories = "SitesCategories"
 )
 
 // BlocksMutation represents an operation that mutates the Blocks nodes in the graph.
@@ -850,6 +854,616 @@ func (m *BlocksMutation) ResetEdge(name string) error {
 		return nil
 	}
 	return fmt.Errorf("unknown Blocks edge %s", name)
+}
+
+// CategoriesMutation represents an operation that mutates the Categories nodes in the graph.
+type CategoriesMutation struct {
+	config
+	op                      Op
+	typ                     string
+	id                      *int
+	created_at              *time.Time
+	updated_at              *time.Time
+	name                    *string
+	clearedFields           map[string]struct{}
+	sites                   map[int]struct{}
+	removedsites            map[int]struct{}
+	clearedsites            bool
+	sites_categories        map[int]struct{}
+	removedsites_categories map[int]struct{}
+	clearedsites_categories bool
+	done                    bool
+	oldValue                func(context.Context) (*Categories, error)
+	predicates              []predicate.Categories
+}
+
+var _ ent.Mutation = (*CategoriesMutation)(nil)
+
+// categoriesOption allows management of the mutation configuration using functional options.
+type categoriesOption func(*CategoriesMutation)
+
+// newCategoriesMutation creates new mutation for the Categories entity.
+func newCategoriesMutation(c config, op Op, opts ...categoriesOption) *CategoriesMutation {
+	m := &CategoriesMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeCategories,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withCategoriesID sets the ID field of the mutation.
+func withCategoriesID(id int) categoriesOption {
+	return func(m *CategoriesMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *Categories
+		)
+		m.oldValue = func(ctx context.Context) (*Categories, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().Categories.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withCategories sets the old Categories of the mutation.
+func withCategories(node *Categories) categoriesOption {
+	return func(m *CategoriesMutation) {
+		m.oldValue = func(context.Context) (*Categories, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m CategoriesMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m CategoriesMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *CategoriesMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *CategoriesMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().Categories.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetCreatedAt sets the "created_at" field.
+func (m *CategoriesMutation) SetCreatedAt(t time.Time) {
+	m.created_at = &t
+}
+
+// CreatedAt returns the value of the "created_at" field in the mutation.
+func (m *CategoriesMutation) CreatedAt() (r time.Time, exists bool) {
+	v := m.created_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCreatedAt returns the old "created_at" field's value of the Categories entity.
+// If the Categories object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CategoriesMutation) OldCreatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCreatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCreatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCreatedAt: %w", err)
+	}
+	return oldValue.CreatedAt, nil
+}
+
+// ResetCreatedAt resets all changes to the "created_at" field.
+func (m *CategoriesMutation) ResetCreatedAt() {
+	m.created_at = nil
+}
+
+// SetUpdatedAt sets the "updated_at" field.
+func (m *CategoriesMutation) SetUpdatedAt(t time.Time) {
+	m.updated_at = &t
+}
+
+// UpdatedAt returns the value of the "updated_at" field in the mutation.
+func (m *CategoriesMutation) UpdatedAt() (r time.Time, exists bool) {
+	v := m.updated_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUpdatedAt returns the old "updated_at" field's value of the Categories entity.
+// If the Categories object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CategoriesMutation) OldUpdatedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUpdatedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUpdatedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUpdatedAt: %w", err)
+	}
+	return oldValue.UpdatedAt, nil
+}
+
+// ResetUpdatedAt resets all changes to the "updated_at" field.
+func (m *CategoriesMutation) ResetUpdatedAt() {
+	m.updated_at = nil
+}
+
+// SetName sets the "name" field.
+func (m *CategoriesMutation) SetName(s string) {
+	m.name = &s
+}
+
+// Name returns the value of the "name" field in the mutation.
+func (m *CategoriesMutation) Name() (r string, exists bool) {
+	v := m.name
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldName returns the old "name" field's value of the Categories entity.
+// If the Categories object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *CategoriesMutation) OldName(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldName is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldName requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldName: %w", err)
+	}
+	return oldValue.Name, nil
+}
+
+// ResetName resets all changes to the "name" field.
+func (m *CategoriesMutation) ResetName() {
+	m.name = nil
+}
+
+// AddSiteIDs adds the "sites" edge to the Sites entity by ids.
+func (m *CategoriesMutation) AddSiteIDs(ids ...int) {
+	if m.sites == nil {
+		m.sites = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.sites[ids[i]] = struct{}{}
+	}
+}
+
+// ClearSites clears the "sites" edge to the Sites entity.
+func (m *CategoriesMutation) ClearSites() {
+	m.clearedsites = true
+}
+
+// SitesCleared reports if the "sites" edge to the Sites entity was cleared.
+func (m *CategoriesMutation) SitesCleared() bool {
+	return m.clearedsites
+}
+
+// RemoveSiteIDs removes the "sites" edge to the Sites entity by IDs.
+func (m *CategoriesMutation) RemoveSiteIDs(ids ...int) {
+	if m.removedsites == nil {
+		m.removedsites = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.sites, ids[i])
+		m.removedsites[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedSites returns the removed IDs of the "sites" edge to the Sites entity.
+func (m *CategoriesMutation) RemovedSitesIDs() (ids []int) {
+	for id := range m.removedsites {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// SitesIDs returns the "sites" edge IDs in the mutation.
+func (m *CategoriesMutation) SitesIDs() (ids []int) {
+	for id := range m.sites {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetSites resets all changes to the "sites" edge.
+func (m *CategoriesMutation) ResetSites() {
+	m.sites = nil
+	m.clearedsites = false
+	m.removedsites = nil
+}
+
+// AddSitesCategoryIDs adds the "sites_categories" edge to the SitesCategories entity by ids.
+func (m *CategoriesMutation) AddSitesCategoryIDs(ids ...int) {
+	if m.sites_categories == nil {
+		m.sites_categories = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.sites_categories[ids[i]] = struct{}{}
+	}
+}
+
+// ClearSitesCategories clears the "sites_categories" edge to the SitesCategories entity.
+func (m *CategoriesMutation) ClearSitesCategories() {
+	m.clearedsites_categories = true
+}
+
+// SitesCategoriesCleared reports if the "sites_categories" edge to the SitesCategories entity was cleared.
+func (m *CategoriesMutation) SitesCategoriesCleared() bool {
+	return m.clearedsites_categories
+}
+
+// RemoveSitesCategoryIDs removes the "sites_categories" edge to the SitesCategories entity by IDs.
+func (m *CategoriesMutation) RemoveSitesCategoryIDs(ids ...int) {
+	if m.removedsites_categories == nil {
+		m.removedsites_categories = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.sites_categories, ids[i])
+		m.removedsites_categories[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedSitesCategories returns the removed IDs of the "sites_categories" edge to the SitesCategories entity.
+func (m *CategoriesMutation) RemovedSitesCategoriesIDs() (ids []int) {
+	for id := range m.removedsites_categories {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// SitesCategoriesIDs returns the "sites_categories" edge IDs in the mutation.
+func (m *CategoriesMutation) SitesCategoriesIDs() (ids []int) {
+	for id := range m.sites_categories {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetSitesCategories resets all changes to the "sites_categories" edge.
+func (m *CategoriesMutation) ResetSitesCategories() {
+	m.sites_categories = nil
+	m.clearedsites_categories = false
+	m.removedsites_categories = nil
+}
+
+// Where appends a list predicates to the CategoriesMutation builder.
+func (m *CategoriesMutation) Where(ps ...predicate.Categories) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the CategoriesMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *CategoriesMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.Categories, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *CategoriesMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *CategoriesMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (Categories).
+func (m *CategoriesMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *CategoriesMutation) Fields() []string {
+	fields := make([]string, 0, 3)
+	if m.created_at != nil {
+		fields = append(fields, categories.FieldCreatedAt)
+	}
+	if m.updated_at != nil {
+		fields = append(fields, categories.FieldUpdatedAt)
+	}
+	if m.name != nil {
+		fields = append(fields, categories.FieldName)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *CategoriesMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case categories.FieldCreatedAt:
+		return m.CreatedAt()
+	case categories.FieldUpdatedAt:
+		return m.UpdatedAt()
+	case categories.FieldName:
+		return m.Name()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *CategoriesMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case categories.FieldCreatedAt:
+		return m.OldCreatedAt(ctx)
+	case categories.FieldUpdatedAt:
+		return m.OldUpdatedAt(ctx)
+	case categories.FieldName:
+		return m.OldName(ctx)
+	}
+	return nil, fmt.Errorf("unknown Categories field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CategoriesMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case categories.FieldCreatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCreatedAt(v)
+		return nil
+	case categories.FieldUpdatedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUpdatedAt(v)
+		return nil
+	case categories.FieldName:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetName(v)
+		return nil
+	}
+	return fmt.Errorf("unknown Categories field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *CategoriesMutation) AddedFields() []string {
+	return nil
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *CategoriesMutation) AddedField(name string) (ent.Value, bool) {
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *CategoriesMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Categories numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *CategoriesMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *CategoriesMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *CategoriesMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown Categories nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *CategoriesMutation) ResetField(name string) error {
+	switch name {
+	case categories.FieldCreatedAt:
+		m.ResetCreatedAt()
+		return nil
+	case categories.FieldUpdatedAt:
+		m.ResetUpdatedAt()
+		return nil
+	case categories.FieldName:
+		m.ResetName()
+		return nil
+	}
+	return fmt.Errorf("unknown Categories field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *CategoriesMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.sites != nil {
+		edges = append(edges, categories.EdgeSites)
+	}
+	if m.sites_categories != nil {
+		edges = append(edges, categories.EdgeSitesCategories)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *CategoriesMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case categories.EdgeSites:
+		ids := make([]ent.Value, 0, len(m.sites))
+		for id := range m.sites {
+			ids = append(ids, id)
+		}
+		return ids
+	case categories.EdgeSitesCategories:
+		ids := make([]ent.Value, 0, len(m.sites_categories))
+		for id := range m.sites_categories {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *CategoriesMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.removedsites != nil {
+		edges = append(edges, categories.EdgeSites)
+	}
+	if m.removedsites_categories != nil {
+		edges = append(edges, categories.EdgeSitesCategories)
+	}
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *CategoriesMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case categories.EdgeSites:
+		ids := make([]ent.Value, 0, len(m.removedsites))
+		for id := range m.removedsites {
+			ids = append(ids, id)
+		}
+		return ids
+	case categories.EdgeSitesCategories:
+		ids := make([]ent.Value, 0, len(m.removedsites_categories))
+		for id := range m.removedsites_categories {
+			ids = append(ids, id)
+		}
+		return ids
+	}
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *CategoriesMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedsites {
+		edges = append(edges, categories.EdgeSites)
+	}
+	if m.clearedsites_categories {
+		edges = append(edges, categories.EdgeSitesCategories)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *CategoriesMutation) EdgeCleared(name string) bool {
+	switch name {
+	case categories.EdgeSites:
+		return m.clearedsites
+	case categories.EdgeSitesCategories:
+		return m.clearedsites_categories
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *CategoriesMutation) ClearEdge(name string) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown Categories unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *CategoriesMutation) ResetEdge(name string) error {
+	switch name {
+	case categories.EdgeSites:
+		m.ResetSites()
+		return nil
+	case categories.EdgeSitesCategories:
+		m.ResetSitesCategories()
+		return nil
+	}
+	return fmt.Errorf("unknown Categories edge %s", name)
 }
 
 // CounterMutation represents an operation that mutates the Counter nodes in the graph.
@@ -1921,19 +2535,25 @@ func (m *IspsMutation) ResetEdge(name string) error {
 // SitesMutation represents an operation that mutates the Sites nodes in the graph.
 type SitesMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	created_at    *time.Time
-	updated_at    *time.Time
-	domain        *string
-	clearedFields map[string]struct{}
-	blocks        map[int]struct{}
-	removedblocks map[int]struct{}
-	clearedblocks bool
-	done          bool
-	oldValue      func(context.Context) (*Sites, error)
-	predicates    []predicate.Sites
+	op                      Op
+	typ                     string
+	id                      *int
+	created_at              *time.Time
+	updated_at              *time.Time
+	domain                  *string
+	clearedFields           map[string]struct{}
+	blocks                  map[int]struct{}
+	removedblocks           map[int]struct{}
+	clearedblocks           bool
+	categories              map[int]struct{}
+	removedcategories       map[int]struct{}
+	clearedcategories       bool
+	sites_categories        map[int]struct{}
+	removedsites_categories map[int]struct{}
+	clearedsites_categories bool
+	done                    bool
+	oldValue                func(context.Context) (*Sites, error)
+	predicates              []predicate.Sites
 }
 
 var _ ent.Mutation = (*SitesMutation)(nil)
@@ -2196,6 +2816,114 @@ func (m *SitesMutation) ResetBlocks() {
 	m.removedblocks = nil
 }
 
+// AddCategoryIDs adds the "categories" edge to the Categories entity by ids.
+func (m *SitesMutation) AddCategoryIDs(ids ...int) {
+	if m.categories == nil {
+		m.categories = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.categories[ids[i]] = struct{}{}
+	}
+}
+
+// ClearCategories clears the "categories" edge to the Categories entity.
+func (m *SitesMutation) ClearCategories() {
+	m.clearedcategories = true
+}
+
+// CategoriesCleared reports if the "categories" edge to the Categories entity was cleared.
+func (m *SitesMutation) CategoriesCleared() bool {
+	return m.clearedcategories
+}
+
+// RemoveCategoryIDs removes the "categories" edge to the Categories entity by IDs.
+func (m *SitesMutation) RemoveCategoryIDs(ids ...int) {
+	if m.removedcategories == nil {
+		m.removedcategories = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.categories, ids[i])
+		m.removedcategories[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedCategories returns the removed IDs of the "categories" edge to the Categories entity.
+func (m *SitesMutation) RemovedCategoriesIDs() (ids []int) {
+	for id := range m.removedcategories {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// CategoriesIDs returns the "categories" edge IDs in the mutation.
+func (m *SitesMutation) CategoriesIDs() (ids []int) {
+	for id := range m.categories {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetCategories resets all changes to the "categories" edge.
+func (m *SitesMutation) ResetCategories() {
+	m.categories = nil
+	m.clearedcategories = false
+	m.removedcategories = nil
+}
+
+// AddSitesCategoryIDs adds the "sites_categories" edge to the SitesCategories entity by ids.
+func (m *SitesMutation) AddSitesCategoryIDs(ids ...int) {
+	if m.sites_categories == nil {
+		m.sites_categories = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.sites_categories[ids[i]] = struct{}{}
+	}
+}
+
+// ClearSitesCategories clears the "sites_categories" edge to the SitesCategories entity.
+func (m *SitesMutation) ClearSitesCategories() {
+	m.clearedsites_categories = true
+}
+
+// SitesCategoriesCleared reports if the "sites_categories" edge to the SitesCategories entity was cleared.
+func (m *SitesMutation) SitesCategoriesCleared() bool {
+	return m.clearedsites_categories
+}
+
+// RemoveSitesCategoryIDs removes the "sites_categories" edge to the SitesCategories entity by IDs.
+func (m *SitesMutation) RemoveSitesCategoryIDs(ids ...int) {
+	if m.removedsites_categories == nil {
+		m.removedsites_categories = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.sites_categories, ids[i])
+		m.removedsites_categories[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedSitesCategories returns the removed IDs of the "sites_categories" edge to the SitesCategories entity.
+func (m *SitesMutation) RemovedSitesCategoriesIDs() (ids []int) {
+	for id := range m.removedsites_categories {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// SitesCategoriesIDs returns the "sites_categories" edge IDs in the mutation.
+func (m *SitesMutation) SitesCategoriesIDs() (ids []int) {
+	for id := range m.sites_categories {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetSitesCategories resets all changes to the "sites_categories" edge.
+func (m *SitesMutation) ResetSitesCategories() {
+	m.sites_categories = nil
+	m.clearedsites_categories = false
+	m.removedsites_categories = nil
+}
+
 // Where appends a list predicates to the SitesMutation builder.
 func (m *SitesMutation) Where(ps ...predicate.Sites) {
 	m.predicates = append(m.predicates, ps...)
@@ -2363,9 +3091,15 @@ func (m *SitesMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *SitesMutation) AddedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 3)
 	if m.blocks != nil {
 		edges = append(edges, sites.EdgeBlocks)
+	}
+	if m.categories != nil {
+		edges = append(edges, sites.EdgeCategories)
+	}
+	if m.sites_categories != nil {
+		edges = append(edges, sites.EdgeSitesCategories)
 	}
 	return edges
 }
@@ -2380,15 +3114,33 @@ func (m *SitesMutation) AddedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case sites.EdgeCategories:
+		ids := make([]ent.Value, 0, len(m.categories))
+		for id := range m.categories {
+			ids = append(ids, id)
+		}
+		return ids
+	case sites.EdgeSitesCategories:
+		ids := make([]ent.Value, 0, len(m.sites_categories))
+		for id := range m.sites_categories {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *SitesMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 3)
 	if m.removedblocks != nil {
 		edges = append(edges, sites.EdgeBlocks)
+	}
+	if m.removedcategories != nil {
+		edges = append(edges, sites.EdgeCategories)
+	}
+	if m.removedsites_categories != nil {
+		edges = append(edges, sites.EdgeSitesCategories)
 	}
 	return edges
 }
@@ -2403,15 +3155,33 @@ func (m *SitesMutation) RemovedIDs(name string) []ent.Value {
 			ids = append(ids, id)
 		}
 		return ids
+	case sites.EdgeCategories:
+		ids := make([]ent.Value, 0, len(m.removedcategories))
+		for id := range m.removedcategories {
+			ids = append(ids, id)
+		}
+		return ids
+	case sites.EdgeSitesCategories:
+		ids := make([]ent.Value, 0, len(m.removedsites_categories))
+		for id := range m.removedsites_categories {
+			ids = append(ids, id)
+		}
+		return ids
 	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *SitesMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 1)
+	edges := make([]string, 0, 3)
 	if m.clearedblocks {
 		edges = append(edges, sites.EdgeBlocks)
+	}
+	if m.clearedcategories {
+		edges = append(edges, sites.EdgeCategories)
+	}
+	if m.clearedsites_categories {
+		edges = append(edges, sites.EdgeSitesCategories)
 	}
 	return edges
 }
@@ -2422,6 +3192,10 @@ func (m *SitesMutation) EdgeCleared(name string) bool {
 	switch name {
 	case sites.EdgeBlocks:
 		return m.clearedblocks
+	case sites.EdgeCategories:
+		return m.clearedcategories
+	case sites.EdgeSitesCategories:
+		return m.clearedsites_categories
 	}
 	return false
 }
@@ -2441,6 +3215,495 @@ func (m *SitesMutation) ResetEdge(name string) error {
 	case sites.EdgeBlocks:
 		m.ResetBlocks()
 		return nil
+	case sites.EdgeCategories:
+		m.ResetCategories()
+		return nil
+	case sites.EdgeSitesCategories:
+		m.ResetSitesCategories()
+		return nil
 	}
 	return fmt.Errorf("unknown Sites edge %s", name)
+}
+
+// SitesCategoriesMutation represents an operation that mutates the SitesCategories nodes in the graph.
+type SitesCategoriesMutation struct {
+	config
+	op                Op
+	typ               string
+	id                *int
+	clearedFields     map[string]struct{}
+	sites             *int
+	clearedsites      bool
+	categories        *int
+	clearedcategories bool
+	done              bool
+	oldValue          func(context.Context) (*SitesCategories, error)
+	predicates        []predicate.SitesCategories
+}
+
+var _ ent.Mutation = (*SitesCategoriesMutation)(nil)
+
+// sitescategoriesOption allows management of the mutation configuration using functional options.
+type sitescategoriesOption func(*SitesCategoriesMutation)
+
+// newSitesCategoriesMutation creates new mutation for the SitesCategories entity.
+func newSitesCategoriesMutation(c config, op Op, opts ...sitescategoriesOption) *SitesCategoriesMutation {
+	m := &SitesCategoriesMutation{
+		config:        c,
+		op:            op,
+		typ:           TypeSitesCategories,
+		clearedFields: make(map[string]struct{}),
+	}
+	for _, opt := range opts {
+		opt(m)
+	}
+	return m
+}
+
+// withSitesCategoriesID sets the ID field of the mutation.
+func withSitesCategoriesID(id int) sitescategoriesOption {
+	return func(m *SitesCategoriesMutation) {
+		var (
+			err   error
+			once  sync.Once
+			value *SitesCategories
+		)
+		m.oldValue = func(ctx context.Context) (*SitesCategories, error) {
+			once.Do(func() {
+				if m.done {
+					err = errors.New("querying old values post mutation is not allowed")
+				} else {
+					value, err = m.Client().SitesCategories.Get(ctx, id)
+				}
+			})
+			return value, err
+		}
+		m.id = &id
+	}
+}
+
+// withSitesCategories sets the old SitesCategories of the mutation.
+func withSitesCategories(node *SitesCategories) sitescategoriesOption {
+	return func(m *SitesCategoriesMutation) {
+		m.oldValue = func(context.Context) (*SitesCategories, error) {
+			return node, nil
+		}
+		m.id = &node.ID
+	}
+}
+
+// Client returns a new `ent.Client` from the mutation. If the mutation was
+// executed in a transaction (ent.Tx), a transactional client is returned.
+func (m SitesCategoriesMutation) Client() *Client {
+	client := &Client{config: m.config}
+	client.init()
+	return client
+}
+
+// Tx returns an `ent.Tx` for mutations that were executed in transactions;
+// it returns an error otherwise.
+func (m SitesCategoriesMutation) Tx() (*Tx, error) {
+	if _, ok := m.driver.(*txDriver); !ok {
+		return nil, errors.New("ent: mutation is not running in a transaction")
+	}
+	tx := &Tx{config: m.config}
+	tx.init()
+	return tx, nil
+}
+
+// ID returns the ID value in the mutation. Note that the ID is only available
+// if it was provided to the builder or after it was returned from the database.
+func (m *SitesCategoriesMutation) ID() (id int, exists bool) {
+	if m.id == nil {
+		return
+	}
+	return *m.id, true
+}
+
+// IDs queries the database and returns the entity ids that match the mutation's predicate.
+// That means, if the mutation is applied within a transaction with an isolation level such
+// as sql.LevelSerializable, the returned ids match the ids of the rows that will be updated
+// or updated by the mutation.
+func (m *SitesCategoriesMutation) IDs(ctx context.Context) ([]int, error) {
+	switch {
+	case m.op.Is(OpUpdateOne | OpDeleteOne):
+		id, exists := m.ID()
+		if exists {
+			return []int{id}, nil
+		}
+		fallthrough
+	case m.op.Is(OpUpdate | OpDelete):
+		return m.Client().SitesCategories.Query().Where(m.predicates...).IDs(ctx)
+	default:
+		return nil, fmt.Errorf("IDs is not allowed on %s operations", m.op)
+	}
+}
+
+// SetSitesID sets the "sites_id" field.
+func (m *SitesCategoriesMutation) SetSitesID(i int) {
+	m.sites = &i
+}
+
+// SitesID returns the value of the "sites_id" field in the mutation.
+func (m *SitesCategoriesMutation) SitesID() (r int, exists bool) {
+	v := m.sites
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldSitesID returns the old "sites_id" field's value of the SitesCategories entity.
+// If the SitesCategories object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SitesCategoriesMutation) OldSitesID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldSitesID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldSitesID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldSitesID: %w", err)
+	}
+	return oldValue.SitesID, nil
+}
+
+// ResetSitesID resets all changes to the "sites_id" field.
+func (m *SitesCategoriesMutation) ResetSitesID() {
+	m.sites = nil
+}
+
+// SetCategoriesID sets the "categories_id" field.
+func (m *SitesCategoriesMutation) SetCategoriesID(i int) {
+	m.categories = &i
+}
+
+// CategoriesID returns the value of the "categories_id" field in the mutation.
+func (m *SitesCategoriesMutation) CategoriesID() (r int, exists bool) {
+	v := m.categories
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCategoriesID returns the old "categories_id" field's value of the SitesCategories entity.
+// If the SitesCategories object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SitesCategoriesMutation) OldCategoriesID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCategoriesID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCategoriesID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCategoriesID: %w", err)
+	}
+	return oldValue.CategoriesID, nil
+}
+
+// ResetCategoriesID resets all changes to the "categories_id" field.
+func (m *SitesCategoriesMutation) ResetCategoriesID() {
+	m.categories = nil
+}
+
+// ClearSites clears the "sites" edge to the Sites entity.
+func (m *SitesCategoriesMutation) ClearSites() {
+	m.clearedsites = true
+	m.clearedFields[sitescategories.FieldSitesID] = struct{}{}
+}
+
+// SitesCleared reports if the "sites" edge to the Sites entity was cleared.
+func (m *SitesCategoriesMutation) SitesCleared() bool {
+	return m.clearedsites
+}
+
+// SitesIDs returns the "sites" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// SitesID instead. It exists only for internal usage by the builders.
+func (m *SitesCategoriesMutation) SitesIDs() (ids []int) {
+	if id := m.sites; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetSites resets all changes to the "sites" edge.
+func (m *SitesCategoriesMutation) ResetSites() {
+	m.sites = nil
+	m.clearedsites = false
+}
+
+// ClearCategories clears the "categories" edge to the Categories entity.
+func (m *SitesCategoriesMutation) ClearCategories() {
+	m.clearedcategories = true
+	m.clearedFields[sitescategories.FieldCategoriesID] = struct{}{}
+}
+
+// CategoriesCleared reports if the "categories" edge to the Categories entity was cleared.
+func (m *SitesCategoriesMutation) CategoriesCleared() bool {
+	return m.clearedcategories
+}
+
+// CategoriesIDs returns the "categories" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// CategoriesID instead. It exists only for internal usage by the builders.
+func (m *SitesCategoriesMutation) CategoriesIDs() (ids []int) {
+	if id := m.categories; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetCategories resets all changes to the "categories" edge.
+func (m *SitesCategoriesMutation) ResetCategories() {
+	m.categories = nil
+	m.clearedcategories = false
+}
+
+// Where appends a list predicates to the SitesCategoriesMutation builder.
+func (m *SitesCategoriesMutation) Where(ps ...predicate.SitesCategories) {
+	m.predicates = append(m.predicates, ps...)
+}
+
+// WhereP appends storage-level predicates to the SitesCategoriesMutation builder. Using this method,
+// users can use type-assertion to append predicates that do not depend on any generated package.
+func (m *SitesCategoriesMutation) WhereP(ps ...func(*sql.Selector)) {
+	p := make([]predicate.SitesCategories, len(ps))
+	for i := range ps {
+		p[i] = ps[i]
+	}
+	m.Where(p...)
+}
+
+// Op returns the operation name.
+func (m *SitesCategoriesMutation) Op() Op {
+	return m.op
+}
+
+// SetOp allows setting the mutation operation.
+func (m *SitesCategoriesMutation) SetOp(op Op) {
+	m.op = op
+}
+
+// Type returns the node type of this mutation (SitesCategories).
+func (m *SitesCategoriesMutation) Type() string {
+	return m.typ
+}
+
+// Fields returns all fields that were changed during this mutation. Note that in
+// order to get all numeric fields that were incremented/decremented, call
+// AddedFields().
+func (m *SitesCategoriesMutation) Fields() []string {
+	fields := make([]string, 0, 2)
+	if m.sites != nil {
+		fields = append(fields, sitescategories.FieldSitesID)
+	}
+	if m.categories != nil {
+		fields = append(fields, sitescategories.FieldCategoriesID)
+	}
+	return fields
+}
+
+// Field returns the value of a field with the given name. The second boolean
+// return value indicates that this field was not set, or was not defined in the
+// schema.
+func (m *SitesCategoriesMutation) Field(name string) (ent.Value, bool) {
+	switch name {
+	case sitescategories.FieldSitesID:
+		return m.SitesID()
+	case sitescategories.FieldCategoriesID:
+		return m.CategoriesID()
+	}
+	return nil, false
+}
+
+// OldField returns the old value of the field from the database. An error is
+// returned if the mutation operation is not UpdateOne, or the query to the
+// database failed.
+func (m *SitesCategoriesMutation) OldField(ctx context.Context, name string) (ent.Value, error) {
+	switch name {
+	case sitescategories.FieldSitesID:
+		return m.OldSitesID(ctx)
+	case sitescategories.FieldCategoriesID:
+		return m.OldCategoriesID(ctx)
+	}
+	return nil, fmt.Errorf("unknown SitesCategories field %s", name)
+}
+
+// SetField sets the value of a field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SitesCategoriesMutation) SetField(name string, value ent.Value) error {
+	switch name {
+	case sitescategories.FieldSitesID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetSitesID(v)
+		return nil
+	case sitescategories.FieldCategoriesID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCategoriesID(v)
+		return nil
+	}
+	return fmt.Errorf("unknown SitesCategories field %s", name)
+}
+
+// AddedFields returns all numeric fields that were incremented/decremented during
+// this mutation.
+func (m *SitesCategoriesMutation) AddedFields() []string {
+	var fields []string
+	return fields
+}
+
+// AddedField returns the numeric value that was incremented/decremented on a field
+// with the given name. The second boolean return value indicates that this field
+// was not set, or was not defined in the schema.
+func (m *SitesCategoriesMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
+	return nil, false
+}
+
+// AddField adds the value to the field with the given name. It returns an error if
+// the field is not defined in the schema, or if the type mismatched the field
+// type.
+func (m *SitesCategoriesMutation) AddField(name string, value ent.Value) error {
+	switch name {
+	}
+	return fmt.Errorf("unknown SitesCategories numeric field %s", name)
+}
+
+// ClearedFields returns all nullable fields that were cleared during this
+// mutation.
+func (m *SitesCategoriesMutation) ClearedFields() []string {
+	return nil
+}
+
+// FieldCleared returns a boolean indicating if a field with the given name was
+// cleared in this mutation.
+func (m *SitesCategoriesMutation) FieldCleared(name string) bool {
+	_, ok := m.clearedFields[name]
+	return ok
+}
+
+// ClearField clears the value of the field with the given name. It returns an
+// error if the field is not defined in the schema.
+func (m *SitesCategoriesMutation) ClearField(name string) error {
+	return fmt.Errorf("unknown SitesCategories nullable field %s", name)
+}
+
+// ResetField resets all changes in the mutation for the field with the given name.
+// It returns an error if the field is not defined in the schema.
+func (m *SitesCategoriesMutation) ResetField(name string) error {
+	switch name {
+	case sitescategories.FieldSitesID:
+		m.ResetSitesID()
+		return nil
+	case sitescategories.FieldCategoriesID:
+		m.ResetCategoriesID()
+		return nil
+	}
+	return fmt.Errorf("unknown SitesCategories field %s", name)
+}
+
+// AddedEdges returns all edge names that were set/added in this mutation.
+func (m *SitesCategoriesMutation) AddedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.sites != nil {
+		edges = append(edges, sitescategories.EdgeSites)
+	}
+	if m.categories != nil {
+		edges = append(edges, sitescategories.EdgeCategories)
+	}
+	return edges
+}
+
+// AddedIDs returns all IDs (to other nodes) that were added for the given edge
+// name in this mutation.
+func (m *SitesCategoriesMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case sitescategories.EdgeSites:
+		if id := m.sites; id != nil {
+			return []ent.Value{*id}
+		}
+	case sitescategories.EdgeCategories:
+		if id := m.categories; id != nil {
+			return []ent.Value{*id}
+		}
+	}
+	return nil
+}
+
+// RemovedEdges returns all edge names that were removed in this mutation.
+func (m *SitesCategoriesMutation) RemovedEdges() []string {
+	edges := make([]string, 0, 2)
+	return edges
+}
+
+// RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
+// the given name in this mutation.
+func (m *SitesCategoriesMutation) RemovedIDs(name string) []ent.Value {
+	return nil
+}
+
+// ClearedEdges returns all edge names that were cleared in this mutation.
+func (m *SitesCategoriesMutation) ClearedEdges() []string {
+	edges := make([]string, 0, 2)
+	if m.clearedsites {
+		edges = append(edges, sitescategories.EdgeSites)
+	}
+	if m.clearedcategories {
+		edges = append(edges, sitescategories.EdgeCategories)
+	}
+	return edges
+}
+
+// EdgeCleared returns a boolean which indicates if the edge with the given name
+// was cleared in this mutation.
+func (m *SitesCategoriesMutation) EdgeCleared(name string) bool {
+	switch name {
+	case sitescategories.EdgeSites:
+		return m.clearedsites
+	case sitescategories.EdgeCategories:
+		return m.clearedcategories
+	}
+	return false
+}
+
+// ClearEdge clears the value of the edge with the given name. It returns an error
+// if that edge is not defined in the schema.
+func (m *SitesCategoriesMutation) ClearEdge(name string) error {
+	switch name {
+	case sitescategories.EdgeSites:
+		m.ClearSites()
+		return nil
+	case sitescategories.EdgeCategories:
+		m.ClearCategories()
+		return nil
+	}
+	return fmt.Errorf("unknown SitesCategories unique edge %s", name)
+}
+
+// ResetEdge resets all changes to the edge with the given name in this mutation.
+// It returns an error if the edge is not defined in the schema.
+func (m *SitesCategoriesMutation) ResetEdge(name string) error {
+	switch name {
+	case sitescategories.EdgeSites:
+		m.ResetSites()
+		return nil
+	case sitescategories.EdgeCategories:
+		m.ResetCategories()
+		return nil
+	}
+	return fmt.Errorf("unknown SitesCategories edge %s", name)
 }

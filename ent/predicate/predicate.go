@@ -9,6 +9,9 @@ import (
 // Blocks is the predicate function for blocks builders.
 type Blocks func(*sql.Selector)
 
+// Categories is the predicate function for categories builders.
+type Categories func(*sql.Selector)
+
 // Counter is the predicate function for counter builders.
 type Counter func(*sql.Selector)
 
@@ -17,3 +20,6 @@ type Isps func(*sql.Selector)
 
 // Sites is the predicate function for sites builders.
 type Sites func(*sql.Selector)
+
+// SitesCategories is the predicate function for sitescategories builders.
+type SitesCategories func(*sql.Selector)

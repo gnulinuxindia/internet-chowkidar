@@ -238,6 +238,52 @@ func HasBlocksWith(preds ...predicate.Blocks) predicate.Sites {
 	})
 }
 
+// HasCategories applies the HasEdge predicate on the "categories" edge.
+func HasCategories() predicate.Sites {
+	return predicate.Sites(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, CategoriesTable, CategoriesPrimaryKey...),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasCategoriesWith applies the HasEdge predicate on the "categories" edge with a given conditions (other predicates).
+func HasCategoriesWith(preds ...predicate.Categories) predicate.Sites {
+	return predicate.Sites(func(s *sql.Selector) {
+		step := newCategoriesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasSitesCategories applies the HasEdge predicate on the "sites_categories" edge.
+func HasSitesCategories() predicate.Sites {
+	return predicate.Sites(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, SitesCategoriesTable, SitesCategoriesColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSitesCategoriesWith applies the HasEdge predicate on the "sites_categories" edge with a given conditions (other predicates).
+func HasSitesCategoriesWith(preds ...predicate.SitesCategories) predicate.Sites {
+	return predicate.Sites(func(s *sql.Selector) {
+		step := newSitesCategoriesStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // And groups predicates with the AND operator between them.
 func And(predicates ...predicate.Sites) predicate.Sites {
 	return predicate.Sites(sql.AndPredicates(predicates...))

@@ -14,12 +14,16 @@ type Tx struct {
 	config
 	// Blocks is the client for interacting with the Blocks builders.
 	Blocks *BlocksClient
+	// Categories is the client for interacting with the Categories builders.
+	Categories *CategoriesClient
 	// Counter is the client for interacting with the Counter builders.
 	Counter *CounterClient
 	// Isps is the client for interacting with the Isps builders.
 	Isps *IspsClient
 	// Sites is the client for interacting with the Sites builders.
 	Sites *SitesClient
+	// SitesCategories is the client for interacting with the SitesCategories builders.
+	SitesCategories *SitesCategoriesClient
 
 	// lazily loaded.
 	client     *Client
@@ -152,9 +156,11 @@ func (tx *Tx) Client() *Client {
 
 func (tx *Tx) init() {
 	tx.Blocks = NewBlocksClient(tx.config)
+	tx.Categories = NewCategoriesClient(tx.config)
 	tx.Counter = NewCounterClient(tx.config)
 	tx.Isps = NewIspsClient(tx.config)
 	tx.Sites = NewSitesClient(tx.config)
+	tx.SitesCategories = NewSitesCategoriesClient(tx.config)
 }
 
 // txDriver wraps the given dialect.Tx with a nop dialect.Driver implementation.

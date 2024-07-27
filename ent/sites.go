@@ -33,9 +33,13 @@ type Sites struct {
 type SitesEdges struct {
 	// Blocks holds the value of the blocks edge.
 	Blocks []*Blocks `json:"blocks,omitempty"`
+	// Categories holds the value of the categories edge.
+	Categories []*Categories `json:"categories,omitempty"`
+	// SitesCategories holds the value of the sites_categories edge.
+	SitesCategories []*SitesCategories `json:"sites_categories,omitempty"`
 	// loadedTypes holds the information for reporting if a
 	// type was loaded (or requested) in eager-loading or not.
-	loadedTypes [1]bool
+	loadedTypes [3]bool
 }
 
 // BlocksOrErr returns the Blocks value or an error if the edge
@@ -45,6 +49,24 @@ func (e SitesEdges) BlocksOrErr() ([]*Blocks, error) {
 		return e.Blocks, nil
 	}
 	return nil, &NotLoadedError{edge: "blocks"}
+}
+
+// CategoriesOrErr returns the Categories value or an error if the edge
+// was not loaded in eager-loading.
+func (e SitesEdges) CategoriesOrErr() ([]*Categories, error) {
+	if e.loadedTypes[1] {
+		return e.Categories, nil
+	}
+	return nil, &NotLoadedError{edge: "categories"}
+}
+
+// SitesCategoriesOrErr returns the SitesCategories value or an error if the edge
+// was not loaded in eager-loading.
+func (e SitesEdges) SitesCategoriesOrErr() ([]*SitesCategories, error) {
+	if e.loadedTypes[2] {
+		return e.SitesCategories, nil
+	}
+	return nil, &NotLoadedError{edge: "sites_categories"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -113,6 +135,16 @@ func (s *Sites) Value(name string) (ent.Value, error) {
 // QueryBlocks queries the "blocks" edge of the Sites entity.
 func (s *Sites) QueryBlocks() *BlocksQuery {
 	return NewSitesClient(s.config).QueryBlocks(s)
+}
+
+// QueryCategories queries the "categories" edge of the Sites entity.
+func (s *Sites) QueryCategories() *CategoriesQuery {
+	return NewSitesClient(s.config).QueryCategories(s)
+}
+
+// QuerySitesCategories queries the "sites_categories" edge of the Sites entity.
+func (s *Sites) QuerySitesCategories() *SitesCategoriesQuery {
+	return NewSitesClient(s.config).QuerySitesCategories(s)
 }
 
 // Update returns a builder for updating this Sites.

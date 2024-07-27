@@ -12,18 +12,22 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/blocks"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/categories"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/predicate"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/sitescategories"
 )
 
 // SitesQuery is the builder for querying Sites entities.
 type SitesQuery struct {
 	config
-	ctx        *QueryContext
-	order      []sites.OrderOption
-	inters     []Interceptor
-	predicates []predicate.Sites
-	withBlocks *BlocksQuery
+	ctx                 *QueryContext
+	order               []sites.OrderOption
+	inters              []Interceptor
+	predicates          []predicate.Sites
+	withBlocks          *BlocksQuery
+	withCategories      *CategoriesQuery
+	withSitesCategories *SitesCategoriesQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -75,6 +79,50 @@ func (sq *SitesQuery) QueryBlocks() *BlocksQuery {
 			sqlgraph.From(sites.Table, sites.FieldID, selector),
 			sqlgraph.To(blocks.Table, blocks.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, sites.BlocksTable, sites.BlocksColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryCategories chains the current query on the "categories" edge.
+func (sq *SitesQuery) QueryCategories() *CategoriesQuery {
+	query := (&CategoriesClient{config: sq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(sites.Table, sites.FieldID, selector),
+			sqlgraph.To(categories.Table, categories.FieldID),
+			sqlgraph.Edge(sqlgraph.M2M, false, sites.CategoriesTable, sites.CategoriesPrimaryKey...),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySitesCategories chains the current query on the "sites_categories" edge.
+func (sq *SitesQuery) QuerySitesCategories() *SitesCategoriesQuery {
+	query := (&SitesCategoriesClient{config: sq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(sites.Table, sites.FieldID, selector),
+			sqlgraph.To(sitescategories.Table, sitescategories.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, true, sites.SitesCategoriesTable, sites.SitesCategoriesColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
 		return fromU, nil
@@ -269,12 +317,14 @@ func (sq *SitesQuery) Clone() *SitesQuery {
 		return nil
 	}
 	return &SitesQuery{
-		config:     sq.config,
-		ctx:        sq.ctx.Clone(),
-		order:      append([]sites.OrderOption{}, sq.order...),
-		inters:     append([]Interceptor{}, sq.inters...),
-		predicates: append([]predicate.Sites{}, sq.predicates...),
-		withBlocks: sq.withBlocks.Clone(),
+		config:              sq.config,
+		ctx:                 sq.ctx.Clone(),
+		order:               append([]sites.OrderOption{}, sq.order...),
+		inters:              append([]Interceptor{}, sq.inters...),
+		predicates:          append([]predicate.Sites{}, sq.predicates...),
+		withBlocks:          sq.withBlocks.Clone(),
+		withCategories:      sq.withCategories.Clone(),
+		withSitesCategories: sq.withSitesCategories.Clone(),
 		// clone intermediate query.
 		sql:  sq.sql.Clone(),
 		path: sq.path,
@@ -289,6 +339,28 @@ func (sq *SitesQuery) WithBlocks(opts ...func(*BlocksQuery)) *SitesQuery {
 		opt(query)
 	}
 	sq.withBlocks = query
+	return sq
+}
+
+// WithCategories tells the query-builder to eager-load the nodes that are connected to
+// the "categories" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *SitesQuery) WithCategories(opts ...func(*CategoriesQuery)) *SitesQuery {
+	query := (&CategoriesClient{config: sq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withCategories = query
+	return sq
+}
+
+// WithSitesCategories tells the query-builder to eager-load the nodes that are connected to
+// the "sites_categories" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *SitesQuery) WithSitesCategories(opts ...func(*SitesCategoriesQuery)) *SitesQuery {
+	query := (&SitesCategoriesClient{config: sq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withSitesCategories = query
 	return sq
 }
 
@@ -370,8 +442,10 @@ func (sq *SitesQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Sites,
 	var (
 		nodes       = []*Sites{}
 		_spec       = sq.querySpec()
-		loadedTypes = [1]bool{
+		loadedTypes = [3]bool{
 			sq.withBlocks != nil,
+			sq.withCategories != nil,
+			sq.withSitesCategories != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
@@ -396,6 +470,20 @@ func (sq *SitesQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Sites,
 		if err := sq.loadBlocks(ctx, query, nodes,
 			func(n *Sites) { n.Edges.Blocks = []*Blocks{} },
 			func(n *Sites, e *Blocks) { n.Edges.Blocks = append(n.Edges.Blocks, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := sq.withCategories; query != nil {
+		if err := sq.loadCategories(ctx, query, nodes,
+			func(n *Sites) { n.Edges.Categories = []*Categories{} },
+			func(n *Sites, e *Categories) { n.Edges.Categories = append(n.Edges.Categories, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := sq.withSitesCategories; query != nil {
+		if err := sq.loadSitesCategories(ctx, query, nodes,
+			func(n *Sites) { n.Edges.SitesCategories = []*SitesCategories{} },
+			func(n *Sites, e *SitesCategories) { n.Edges.SitesCategories = append(n.Edges.SitesCategories, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -427,6 +515,97 @@ func (sq *SitesQuery) loadBlocks(ctx context.Context, query *BlocksQuery, nodes 
 		node, ok := nodeids[fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "site_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (sq *SitesQuery) loadCategories(ctx context.Context, query *CategoriesQuery, nodes []*Sites, init func(*Sites), assign func(*Sites, *Categories)) error {
+	edgeIDs := make([]driver.Value, len(nodes))
+	byID := make(map[int]*Sites)
+	nids := make(map[int]map[*Sites]struct{})
+	for i, node := range nodes {
+		edgeIDs[i] = node.ID
+		byID[node.ID] = node
+		if init != nil {
+			init(node)
+		}
+	}
+	query.Where(func(s *sql.Selector) {
+		joinT := sql.Table(sites.CategoriesTable)
+		s.Join(joinT).On(s.C(categories.FieldID), joinT.C(sites.CategoriesPrimaryKey[1]))
+		s.Where(sql.InValues(joinT.C(sites.CategoriesPrimaryKey[0]), edgeIDs...))
+		columns := s.SelectedColumns()
+		s.Select(joinT.C(sites.CategoriesPrimaryKey[0]))
+		s.AppendSelect(columns...)
+		s.SetDistinct(false)
+	})
+	if err := query.prepareQuery(ctx); err != nil {
+		return err
+	}
+	qr := QuerierFunc(func(ctx context.Context, q Query) (Value, error) {
+		return query.sqlAll(ctx, func(_ context.Context, spec *sqlgraph.QuerySpec) {
+			assign := spec.Assign
+			values := spec.ScanValues
+			spec.ScanValues = func(columns []string) ([]any, error) {
+				values, err := values(columns[1:])
+				if err != nil {
+					return nil, err
+				}
+				return append([]any{new(sql.NullInt64)}, values...), nil
+			}
+			spec.Assign = func(columns []string, values []any) error {
+				outValue := int(values[0].(*sql.NullInt64).Int64)
+				inValue := int(values[1].(*sql.NullInt64).Int64)
+				if nids[inValue] == nil {
+					nids[inValue] = map[*Sites]struct{}{byID[outValue]: {}}
+					return assign(columns[1:], values[1:])
+				}
+				nids[inValue][byID[outValue]] = struct{}{}
+				return nil
+			}
+		})
+	})
+	neighbors, err := withInterceptors[[]*Categories](ctx, query, qr, query.inters)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected "categories" node returned %v`, n.ID)
+		}
+		for kn := range nodes {
+			assign(kn, n)
+		}
+	}
+	return nil
+}
+func (sq *SitesQuery) loadSitesCategories(ctx context.Context, query *SitesCategoriesQuery, nodes []*Sites, init func(*Sites), assign func(*Sites, *SitesCategories)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Sites)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(sitescategories.FieldSitesID)
+	}
+	query.Where(predicate.SitesCategories(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(sites.SitesCategoriesColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.SitesID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "sites_id" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}

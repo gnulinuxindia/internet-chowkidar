@@ -11,7 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/blocks"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/categories"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/sitescategories"
 )
 
 // SitesCreate is the builder for creating a Sites entity.
@@ -68,6 +70,36 @@ func (sc *SitesCreate) AddBlocks(b ...*Blocks) *SitesCreate {
 		ids[i] = b[i].ID
 	}
 	return sc.AddBlockIDs(ids...)
+}
+
+// AddCategoryIDs adds the "categories" edge to the Categories entity by IDs.
+func (sc *SitesCreate) AddCategoryIDs(ids ...int) *SitesCreate {
+	sc.mutation.AddCategoryIDs(ids...)
+	return sc
+}
+
+// AddCategories adds the "categories" edges to the Categories entity.
+func (sc *SitesCreate) AddCategories(c ...*Categories) *SitesCreate {
+	ids := make([]int, len(c))
+	for i := range c {
+		ids[i] = c[i].ID
+	}
+	return sc.AddCategoryIDs(ids...)
+}
+
+// AddSitesCategoryIDs adds the "sites_categories" edge to the SitesCategories entity by IDs.
+func (sc *SitesCreate) AddSitesCategoryIDs(ids ...int) *SitesCreate {
+	sc.mutation.AddSitesCategoryIDs(ids...)
+	return sc
+}
+
+// AddSitesCategories adds the "sites_categories" edges to the SitesCategories entity.
+func (sc *SitesCreate) AddSitesCategories(s ...*SitesCategories) *SitesCreate {
+	ids := make([]int, len(s))
+	for i := range s {
+		ids[i] = s[i].ID
+	}
+	return sc.AddSitesCategoryIDs(ids...)
 }
 
 // Mutation returns the SitesMutation object of the builder.
@@ -173,6 +205,38 @@ func (sc *SitesCreate) createSpec() (*Sites, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.CategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2M,
+			Inverse: false,
+			Table:   sites.CategoriesTable,
+			Columns: sites.CategoriesPrimaryKey,
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(categories.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := sc.mutation.SitesCategoriesIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: true,
+			Table:   sites.SitesCategoriesTable,
+			Columns: []string{sites.SitesCategoriesColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sitescategories.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
