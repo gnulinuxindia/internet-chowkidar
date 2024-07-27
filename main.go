@@ -23,8 +23,8 @@ func main() {
 	ctx := context.Background()
 
 	// custom logger
-	logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
-	slog.SetDefault(logger)
+	// logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
+	// slog.SetDefault(logger)
 
 	slog.Info("starting server")
 

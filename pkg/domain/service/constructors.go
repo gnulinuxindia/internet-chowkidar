@@ -3,6 +3,14 @@ package service
 
 import "github.com/gnulinuxindia/internet-chowkidar/pkg/domain/repository"
 
+func ProvideIspService(
+	repo repository.IspRepository,
+) IspService {
+	return &ispServiceImpl{
+		repo: repo,
+	}
+}
+
 func ProvideSitesService(
 	repo repository.SitesRepository,
 ) SitesService {

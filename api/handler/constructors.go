@@ -11,8 +11,12 @@ func ProvideCategoryHandler() CategoryHandler {
 	return &categoryHandlerImpl{}
 }
 
-func ProvideIspHandler() IspHandler {
-	return &ispHandlerImpl{}
+func ProvideIspHandler(
+	ispService service.IspService,
+) IspHandler {
+	return &ispHandlerImpl{
+		ispService: ispService,
+	}
 }
 
 func ProvideReportsHandler() ReportsHandler {

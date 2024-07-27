@@ -7,6 +7,7 @@ import (
 )
 
 type Services struct {
+	service.IspService
 	service.SitesService
 }
 
@@ -14,6 +15,7 @@ type MockServices struct {
 }
 
 var ServiceSet = wire.NewSet(
+	service.ProvideIspService,
 	service.ProvideSitesService,
 	wire.Struct(new(Services), "*"),
 )
@@ -21,6 +23,7 @@ var ServiceSet = wire.NewSet(
 var MockServicesInstance MockServices = MockServices{}
 
 var MockServiceSet = wire.NewSet(
+	service.ProvideIspService,
 	service.ProvideSitesService,
 	wire.Struct(new(Services), "*"),
 	wire.Struct(new(MockServices), "*"),

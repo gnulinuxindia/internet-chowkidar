@@ -28,8 +28,6 @@ import (
 func InjectHandlers() (*api.Handlers, error) {
 	blocksHandler := handler.ProvideBlocksHandler()
 	categoryHandler := handler.ProvideCategoryHandler()
-	ispHandler := handler.ProvideIspHandler()
-	reportsHandler := handler.ProvideReportsHandler()
 	configConfig, err := config.ProvideConfig()
 	if err != nil {
 		return nil, err
@@ -42,6 +40,10 @@ func InjectHandlers() (*api.Handlers, error) {
 	if err != nil {
 		return nil, err
 	}
+	ispRepository := repository.ProvideIspRepository(client)
+	ispService := service.ProvideIspService(ispRepository)
+	ispHandler := handler.ProvideIspHandler(ispService)
+	reportsHandler := handler.ProvideReportsHandler()
 	sitesRepository := repository.ProvideSitesRepository(client)
 	sitesService := service.ProvideSitesService(sitesRepository)
 	sitesHandler := handler.ProvideSitesHandler(sitesService)
@@ -58,8 +60,6 @@ func InjectHandlers() (*api.Handlers, error) {
 func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
 	blocksHandler := handler.ProvideBlocksHandler()
 	categoryHandler := handler.ProvideCategoryHandler()
-	ispHandler := handler.ProvideIspHandler()
-	reportsHandler := handler.ProvideReportsHandler()
 	configConfig, err := config.ProvideConfig()
 	if err != nil {
 		return nil, err
@@ -72,6 +72,10 @@ func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
 	if err != nil {
 		return nil, err
 	}
+	ispRepository := repository.ProvideIspRepository(client)
+	ispService := service.ProvideIspService(ispRepository)
+	ispHandler := handler.ProvideIspHandler(ispService)
+	reportsHandler := handler.ProvideReportsHandler()
 	sitesRepository := repository.ProvideSitesRepository(client)
 	sitesService := service.ProvideSitesService(sitesRepository)
 	sitesHandler := handler.ProvideSitesHandler(sitesService)
@@ -99,9 +103,12 @@ func InjectServices() (*di.Services, error) {
 	if err != nil {
 		return nil, err
 	}
+	ispRepository := repository.ProvideIspRepository(client)
+	ispService := service.ProvideIspService(ispRepository)
 	sitesRepository := repository.ProvideSitesRepository(client)
 	sitesService := service.ProvideSitesService(sitesRepository)
 	services := &di.Services{
+		IspService:   ispService,
 		SitesService: sitesService,
 	}
 	return services, nil
@@ -120,9 +127,12 @@ func InjectMockServices(ctrl *gomock.Controller) (*di.Services, error) {
 	if err != nil {
 		return nil, err
 	}
+	ispRepository := repository.ProvideIspRepository(client)
+	ispService := service.ProvideIspService(ispRepository)
 	sitesRepository := repository.ProvideSitesRepository(client)
 	sitesService := service.ProvideSitesService(sitesRepository)
 	services := &di.Services{
+		IspService:   ispService,
 		SitesService: sitesService,
 	}
 	return services, nil

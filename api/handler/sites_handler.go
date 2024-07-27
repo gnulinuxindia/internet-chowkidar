@@ -19,7 +19,7 @@ type sitesHandlerImpl struct {
 }
 
 func (s *sitesHandlerImpl) ListSites(ctx context.Context, params genapi.ListSitesParams) ([]genapi.Site, error) {
-	panic("not implemented")
+	return s.sitesService.GetAllSites(ctx, params)
 }
 
 func (s *sitesHandlerImpl) ListSiteSuggestions(ctx context.Context) ([]genapi.SiteSuggestion, error) {
