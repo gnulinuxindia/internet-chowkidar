@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 )
@@ -19,7 +20,9 @@ func (Sites) Fields() []ent.Field {
 
 // Edges of the Sites.
 func (Sites) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.To("blocks", Blocks.Type),
+	}
 }
 
 func (Sites) Mixin() []ent.Mixin {

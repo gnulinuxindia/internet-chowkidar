@@ -4,12 +4,14 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/blocks"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/predicate"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
 )
@@ -21,6 +23,7 @@ type SitesQuery struct {
 	order      []sites.OrderOption
 	inters     []Interceptor
 	predicates []predicate.Sites
+	withBlocks *BlocksQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -55,6 +58,28 @@ func (sq *SitesQuery) Unique(unique bool) *SitesQuery {
 func (sq *SitesQuery) Order(o ...sites.OrderOption) *SitesQuery {
 	sq.order = append(sq.order, o...)
 	return sq
+}
+
+// QueryBlocks chains the current query on the "blocks" edge.
+func (sq *SitesQuery) QueryBlocks() *BlocksQuery {
+	query := (&BlocksClient{config: sq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := sq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := sq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(sites.Table, sites.FieldID, selector),
+			sqlgraph.To(blocks.Table, blocks.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, sites.BlocksTable, sites.BlocksColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(sq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first Sites entity from the query.
@@ -249,10 +274,22 @@ func (sq *SitesQuery) Clone() *SitesQuery {
 		order:      append([]sites.OrderOption{}, sq.order...),
 		inters:     append([]Interceptor{}, sq.inters...),
 		predicates: append([]predicate.Sites{}, sq.predicates...),
+		withBlocks: sq.withBlocks.Clone(),
 		// clone intermediate query.
 		sql:  sq.sql.Clone(),
 		path: sq.path,
 	}
+}
+
+// WithBlocks tells the query-builder to eager-load the nodes that are connected to
+// the "blocks" edge. The optional arguments are used to configure the query builder of the edge.
+func (sq *SitesQuery) WithBlocks(opts ...func(*BlocksQuery)) *SitesQuery {
+	query := (&BlocksClient{config: sq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	sq.withBlocks = query
+	return sq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -331,8 +368,11 @@ func (sq *SitesQuery) prepareQuery(ctx context.Context) error {
 
 func (sq *SitesQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Sites, error) {
 	var (
-		nodes = []*Sites{}
-		_spec = sq.querySpec()
+		nodes       = []*Sites{}
+		_spec       = sq.querySpec()
+		loadedTypes = [1]bool{
+			sq.withBlocks != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Sites).scanValues(nil, columns)
@@ -340,6 +380,7 @@ func (sq *SitesQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Sites,
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &Sites{config: sq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -351,7 +392,45 @@ func (sq *SitesQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Sites,
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := sq.withBlocks; query != nil {
+		if err := sq.loadBlocks(ctx, query, nodes,
+			func(n *Sites) { n.Edges.Blocks = []*Blocks{} },
+			func(n *Sites, e *Blocks) { n.Edges.Blocks = append(n.Edges.Blocks, e) }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (sq *SitesQuery) loadBlocks(ctx context.Context, query *BlocksQuery, nodes []*Sites, init func(*Sites), assign func(*Sites, *Blocks)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Sites)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(blocks.FieldSiteID)
+	}
+	query.Where(predicate.Blocks(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(sites.BlocksColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.SiteID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "site_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
 }
 
 func (sq *SitesQuery) sqlCount(ctx context.Context) (int, error) {

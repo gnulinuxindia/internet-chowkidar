@@ -11,7 +11,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/blocks"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/isps"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/predicate"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
 )
 
 // BlocksQuery is the builder for querying Blocks entities.
@@ -21,6 +23,8 @@ type BlocksQuery struct {
 	order      []blocks.OrderOption
 	inters     []Interceptor
 	predicates []predicate.Blocks
+	withSite   *SitesQuery
+	withIsp    *IspsQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -55,6 +59,50 @@ func (bq *BlocksQuery) Unique(unique bool) *BlocksQuery {
 func (bq *BlocksQuery) Order(o ...blocks.OrderOption) *BlocksQuery {
 	bq.order = append(bq.order, o...)
 	return bq
+}
+
+// QuerySite chains the current query on the "site" edge.
+func (bq *BlocksQuery) QuerySite() *SitesQuery {
+	query := (&SitesClient{config: bq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(blocks.Table, blocks.FieldID, selector),
+			sqlgraph.To(sites.Table, sites.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, blocks.SiteTable, blocks.SiteColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QueryIsp chains the current query on the "isp" edge.
+func (bq *BlocksQuery) QueryIsp() *IspsQuery {
+	query := (&IspsClient{config: bq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := bq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := bq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(blocks.Table, blocks.FieldID, selector),
+			sqlgraph.To(isps.Table, isps.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, blocks.IspTable, blocks.IspColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(bq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first Blocks entity from the query.
@@ -249,10 +297,34 @@ func (bq *BlocksQuery) Clone() *BlocksQuery {
 		order:      append([]blocks.OrderOption{}, bq.order...),
 		inters:     append([]Interceptor{}, bq.inters...),
 		predicates: append([]predicate.Blocks{}, bq.predicates...),
+		withSite:   bq.withSite.Clone(),
+		withIsp:    bq.withIsp.Clone(),
 		// clone intermediate query.
 		sql:  bq.sql.Clone(),
 		path: bq.path,
 	}
+}
+
+// WithSite tells the query-builder to eager-load the nodes that are connected to
+// the "site" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BlocksQuery) WithSite(opts ...func(*SitesQuery)) *BlocksQuery {
+	query := (&SitesClient{config: bq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	bq.withSite = query
+	return bq
+}
+
+// WithIsp tells the query-builder to eager-load the nodes that are connected to
+// the "isp" edge. The optional arguments are used to configure the query builder of the edge.
+func (bq *BlocksQuery) WithIsp(opts ...func(*IspsQuery)) *BlocksQuery {
+	query := (&IspsClient{config: bq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	bq.withIsp = query
+	return bq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -331,8 +403,12 @@ func (bq *BlocksQuery) prepareQuery(ctx context.Context) error {
 
 func (bq *BlocksQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Blocks, error) {
 	var (
-		nodes = []*Blocks{}
-		_spec = bq.querySpec()
+		nodes       = []*Blocks{}
+		_spec       = bq.querySpec()
+		loadedTypes = [2]bool{
+			bq.withSite != nil,
+			bq.withIsp != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Blocks).scanValues(nil, columns)
@@ -340,6 +416,7 @@ func (bq *BlocksQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Block
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &Blocks{config: bq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -351,7 +428,78 @@ func (bq *BlocksQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Block
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := bq.withSite; query != nil {
+		if err := bq.loadSite(ctx, query, nodes, nil,
+			func(n *Blocks, e *Sites) { n.Edges.Site = e }); err != nil {
+			return nil, err
+		}
+	}
+	if query := bq.withIsp; query != nil {
+		if err := bq.loadIsp(ctx, query, nodes, nil,
+			func(n *Blocks, e *Isps) { n.Edges.Isp = e }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (bq *BlocksQuery) loadSite(ctx context.Context, query *SitesQuery, nodes []*Blocks, init func(*Blocks), assign func(*Blocks, *Sites)) error {
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*Blocks)
+	for i := range nodes {
+		fk := nodes[i].SiteID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(sites.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "site_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
+}
+func (bq *BlocksQuery) loadIsp(ctx context.Context, query *IspsQuery, nodes []*Blocks, init func(*Blocks), assign func(*Blocks, *Isps)) error {
+	ids := make([]int, 0, len(nodes))
+	nodeids := make(map[int][]*Blocks)
+	for i := range nodes {
+		fk := nodes[i].IspID
+		if _, ok := nodeids[fk]; !ok {
+			ids = append(ids, fk)
+		}
+		nodeids[fk] = append(nodeids[fk], nodes[i])
+	}
+	if len(ids) == 0 {
+		return nil
+	}
+	query.Where(isps.IDIn(ids...))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		nodes, ok := nodeids[n.ID]
+		if !ok {
+			return fmt.Errorf(`unexpected foreign-key "isp_id" returned %v`, n.ID)
+		}
+		for i := range nodes {
+			assign(nodes[i], n)
+		}
+	}
+	return nil
 }
 
 func (bq *BlocksQuery) sqlCount(ctx context.Context) (int, error) {
@@ -378,6 +526,12 @@ func (bq *BlocksQuery) querySpec() *sqlgraph.QuerySpec {
 			if fields[i] != blocks.FieldID {
 				_spec.Node.Columns = append(_spec.Node.Columns, fields[i])
 			}
+		}
+		if bq.withSite != nil {
+			_spec.Node.AddColumnOnce(blocks.FieldSiteID)
+		}
+		if bq.withIsp != nil {
+			_spec.Node.AddColumnOnce(blocks.FieldIspID)
 		}
 	}
 	if ps := bq.predicates; len(ps) > 0 {

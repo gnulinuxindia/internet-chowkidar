@@ -4,12 +4,14 @@ package ent
 
 import (
 	"context"
+	"database/sql/driver"
 	"fmt"
 	"math"
 
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/blocks"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/isps"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/predicate"
 )
@@ -17,10 +19,11 @@ import (
 // IspsQuery is the builder for querying Isps entities.
 type IspsQuery struct {
 	config
-	ctx        *QueryContext
-	order      []isps.OrderOption
-	inters     []Interceptor
-	predicates []predicate.Isps
+	ctx           *QueryContext
+	order         []isps.OrderOption
+	inters        []Interceptor
+	predicates    []predicate.Isps
+	withIspBlocks *BlocksQuery
 	// intermediate query (i.e. traversal path).
 	sql  *sql.Selector
 	path func(context.Context) (*sql.Selector, error)
@@ -55,6 +58,28 @@ func (iq *IspsQuery) Unique(unique bool) *IspsQuery {
 func (iq *IspsQuery) Order(o ...isps.OrderOption) *IspsQuery {
 	iq.order = append(iq.order, o...)
 	return iq
+}
+
+// QueryIspBlocks chains the current query on the "isp_blocks" edge.
+func (iq *IspsQuery) QueryIspBlocks() *BlocksQuery {
+	query := (&BlocksClient{config: iq.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := iq.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := iq.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(isps.Table, isps.FieldID, selector),
+			sqlgraph.To(blocks.Table, blocks.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, isps.IspBlocksTable, isps.IspBlocksColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(iq.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
 }
 
 // First returns the first Isps entity from the query.
@@ -244,15 +269,27 @@ func (iq *IspsQuery) Clone() *IspsQuery {
 		return nil
 	}
 	return &IspsQuery{
-		config:     iq.config,
-		ctx:        iq.ctx.Clone(),
-		order:      append([]isps.OrderOption{}, iq.order...),
-		inters:     append([]Interceptor{}, iq.inters...),
-		predicates: append([]predicate.Isps{}, iq.predicates...),
+		config:        iq.config,
+		ctx:           iq.ctx.Clone(),
+		order:         append([]isps.OrderOption{}, iq.order...),
+		inters:        append([]Interceptor{}, iq.inters...),
+		predicates:    append([]predicate.Isps{}, iq.predicates...),
+		withIspBlocks: iq.withIspBlocks.Clone(),
 		// clone intermediate query.
 		sql:  iq.sql.Clone(),
 		path: iq.path,
 	}
+}
+
+// WithIspBlocks tells the query-builder to eager-load the nodes that are connected to
+// the "isp_blocks" edge. The optional arguments are used to configure the query builder of the edge.
+func (iq *IspsQuery) WithIspBlocks(opts ...func(*BlocksQuery)) *IspsQuery {
+	query := (&BlocksClient{config: iq.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	iq.withIspBlocks = query
+	return iq
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -331,8 +368,11 @@ func (iq *IspsQuery) prepareQuery(ctx context.Context) error {
 
 func (iq *IspsQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Isps, error) {
 	var (
-		nodes = []*Isps{}
-		_spec = iq.querySpec()
+		nodes       = []*Isps{}
+		_spec       = iq.querySpec()
+		loadedTypes = [1]bool{
+			iq.withIspBlocks != nil,
+		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Isps).scanValues(nil, columns)
@@ -340,6 +380,7 @@ func (iq *IspsQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Isps, e
 	_spec.Assign = func(columns []string, values []any) error {
 		node := &Isps{config: iq.config}
 		nodes = append(nodes, node)
+		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
 	}
 	for i := range hooks {
@@ -351,7 +392,45 @@ func (iq *IspsQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Isps, e
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
+	if query := iq.withIspBlocks; query != nil {
+		if err := iq.loadIspBlocks(ctx, query, nodes,
+			func(n *Isps) { n.Edges.IspBlocks = []*Blocks{} },
+			func(n *Isps, e *Blocks) { n.Edges.IspBlocks = append(n.Edges.IspBlocks, e) }); err != nil {
+			return nil, err
+		}
+	}
 	return nodes, nil
+}
+
+func (iq *IspsQuery) loadIspBlocks(ctx context.Context, query *BlocksQuery, nodes []*Isps, init func(*Isps), assign func(*Isps, *Blocks)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Isps)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(blocks.FieldIspID)
+	}
+	query.Where(predicate.Blocks(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(isps.IspBlocksColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.IspID
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "isp_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
 }
 
 func (iq *IspsQuery) sqlCount(ctx context.Context) (int, error) {

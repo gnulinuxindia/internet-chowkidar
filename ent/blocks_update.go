@@ -12,7 +12,9 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/blocks"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/isps"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/predicate"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
 )
 
 // BlocksUpdate is the builder for updating Blocks entities.
@@ -34,37 +36,115 @@ func (bu *BlocksUpdate) SetUpdatedAt(t time.Time) *BlocksUpdate {
 	return bu
 }
 
-// SetIP sets the "ip" field.
-func (bu *BlocksUpdate) SetIP(s string) *BlocksUpdate {
-	bu.mutation.SetIP(s)
+// SetSiteID sets the "site_id" field.
+func (bu *BlocksUpdate) SetSiteID(i int) *BlocksUpdate {
+	bu.mutation.SetSiteID(i)
 	return bu
 }
 
-// SetNillableIP sets the "ip" field if the given value is not nil.
-func (bu *BlocksUpdate) SetNillableIP(s *string) *BlocksUpdate {
-	if s != nil {
-		bu.SetIP(*s)
+// SetNillableSiteID sets the "site_id" field if the given value is not nil.
+func (bu *BlocksUpdate) SetNillableSiteID(i *int) *BlocksUpdate {
+	if i != nil {
+		bu.SetSiteID(*i)
 	}
 	return bu
 }
 
-// SetDomain sets the "domain" field.
-func (bu *BlocksUpdate) SetDomain(s string) *BlocksUpdate {
-	bu.mutation.SetDomain(s)
+// SetIspID sets the "isp_id" field.
+func (bu *BlocksUpdate) SetIspID(i int) *BlocksUpdate {
+	bu.mutation.SetIspID(i)
 	return bu
 }
 
-// SetNillableDomain sets the "domain" field if the given value is not nil.
-func (bu *BlocksUpdate) SetNillableDomain(s *string) *BlocksUpdate {
-	if s != nil {
-		bu.SetDomain(*s)
+// SetNillableIspID sets the "isp_id" field if the given value is not nil.
+func (bu *BlocksUpdate) SetNillableIspID(i *int) *BlocksUpdate {
+	if i != nil {
+		bu.SetIspID(*i)
 	}
 	return bu
+}
+
+// SetBlockReports sets the "block_reports" field.
+func (bu *BlocksUpdate) SetBlockReports(i int) *BlocksUpdate {
+	bu.mutation.ResetBlockReports()
+	bu.mutation.SetBlockReports(i)
+	return bu
+}
+
+// SetNillableBlockReports sets the "block_reports" field if the given value is not nil.
+func (bu *BlocksUpdate) SetNillableBlockReports(i *int) *BlocksUpdate {
+	if i != nil {
+		bu.SetBlockReports(*i)
+	}
+	return bu
+}
+
+// AddBlockReports adds i to the "block_reports" field.
+func (bu *BlocksUpdate) AddBlockReports(i int) *BlocksUpdate {
+	bu.mutation.AddBlockReports(i)
+	return bu
+}
+
+// SetUnblockReports sets the "unblock_reports" field.
+func (bu *BlocksUpdate) SetUnblockReports(i int) *BlocksUpdate {
+	bu.mutation.ResetUnblockReports()
+	bu.mutation.SetUnblockReports(i)
+	return bu
+}
+
+// SetNillableUnblockReports sets the "unblock_reports" field if the given value is not nil.
+func (bu *BlocksUpdate) SetNillableUnblockReports(i *int) *BlocksUpdate {
+	if i != nil {
+		bu.SetUnblockReports(*i)
+	}
+	return bu
+}
+
+// AddUnblockReports adds i to the "unblock_reports" field.
+func (bu *BlocksUpdate) AddUnblockReports(i int) *BlocksUpdate {
+	bu.mutation.AddUnblockReports(i)
+	return bu
+}
+
+// SetLastReportedAt sets the "last_reported_at" field.
+func (bu *BlocksUpdate) SetLastReportedAt(t time.Time) *BlocksUpdate {
+	bu.mutation.SetLastReportedAt(t)
+	return bu
+}
+
+// SetNillableLastReportedAt sets the "last_reported_at" field if the given value is not nil.
+func (bu *BlocksUpdate) SetNillableLastReportedAt(t *time.Time) *BlocksUpdate {
+	if t != nil {
+		bu.SetLastReportedAt(*t)
+	}
+	return bu
+}
+
+// SetSite sets the "site" edge to the Sites entity.
+func (bu *BlocksUpdate) SetSite(s *Sites) *BlocksUpdate {
+	return bu.SetSiteID(s.ID)
+}
+
+// SetIsp sets the "isp" edge to the Isps entity.
+func (bu *BlocksUpdate) SetIsp(i *Isps) *BlocksUpdate {
+	return bu.SetIspID(i.ID)
 }
 
 // Mutation returns the BlocksMutation object of the builder.
 func (bu *BlocksUpdate) Mutation() *BlocksMutation {
 	return bu.mutation
+}
+
+// ClearSite clears the "site" edge to the Sites entity.
+func (bu *BlocksUpdate) ClearSite() *BlocksUpdate {
+	bu.mutation.ClearSite()
+	return bu
+}
+
+// ClearIsp clears the "isp" edge to the Isps entity.
+func (bu *BlocksUpdate) ClearIsp() *BlocksUpdate {
+	bu.mutation.ClearIsp()
+	return bu
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -103,7 +183,21 @@ func (bu *BlocksUpdate) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (bu *BlocksUpdate) check() error {
+	if _, ok := bu.mutation.SiteID(); bu.mutation.SiteCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Blocks.site"`)
+	}
+	if _, ok := bu.mutation.IspID(); bu.mutation.IspCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Blocks.isp"`)
+	}
+	return nil
+}
+
 func (bu *BlocksUpdate) sqlSave(ctx context.Context) (n int, err error) {
+	if err := bu.check(); err != nil {
+		return n, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(blocks.Table, blocks.Columns, sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt))
 	if ps := bu.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
@@ -115,11 +209,78 @@ func (bu *BlocksUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := bu.mutation.UpdatedAt(); ok {
 		_spec.SetField(blocks.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := bu.mutation.IP(); ok {
-		_spec.SetField(blocks.FieldIP, field.TypeString, value)
+	if value, ok := bu.mutation.BlockReports(); ok {
+		_spec.SetField(blocks.FieldBlockReports, field.TypeInt, value)
 	}
-	if value, ok := bu.mutation.Domain(); ok {
-		_spec.SetField(blocks.FieldDomain, field.TypeString, value)
+	if value, ok := bu.mutation.AddedBlockReports(); ok {
+		_spec.AddField(blocks.FieldBlockReports, field.TypeInt, value)
+	}
+	if value, ok := bu.mutation.UnblockReports(); ok {
+		_spec.SetField(blocks.FieldUnblockReports, field.TypeInt, value)
+	}
+	if value, ok := bu.mutation.AddedUnblockReports(); ok {
+		_spec.AddField(blocks.FieldUnblockReports, field.TypeInt, value)
+	}
+	if value, ok := bu.mutation.LastReportedAt(); ok {
+		_spec.SetField(blocks.FieldLastReportedAt, field.TypeTime, value)
+	}
+	if bu.mutation.SiteCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   blocks.SiteTable,
+			Columns: []string{blocks.SiteColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sites.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.SiteIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   blocks.SiteTable,
+			Columns: []string{blocks.SiteColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sites.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if bu.mutation.IspCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   blocks.IspTable,
+			Columns: []string{blocks.IspColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(isps.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := bu.mutation.IspIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   blocks.IspTable,
+			Columns: []string{blocks.IspColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(isps.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -147,37 +308,115 @@ func (buo *BlocksUpdateOne) SetUpdatedAt(t time.Time) *BlocksUpdateOne {
 	return buo
 }
 
-// SetIP sets the "ip" field.
-func (buo *BlocksUpdateOne) SetIP(s string) *BlocksUpdateOne {
-	buo.mutation.SetIP(s)
+// SetSiteID sets the "site_id" field.
+func (buo *BlocksUpdateOne) SetSiteID(i int) *BlocksUpdateOne {
+	buo.mutation.SetSiteID(i)
 	return buo
 }
 
-// SetNillableIP sets the "ip" field if the given value is not nil.
-func (buo *BlocksUpdateOne) SetNillableIP(s *string) *BlocksUpdateOne {
-	if s != nil {
-		buo.SetIP(*s)
+// SetNillableSiteID sets the "site_id" field if the given value is not nil.
+func (buo *BlocksUpdateOne) SetNillableSiteID(i *int) *BlocksUpdateOne {
+	if i != nil {
+		buo.SetSiteID(*i)
 	}
 	return buo
 }
 
-// SetDomain sets the "domain" field.
-func (buo *BlocksUpdateOne) SetDomain(s string) *BlocksUpdateOne {
-	buo.mutation.SetDomain(s)
+// SetIspID sets the "isp_id" field.
+func (buo *BlocksUpdateOne) SetIspID(i int) *BlocksUpdateOne {
+	buo.mutation.SetIspID(i)
 	return buo
 }
 
-// SetNillableDomain sets the "domain" field if the given value is not nil.
-func (buo *BlocksUpdateOne) SetNillableDomain(s *string) *BlocksUpdateOne {
-	if s != nil {
-		buo.SetDomain(*s)
+// SetNillableIspID sets the "isp_id" field if the given value is not nil.
+func (buo *BlocksUpdateOne) SetNillableIspID(i *int) *BlocksUpdateOne {
+	if i != nil {
+		buo.SetIspID(*i)
 	}
 	return buo
+}
+
+// SetBlockReports sets the "block_reports" field.
+func (buo *BlocksUpdateOne) SetBlockReports(i int) *BlocksUpdateOne {
+	buo.mutation.ResetBlockReports()
+	buo.mutation.SetBlockReports(i)
+	return buo
+}
+
+// SetNillableBlockReports sets the "block_reports" field if the given value is not nil.
+func (buo *BlocksUpdateOne) SetNillableBlockReports(i *int) *BlocksUpdateOne {
+	if i != nil {
+		buo.SetBlockReports(*i)
+	}
+	return buo
+}
+
+// AddBlockReports adds i to the "block_reports" field.
+func (buo *BlocksUpdateOne) AddBlockReports(i int) *BlocksUpdateOne {
+	buo.mutation.AddBlockReports(i)
+	return buo
+}
+
+// SetUnblockReports sets the "unblock_reports" field.
+func (buo *BlocksUpdateOne) SetUnblockReports(i int) *BlocksUpdateOne {
+	buo.mutation.ResetUnblockReports()
+	buo.mutation.SetUnblockReports(i)
+	return buo
+}
+
+// SetNillableUnblockReports sets the "unblock_reports" field if the given value is not nil.
+func (buo *BlocksUpdateOne) SetNillableUnblockReports(i *int) *BlocksUpdateOne {
+	if i != nil {
+		buo.SetUnblockReports(*i)
+	}
+	return buo
+}
+
+// AddUnblockReports adds i to the "unblock_reports" field.
+func (buo *BlocksUpdateOne) AddUnblockReports(i int) *BlocksUpdateOne {
+	buo.mutation.AddUnblockReports(i)
+	return buo
+}
+
+// SetLastReportedAt sets the "last_reported_at" field.
+func (buo *BlocksUpdateOne) SetLastReportedAt(t time.Time) *BlocksUpdateOne {
+	buo.mutation.SetLastReportedAt(t)
+	return buo
+}
+
+// SetNillableLastReportedAt sets the "last_reported_at" field if the given value is not nil.
+func (buo *BlocksUpdateOne) SetNillableLastReportedAt(t *time.Time) *BlocksUpdateOne {
+	if t != nil {
+		buo.SetLastReportedAt(*t)
+	}
+	return buo
+}
+
+// SetSite sets the "site" edge to the Sites entity.
+func (buo *BlocksUpdateOne) SetSite(s *Sites) *BlocksUpdateOne {
+	return buo.SetSiteID(s.ID)
+}
+
+// SetIsp sets the "isp" edge to the Isps entity.
+func (buo *BlocksUpdateOne) SetIsp(i *Isps) *BlocksUpdateOne {
+	return buo.SetIspID(i.ID)
 }
 
 // Mutation returns the BlocksMutation object of the builder.
 func (buo *BlocksUpdateOne) Mutation() *BlocksMutation {
 	return buo.mutation
+}
+
+// ClearSite clears the "site" edge to the Sites entity.
+func (buo *BlocksUpdateOne) ClearSite() *BlocksUpdateOne {
+	buo.mutation.ClearSite()
+	return buo
+}
+
+// ClearIsp clears the "isp" edge to the Isps entity.
+func (buo *BlocksUpdateOne) ClearIsp() *BlocksUpdateOne {
+	buo.mutation.ClearIsp()
+	return buo
 }
 
 // Where appends a list predicates to the BlocksUpdate builder.
@@ -229,7 +468,21 @@ func (buo *BlocksUpdateOne) defaults() {
 	}
 }
 
+// check runs all checks and user-defined validators on the builder.
+func (buo *BlocksUpdateOne) check() error {
+	if _, ok := buo.mutation.SiteID(); buo.mutation.SiteCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Blocks.site"`)
+	}
+	if _, ok := buo.mutation.IspID(); buo.mutation.IspCleared() && !ok {
+		return errors.New(`ent: clearing a required unique edge "Blocks.isp"`)
+	}
+	return nil
+}
+
 func (buo *BlocksUpdateOne) sqlSave(ctx context.Context) (_node *Blocks, err error) {
+	if err := buo.check(); err != nil {
+		return _node, err
+	}
 	_spec := sqlgraph.NewUpdateSpec(blocks.Table, blocks.Columns, sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt))
 	id, ok := buo.mutation.ID()
 	if !ok {
@@ -258,11 +511,78 @@ func (buo *BlocksUpdateOne) sqlSave(ctx context.Context) (_node *Blocks, err err
 	if value, ok := buo.mutation.UpdatedAt(); ok {
 		_spec.SetField(blocks.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := buo.mutation.IP(); ok {
-		_spec.SetField(blocks.FieldIP, field.TypeString, value)
+	if value, ok := buo.mutation.BlockReports(); ok {
+		_spec.SetField(blocks.FieldBlockReports, field.TypeInt, value)
 	}
-	if value, ok := buo.mutation.Domain(); ok {
-		_spec.SetField(blocks.FieldDomain, field.TypeString, value)
+	if value, ok := buo.mutation.AddedBlockReports(); ok {
+		_spec.AddField(blocks.FieldBlockReports, field.TypeInt, value)
+	}
+	if value, ok := buo.mutation.UnblockReports(); ok {
+		_spec.SetField(blocks.FieldUnblockReports, field.TypeInt, value)
+	}
+	if value, ok := buo.mutation.AddedUnblockReports(); ok {
+		_spec.AddField(blocks.FieldUnblockReports, field.TypeInt, value)
+	}
+	if value, ok := buo.mutation.LastReportedAt(); ok {
+		_spec.SetField(blocks.FieldLastReportedAt, field.TypeTime, value)
+	}
+	if buo.mutation.SiteCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   blocks.SiteTable,
+			Columns: []string{blocks.SiteColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sites.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.SiteIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   blocks.SiteTable,
+			Columns: []string{blocks.SiteColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sites.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if buo.mutation.IspCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   blocks.IspTable,
+			Columns: []string{blocks.IspColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(isps.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := buo.mutation.IspIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   blocks.IspTable,
+			Columns: []string{blocks.IspColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(isps.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Blocks{config: buo.config}
 	_spec.Assign = _node.assignValues

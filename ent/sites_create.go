@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/blocks"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
 )
 
@@ -52,6 +53,21 @@ func (sc *SitesCreate) SetNillableUpdatedAt(t *time.Time) *SitesCreate {
 func (sc *SitesCreate) SetDomain(s string) *SitesCreate {
 	sc.mutation.SetDomain(s)
 	return sc
+}
+
+// AddBlockIDs adds the "blocks" edge to the Blocks entity by IDs.
+func (sc *SitesCreate) AddBlockIDs(ids ...int) *SitesCreate {
+	sc.mutation.AddBlockIDs(ids...)
+	return sc
+}
+
+// AddBlocks adds the "blocks" edges to the Blocks entity.
+func (sc *SitesCreate) AddBlocks(b ...*Blocks) *SitesCreate {
+	ids := make([]int, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return sc.AddBlockIDs(ids...)
 }
 
 // Mutation returns the SitesMutation object of the builder.
@@ -147,6 +163,22 @@ func (sc *SitesCreate) createSpec() (*Sites, *sqlgraph.CreateSpec) {
 	if value, ok := sc.mutation.Domain(); ok {
 		_spec.SetField(sites.FieldDomain, field.TypeString, value)
 		_node.Domain = value
+	}
+	if nodes := sc.mutation.BlocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   sites.BlocksTable,
+			Columns: []string{sites.BlocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

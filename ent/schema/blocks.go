@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 )
@@ -13,6 +14,8 @@ type Blocks struct {
 // Fields of the Blocks.
 func (Blocks) Fields() []ent.Field {
 	return []ent.Field{
+		field.Int("site_id"),
+		field.Int("isp_id"),
 		field.Int("block_reports").Default(0),
 		field.Int("unblock_reports").Default(0),
 		field.Time("last_reported_at"),
@@ -22,7 +25,16 @@ func (Blocks) Fields() []ent.Field {
 // Edges of the Blocks.
 func (Blocks) Edges() []ent.Edge {
 	return []ent.Edge{
-		
+		edge.From("site", Sites.Type).
+			Ref("blocks").
+			Field("site_id").
+			Required().
+			Unique(),
+		edge.From("isp", Isps.Type).
+			Ref("isp_blocks").
+			Field("isp_id").
+			Required().
+			Unique(),
 	}
 }
 
@@ -34,6 +46,6 @@ func (Blocks) Mixin() []ent.Mixin {
 
 func (Blocks) Indexes() []ent.Index {
 	return []ent.Index{
-		index.Fields("ip").Unique(),
+		index.Fields("site_id", "isp_id").Unique(),
 	}
 }

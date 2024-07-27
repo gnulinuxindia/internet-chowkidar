@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -17,12 +18,36 @@ const (
 	FieldCreatedAt = "created_at"
 	// FieldUpdatedAt holds the string denoting the updated_at field in the database.
 	FieldUpdatedAt = "updated_at"
-	// FieldIP holds the string denoting the ip field in the database.
-	FieldIP = "ip"
-	// FieldDomain holds the string denoting the domain field in the database.
-	FieldDomain = "domain"
+	// FieldSiteID holds the string denoting the site_id field in the database.
+	FieldSiteID = "site_id"
+	// FieldIspID holds the string denoting the isp_id field in the database.
+	FieldIspID = "isp_id"
+	// FieldBlockReports holds the string denoting the block_reports field in the database.
+	FieldBlockReports = "block_reports"
+	// FieldUnblockReports holds the string denoting the unblock_reports field in the database.
+	FieldUnblockReports = "unblock_reports"
+	// FieldLastReportedAt holds the string denoting the last_reported_at field in the database.
+	FieldLastReportedAt = "last_reported_at"
+	// EdgeSite holds the string denoting the site edge name in mutations.
+	EdgeSite = "site"
+	// EdgeIsp holds the string denoting the isp edge name in mutations.
+	EdgeIsp = "isp"
 	// Table holds the table name of the blocks in the database.
 	Table = "blocks"
+	// SiteTable is the table that holds the site relation/edge.
+	SiteTable = "blocks"
+	// SiteInverseTable is the table name for the Sites entity.
+	// It exists in this package in order to avoid circular dependency with the "sites" package.
+	SiteInverseTable = "sites"
+	// SiteColumn is the table column denoting the site relation/edge.
+	SiteColumn = "site_id"
+	// IspTable is the table that holds the isp relation/edge.
+	IspTable = "blocks"
+	// IspInverseTable is the table name for the Isps entity.
+	// It exists in this package in order to avoid circular dependency with the "isps" package.
+	IspInverseTable = "isps"
+	// IspColumn is the table column denoting the isp relation/edge.
+	IspColumn = "isp_id"
 )
 
 // Columns holds all SQL columns for blocks fields.
@@ -30,8 +55,11 @@ var Columns = []string{
 	FieldID,
 	FieldCreatedAt,
 	FieldUpdatedAt,
-	FieldIP,
-	FieldDomain,
+	FieldSiteID,
+	FieldIspID,
+	FieldBlockReports,
+	FieldUnblockReports,
+	FieldLastReportedAt,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -51,6 +79,10 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
+	// DefaultBlockReports holds the default value on creation for the "block_reports" field.
+	DefaultBlockReports int
+	// DefaultUnblockReports holds the default value on creation for the "unblock_reports" field.
+	DefaultUnblockReports int
 )
 
 // OrderOption defines the ordering options for the Blocks queries.
@@ -71,12 +103,55 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldUpdatedAt, opts...).ToFunc()
 }
 
-// ByIP orders the results by the ip field.
-func ByIP(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldIP, opts...).ToFunc()
+// BySiteID orders the results by the site_id field.
+func BySiteID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldSiteID, opts...).ToFunc()
 }
 
-// ByDomain orders the results by the domain field.
-func ByDomain(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldDomain, opts...).ToFunc()
+// ByIspID orders the results by the isp_id field.
+func ByIspID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldIspID, opts...).ToFunc()
+}
+
+// ByBlockReports orders the results by the block_reports field.
+func ByBlockReports(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBlockReports, opts...).ToFunc()
+}
+
+// ByUnblockReports orders the results by the unblock_reports field.
+func ByUnblockReports(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldUnblockReports, opts...).ToFunc()
+}
+
+// ByLastReportedAt orders the results by the last_reported_at field.
+func ByLastReportedAt(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLastReportedAt, opts...).ToFunc()
+}
+
+// BySiteField orders the results by site field.
+func BySiteField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSiteStep(), sql.OrderByField(field, opts...))
+	}
+}
+
+// ByIspField orders the results by isp field.
+func ByIspField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newIspStep(), sql.OrderByField(field, opts...))
+	}
+}
+func newSiteStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SiteInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, SiteTable, SiteColumn),
+	)
+}
+func newIspStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(IspInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, IspTable, IspColumn),
+	)
 }

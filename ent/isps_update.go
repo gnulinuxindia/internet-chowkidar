@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/blocks"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/isps"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/predicate"
 )
@@ -90,9 +91,45 @@ func (iu *IspsUpdate) SetNillableName(s *string) *IspsUpdate {
 	return iu
 }
 
+// AddIspBlockIDs adds the "isp_blocks" edge to the Blocks entity by IDs.
+func (iu *IspsUpdate) AddIspBlockIDs(ids ...int) *IspsUpdate {
+	iu.mutation.AddIspBlockIDs(ids...)
+	return iu
+}
+
+// AddIspBlocks adds the "isp_blocks" edges to the Blocks entity.
+func (iu *IspsUpdate) AddIspBlocks(b ...*Blocks) *IspsUpdate {
+	ids := make([]int, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return iu.AddIspBlockIDs(ids...)
+}
+
 // Mutation returns the IspsMutation object of the builder.
 func (iu *IspsUpdate) Mutation() *IspsMutation {
 	return iu.mutation
+}
+
+// ClearIspBlocks clears all "isp_blocks" edges to the Blocks entity.
+func (iu *IspsUpdate) ClearIspBlocks() *IspsUpdate {
+	iu.mutation.ClearIspBlocks()
+	return iu
+}
+
+// RemoveIspBlockIDs removes the "isp_blocks" edge to Blocks entities by IDs.
+func (iu *IspsUpdate) RemoveIspBlockIDs(ids ...int) *IspsUpdate {
+	iu.mutation.RemoveIspBlockIDs(ids...)
+	return iu
+}
+
+// RemoveIspBlocks removes "isp_blocks" edges to Blocks entities.
+func (iu *IspsUpdate) RemoveIspBlocks(b ...*Blocks) *IspsUpdate {
+	ids := make([]int, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return iu.RemoveIspBlockIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -157,6 +194,51 @@ func (iu *IspsUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	}
 	if value, ok := iu.mutation.Name(); ok {
 		_spec.SetField(isps.FieldName, field.TypeString, value)
+	}
+	if iu.mutation.IspBlocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   isps.IspBlocksTable,
+			Columns: []string{isps.IspBlocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iu.mutation.RemovedIspBlocksIDs(); len(nodes) > 0 && !iu.mutation.IspBlocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   isps.IspBlocksTable,
+			Columns: []string{isps.IspBlocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iu.mutation.IspBlocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   isps.IspBlocksTable,
+			Columns: []string{isps.IspBlocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if n, err = sqlgraph.UpdateNodes(ctx, iu.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -240,9 +322,45 @@ func (iuo *IspsUpdateOne) SetNillableName(s *string) *IspsUpdateOne {
 	return iuo
 }
 
+// AddIspBlockIDs adds the "isp_blocks" edge to the Blocks entity by IDs.
+func (iuo *IspsUpdateOne) AddIspBlockIDs(ids ...int) *IspsUpdateOne {
+	iuo.mutation.AddIspBlockIDs(ids...)
+	return iuo
+}
+
+// AddIspBlocks adds the "isp_blocks" edges to the Blocks entity.
+func (iuo *IspsUpdateOne) AddIspBlocks(b ...*Blocks) *IspsUpdateOne {
+	ids := make([]int, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return iuo.AddIspBlockIDs(ids...)
+}
+
 // Mutation returns the IspsMutation object of the builder.
 func (iuo *IspsUpdateOne) Mutation() *IspsMutation {
 	return iuo.mutation
+}
+
+// ClearIspBlocks clears all "isp_blocks" edges to the Blocks entity.
+func (iuo *IspsUpdateOne) ClearIspBlocks() *IspsUpdateOne {
+	iuo.mutation.ClearIspBlocks()
+	return iuo
+}
+
+// RemoveIspBlockIDs removes the "isp_blocks" edge to Blocks entities by IDs.
+func (iuo *IspsUpdateOne) RemoveIspBlockIDs(ids ...int) *IspsUpdateOne {
+	iuo.mutation.RemoveIspBlockIDs(ids...)
+	return iuo
+}
+
+// RemoveIspBlocks removes "isp_blocks" edges to Blocks entities.
+func (iuo *IspsUpdateOne) RemoveIspBlocks(b ...*Blocks) *IspsUpdateOne {
+	ids := make([]int, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return iuo.RemoveIspBlockIDs(ids...)
 }
 
 // Where appends a list predicates to the IspsUpdate builder.
@@ -337,6 +455,51 @@ func (iuo *IspsUpdateOne) sqlSave(ctx context.Context) (_node *Isps, err error) 
 	}
 	if value, ok := iuo.mutation.Name(); ok {
 		_spec.SetField(isps.FieldName, field.TypeString, value)
+	}
+	if iuo.mutation.IspBlocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   isps.IspBlocksTable,
+			Columns: []string{isps.IspBlocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iuo.mutation.RemovedIspBlocksIDs(); len(nodes) > 0 && !iuo.mutation.IspBlocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   isps.IspBlocksTable,
+			Columns: []string{isps.IspBlocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := iuo.mutation.IspBlocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   isps.IspBlocksTable,
+			Columns: []string{isps.IspBlocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Isps{config: iuo.config}
 	_spec.Assign = _node.assignValues

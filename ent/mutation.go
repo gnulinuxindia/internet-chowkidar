@@ -36,17 +36,24 @@ const (
 // BlocksMutation represents an operation that mutates the Blocks nodes in the graph.
 type BlocksMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	created_at    *time.Time
-	updated_at    *time.Time
-	ip            *string
-	domain        *string
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Blocks, error)
-	predicates    []predicate.Blocks
+	op                 Op
+	typ                string
+	id                 *int
+	created_at         *time.Time
+	updated_at         *time.Time
+	block_reports      *int
+	addblock_reports   *int
+	unblock_reports    *int
+	addunblock_reports *int
+	last_reported_at   *time.Time
+	clearedFields      map[string]struct{}
+	site               *int
+	clearedsite        bool
+	isp                *int
+	clearedisp         bool
+	done               bool
+	oldValue           func(context.Context) (*Blocks, error)
+	predicates         []predicate.Blocks
 }
 
 var _ ent.Mutation = (*BlocksMutation)(nil)
@@ -219,76 +226,278 @@ func (m *BlocksMutation) ResetUpdatedAt() {
 	m.updated_at = nil
 }
 
-// SetIP sets the "ip" field.
-func (m *BlocksMutation) SetIP(s string) {
-	m.ip = &s
+// SetSiteID sets the "site_id" field.
+func (m *BlocksMutation) SetSiteID(i int) {
+	m.site = &i
 }
 
-// IP returns the value of the "ip" field in the mutation.
-func (m *BlocksMutation) IP() (r string, exists bool) {
-	v := m.ip
+// SiteID returns the value of the "site_id" field in the mutation.
+func (m *BlocksMutation) SiteID() (r int, exists bool) {
+	v := m.site
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldIP returns the old "ip" field's value of the Blocks entity.
+// OldSiteID returns the old "site_id" field's value of the Blocks entity.
 // If the Blocks object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BlocksMutation) OldIP(ctx context.Context) (v string, err error) {
+func (m *BlocksMutation) OldSiteID(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldIP is only allowed on UpdateOne operations")
+		return v, errors.New("OldSiteID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldIP requires an ID field in the mutation")
+		return v, errors.New("OldSiteID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldIP: %w", err)
+		return v, fmt.Errorf("querying old value for OldSiteID: %w", err)
 	}
-	return oldValue.IP, nil
+	return oldValue.SiteID, nil
 }
 
-// ResetIP resets all changes to the "ip" field.
-func (m *BlocksMutation) ResetIP() {
-	m.ip = nil
+// ResetSiteID resets all changes to the "site_id" field.
+func (m *BlocksMutation) ResetSiteID() {
+	m.site = nil
 }
 
-// SetDomain sets the "domain" field.
-func (m *BlocksMutation) SetDomain(s string) {
-	m.domain = &s
+// SetIspID sets the "isp_id" field.
+func (m *BlocksMutation) SetIspID(i int) {
+	m.isp = &i
 }
 
-// Domain returns the value of the "domain" field in the mutation.
-func (m *BlocksMutation) Domain() (r string, exists bool) {
-	v := m.domain
+// IspID returns the value of the "isp_id" field in the mutation.
+func (m *BlocksMutation) IspID() (r int, exists bool) {
+	v := m.isp
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldDomain returns the old "domain" field's value of the Blocks entity.
+// OldIspID returns the old "isp_id" field's value of the Blocks entity.
 // If the Blocks object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BlocksMutation) OldDomain(ctx context.Context) (v string, err error) {
+func (m *BlocksMutation) OldIspID(ctx context.Context) (v int, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldDomain is only allowed on UpdateOne operations")
+		return v, errors.New("OldIspID is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldDomain requires an ID field in the mutation")
+		return v, errors.New("OldIspID requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldDomain: %w", err)
+		return v, fmt.Errorf("querying old value for OldIspID: %w", err)
 	}
-	return oldValue.Domain, nil
+	return oldValue.IspID, nil
 }
 
-// ResetDomain resets all changes to the "domain" field.
-func (m *BlocksMutation) ResetDomain() {
-	m.domain = nil
+// ResetIspID resets all changes to the "isp_id" field.
+func (m *BlocksMutation) ResetIspID() {
+	m.isp = nil
+}
+
+// SetBlockReports sets the "block_reports" field.
+func (m *BlocksMutation) SetBlockReports(i int) {
+	m.block_reports = &i
+	m.addblock_reports = nil
+}
+
+// BlockReports returns the value of the "block_reports" field in the mutation.
+func (m *BlocksMutation) BlockReports() (r int, exists bool) {
+	v := m.block_reports
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldBlockReports returns the old "block_reports" field's value of the Blocks entity.
+// If the Blocks object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BlocksMutation) OldBlockReports(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldBlockReports is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldBlockReports requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldBlockReports: %w", err)
+	}
+	return oldValue.BlockReports, nil
+}
+
+// AddBlockReports adds i to the "block_reports" field.
+func (m *BlocksMutation) AddBlockReports(i int) {
+	if m.addblock_reports != nil {
+		*m.addblock_reports += i
+	} else {
+		m.addblock_reports = &i
+	}
+}
+
+// AddedBlockReports returns the value that was added to the "block_reports" field in this mutation.
+func (m *BlocksMutation) AddedBlockReports() (r int, exists bool) {
+	v := m.addblock_reports
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetBlockReports resets all changes to the "block_reports" field.
+func (m *BlocksMutation) ResetBlockReports() {
+	m.block_reports = nil
+	m.addblock_reports = nil
+}
+
+// SetUnblockReports sets the "unblock_reports" field.
+func (m *BlocksMutation) SetUnblockReports(i int) {
+	m.unblock_reports = &i
+	m.addunblock_reports = nil
+}
+
+// UnblockReports returns the value of the "unblock_reports" field in the mutation.
+func (m *BlocksMutation) UnblockReports() (r int, exists bool) {
+	v := m.unblock_reports
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldUnblockReports returns the old "unblock_reports" field's value of the Blocks entity.
+// If the Blocks object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BlocksMutation) OldUnblockReports(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldUnblockReports is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldUnblockReports requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldUnblockReports: %w", err)
+	}
+	return oldValue.UnblockReports, nil
+}
+
+// AddUnblockReports adds i to the "unblock_reports" field.
+func (m *BlocksMutation) AddUnblockReports(i int) {
+	if m.addunblock_reports != nil {
+		*m.addunblock_reports += i
+	} else {
+		m.addunblock_reports = &i
+	}
+}
+
+// AddedUnblockReports returns the value that was added to the "unblock_reports" field in this mutation.
+func (m *BlocksMutation) AddedUnblockReports() (r int, exists bool) {
+	v := m.addunblock_reports
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetUnblockReports resets all changes to the "unblock_reports" field.
+func (m *BlocksMutation) ResetUnblockReports() {
+	m.unblock_reports = nil
+	m.addunblock_reports = nil
+}
+
+// SetLastReportedAt sets the "last_reported_at" field.
+func (m *BlocksMutation) SetLastReportedAt(t time.Time) {
+	m.last_reported_at = &t
+}
+
+// LastReportedAt returns the value of the "last_reported_at" field in the mutation.
+func (m *BlocksMutation) LastReportedAt() (r time.Time, exists bool) {
+	v := m.last_reported_at
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLastReportedAt returns the old "last_reported_at" field's value of the Blocks entity.
+// If the Blocks object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BlocksMutation) OldLastReportedAt(ctx context.Context) (v time.Time, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLastReportedAt is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLastReportedAt requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLastReportedAt: %w", err)
+	}
+	return oldValue.LastReportedAt, nil
+}
+
+// ResetLastReportedAt resets all changes to the "last_reported_at" field.
+func (m *BlocksMutation) ResetLastReportedAt() {
+	m.last_reported_at = nil
+}
+
+// ClearSite clears the "site" edge to the Sites entity.
+func (m *BlocksMutation) ClearSite() {
+	m.clearedsite = true
+	m.clearedFields[blocks.FieldSiteID] = struct{}{}
+}
+
+// SiteCleared reports if the "site" edge to the Sites entity was cleared.
+func (m *BlocksMutation) SiteCleared() bool {
+	return m.clearedsite
+}
+
+// SiteIDs returns the "site" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// SiteID instead. It exists only for internal usage by the builders.
+func (m *BlocksMutation) SiteIDs() (ids []int) {
+	if id := m.site; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetSite resets all changes to the "site" edge.
+func (m *BlocksMutation) ResetSite() {
+	m.site = nil
+	m.clearedsite = false
+}
+
+// ClearIsp clears the "isp" edge to the Isps entity.
+func (m *BlocksMutation) ClearIsp() {
+	m.clearedisp = true
+	m.clearedFields[blocks.FieldIspID] = struct{}{}
+}
+
+// IspCleared reports if the "isp" edge to the Isps entity was cleared.
+func (m *BlocksMutation) IspCleared() bool {
+	return m.clearedisp
+}
+
+// IspIDs returns the "isp" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// IspID instead. It exists only for internal usage by the builders.
+func (m *BlocksMutation) IspIDs() (ids []int) {
+	if id := m.isp; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetIsp resets all changes to the "isp" edge.
+func (m *BlocksMutation) ResetIsp() {
+	m.isp = nil
+	m.clearedisp = false
 }
 
 // Where appends a list predicates to the BlocksMutation builder.
@@ -325,18 +534,27 @@ func (m *BlocksMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *BlocksMutation) Fields() []string {
-	fields := make([]string, 0, 4)
+	fields := make([]string, 0, 7)
 	if m.created_at != nil {
 		fields = append(fields, blocks.FieldCreatedAt)
 	}
 	if m.updated_at != nil {
 		fields = append(fields, blocks.FieldUpdatedAt)
 	}
-	if m.ip != nil {
-		fields = append(fields, blocks.FieldIP)
+	if m.site != nil {
+		fields = append(fields, blocks.FieldSiteID)
 	}
-	if m.domain != nil {
-		fields = append(fields, blocks.FieldDomain)
+	if m.isp != nil {
+		fields = append(fields, blocks.FieldIspID)
+	}
+	if m.block_reports != nil {
+		fields = append(fields, blocks.FieldBlockReports)
+	}
+	if m.unblock_reports != nil {
+		fields = append(fields, blocks.FieldUnblockReports)
+	}
+	if m.last_reported_at != nil {
+		fields = append(fields, blocks.FieldLastReportedAt)
 	}
 	return fields
 }
@@ -350,10 +568,16 @@ func (m *BlocksMutation) Field(name string) (ent.Value, bool) {
 		return m.CreatedAt()
 	case blocks.FieldUpdatedAt:
 		return m.UpdatedAt()
-	case blocks.FieldIP:
-		return m.IP()
-	case blocks.FieldDomain:
-		return m.Domain()
+	case blocks.FieldSiteID:
+		return m.SiteID()
+	case blocks.FieldIspID:
+		return m.IspID()
+	case blocks.FieldBlockReports:
+		return m.BlockReports()
+	case blocks.FieldUnblockReports:
+		return m.UnblockReports()
+	case blocks.FieldLastReportedAt:
+		return m.LastReportedAt()
 	}
 	return nil, false
 }
@@ -367,10 +591,16 @@ func (m *BlocksMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldCreatedAt(ctx)
 	case blocks.FieldUpdatedAt:
 		return m.OldUpdatedAt(ctx)
-	case blocks.FieldIP:
-		return m.OldIP(ctx)
-	case blocks.FieldDomain:
-		return m.OldDomain(ctx)
+	case blocks.FieldSiteID:
+		return m.OldSiteID(ctx)
+	case blocks.FieldIspID:
+		return m.OldIspID(ctx)
+	case blocks.FieldBlockReports:
+		return m.OldBlockReports(ctx)
+	case blocks.FieldUnblockReports:
+		return m.OldUnblockReports(ctx)
+	case blocks.FieldLastReportedAt:
+		return m.OldLastReportedAt(ctx)
 	}
 	return nil, fmt.Errorf("unknown Blocks field %s", name)
 }
@@ -394,19 +624,40 @@ func (m *BlocksMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetUpdatedAt(v)
 		return nil
-	case blocks.FieldIP:
-		v, ok := value.(string)
+	case blocks.FieldSiteID:
+		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetIP(v)
+		m.SetSiteID(v)
 		return nil
-	case blocks.FieldDomain:
-		v, ok := value.(string)
+	case blocks.FieldIspID:
+		v, ok := value.(int)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetDomain(v)
+		m.SetIspID(v)
+		return nil
+	case blocks.FieldBlockReports:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetBlockReports(v)
+		return nil
+	case blocks.FieldUnblockReports:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetUnblockReports(v)
+		return nil
+	case blocks.FieldLastReportedAt:
+		v, ok := value.(time.Time)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLastReportedAt(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Blocks field %s", name)
@@ -415,13 +666,26 @@ func (m *BlocksMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *BlocksMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	if m.addblock_reports != nil {
+		fields = append(fields, blocks.FieldBlockReports)
+	}
+	if m.addunblock_reports != nil {
+		fields = append(fields, blocks.FieldUnblockReports)
+	}
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *BlocksMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	case blocks.FieldBlockReports:
+		return m.AddedBlockReports()
+	case blocks.FieldUnblockReports:
+		return m.AddedUnblockReports()
+	}
 	return nil, false
 }
 
@@ -430,6 +694,20 @@ func (m *BlocksMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *BlocksMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case blocks.FieldBlockReports:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddBlockReports(v)
+		return nil
+	case blocks.FieldUnblockReports:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddUnblockReports(v)
+		return nil
 	}
 	return fmt.Errorf("unknown Blocks numeric field %s", name)
 }
@@ -463,11 +741,20 @@ func (m *BlocksMutation) ResetField(name string) error {
 	case blocks.FieldUpdatedAt:
 		m.ResetUpdatedAt()
 		return nil
-	case blocks.FieldIP:
-		m.ResetIP()
+	case blocks.FieldSiteID:
+		m.ResetSiteID()
 		return nil
-	case blocks.FieldDomain:
-		m.ResetDomain()
+	case blocks.FieldIspID:
+		m.ResetIspID()
+		return nil
+	case blocks.FieldBlockReports:
+		m.ResetBlockReports()
+		return nil
+	case blocks.FieldUnblockReports:
+		m.ResetUnblockReports()
+		return nil
+	case blocks.FieldLastReportedAt:
+		m.ResetLastReportedAt()
 		return nil
 	}
 	return fmt.Errorf("unknown Blocks field %s", name)
@@ -475,19 +762,35 @@ func (m *BlocksMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *BlocksMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 2)
+	if m.site != nil {
+		edges = append(edges, blocks.EdgeSite)
+	}
+	if m.isp != nil {
+		edges = append(edges, blocks.EdgeIsp)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *BlocksMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case blocks.EdgeSite:
+		if id := m.site; id != nil {
+			return []ent.Value{*id}
+		}
+	case blocks.EdgeIsp:
+		if id := m.isp; id != nil {
+			return []ent.Value{*id}
+		}
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *BlocksMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 2)
 	return edges
 }
 
@@ -499,25 +802,53 @@ func (m *BlocksMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *BlocksMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 2)
+	if m.clearedsite {
+		edges = append(edges, blocks.EdgeSite)
+	}
+	if m.clearedisp {
+		edges = append(edges, blocks.EdgeIsp)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *BlocksMutation) EdgeCleared(name string) bool {
+	switch name {
+	case blocks.EdgeSite:
+		return m.clearedsite
+	case blocks.EdgeIsp:
+		return m.clearedisp
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *BlocksMutation) ClearEdge(name string) error {
+	switch name {
+	case blocks.EdgeSite:
+		m.ClearSite()
+		return nil
+	case blocks.EdgeIsp:
+		m.ClearIsp()
+		return nil
+	}
 	return fmt.Errorf("unknown Blocks unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *BlocksMutation) ResetEdge(name string) error {
+	switch name {
+	case blocks.EdgeSite:
+		m.ResetSite()
+		return nil
+	case blocks.EdgeIsp:
+		m.ResetIsp()
+		return nil
+	}
 	return fmt.Errorf("unknown Blocks edge %s", name)
 }
 
@@ -886,20 +1217,23 @@ func (m *CounterMutation) ResetEdge(name string) error {
 // IspsMutation represents an operation that mutates the Isps nodes in the graph.
 type IspsMutation struct {
 	config
-	op            Op
-	typ           string
-	id            *int
-	created_at    *time.Time
-	updated_at    *time.Time
-	latitude      *float64
-	addlatitude   *float64
-	longitude     *float64
-	addlongitude  *float64
-	name          *string
-	clearedFields map[string]struct{}
-	done          bool
-	oldValue      func(context.Context) (*Isps, error)
-	predicates    []predicate.Isps
+	op                Op
+	typ               string
+	id                *int
+	created_at        *time.Time
+	updated_at        *time.Time
+	latitude          *float64
+	addlatitude       *float64
+	longitude         *float64
+	addlongitude      *float64
+	name              *string
+	clearedFields     map[string]struct{}
+	isp_blocks        map[int]struct{}
+	removedisp_blocks map[int]struct{}
+	clearedisp_blocks bool
+	done              bool
+	oldValue          func(context.Context) (*Isps, error)
+	predicates        []predicate.Isps
 }
 
 var _ ent.Mutation = (*IspsMutation)(nil)
@@ -1220,6 +1554,60 @@ func (m *IspsMutation) ResetName() {
 	m.name = nil
 }
 
+// AddIspBlockIDs adds the "isp_blocks" edge to the Blocks entity by ids.
+func (m *IspsMutation) AddIspBlockIDs(ids ...int) {
+	if m.isp_blocks == nil {
+		m.isp_blocks = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.isp_blocks[ids[i]] = struct{}{}
+	}
+}
+
+// ClearIspBlocks clears the "isp_blocks" edge to the Blocks entity.
+func (m *IspsMutation) ClearIspBlocks() {
+	m.clearedisp_blocks = true
+}
+
+// IspBlocksCleared reports if the "isp_blocks" edge to the Blocks entity was cleared.
+func (m *IspsMutation) IspBlocksCleared() bool {
+	return m.clearedisp_blocks
+}
+
+// RemoveIspBlockIDs removes the "isp_blocks" edge to the Blocks entity by IDs.
+func (m *IspsMutation) RemoveIspBlockIDs(ids ...int) {
+	if m.removedisp_blocks == nil {
+		m.removedisp_blocks = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.isp_blocks, ids[i])
+		m.removedisp_blocks[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedIspBlocks returns the removed IDs of the "isp_blocks" edge to the Blocks entity.
+func (m *IspsMutation) RemovedIspBlocksIDs() (ids []int) {
+	for id := range m.removedisp_blocks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// IspBlocksIDs returns the "isp_blocks" edge IDs in the mutation.
+func (m *IspsMutation) IspBlocksIDs() (ids []int) {
+	for id := range m.isp_blocks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetIspBlocks resets all changes to the "isp_blocks" edge.
+func (m *IspsMutation) ResetIspBlocks() {
+	m.isp_blocks = nil
+	m.clearedisp_blocks = false
+	m.removedisp_blocks = nil
+}
+
 // Where appends a list predicates to the IspsMutation builder.
 func (m *IspsMutation) Where(ps ...predicate.Isps) {
 	m.predicates = append(m.predicates, ps...)
@@ -1448,49 +1836,85 @@ func (m *IspsMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *IspsMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.isp_blocks != nil {
+		edges = append(edges, isps.EdgeIspBlocks)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *IspsMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case isps.EdgeIspBlocks:
+		ids := make([]ent.Value, 0, len(m.isp_blocks))
+		for id := range m.isp_blocks {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *IspsMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.removedisp_blocks != nil {
+		edges = append(edges, isps.EdgeIspBlocks)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *IspsMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case isps.EdgeIspBlocks:
+		ids := make([]ent.Value, 0, len(m.removedisp_blocks))
+		for id := range m.removedisp_blocks {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *IspsMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedisp_blocks {
+		edges = append(edges, isps.EdgeIspBlocks)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *IspsMutation) EdgeCleared(name string) bool {
+	switch name {
+	case isps.EdgeIspBlocks:
+		return m.clearedisp_blocks
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *IspsMutation) ClearEdge(name string) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown Isps unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *IspsMutation) ResetEdge(name string) error {
+	switch name {
+	case isps.EdgeIspBlocks:
+		m.ResetIspBlocks()
+		return nil
+	}
 	return fmt.Errorf("unknown Isps edge %s", name)
 }
 
@@ -1504,6 +1928,9 @@ type SitesMutation struct {
 	updated_at    *time.Time
 	domain        *string
 	clearedFields map[string]struct{}
+	blocks        map[int]struct{}
+	removedblocks map[int]struct{}
+	clearedblocks bool
 	done          bool
 	oldValue      func(context.Context) (*Sites, error)
 	predicates    []predicate.Sites
@@ -1715,6 +2142,60 @@ func (m *SitesMutation) ResetDomain() {
 	m.domain = nil
 }
 
+// AddBlockIDs adds the "blocks" edge to the Blocks entity by ids.
+func (m *SitesMutation) AddBlockIDs(ids ...int) {
+	if m.blocks == nil {
+		m.blocks = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.blocks[ids[i]] = struct{}{}
+	}
+}
+
+// ClearBlocks clears the "blocks" edge to the Blocks entity.
+func (m *SitesMutation) ClearBlocks() {
+	m.clearedblocks = true
+}
+
+// BlocksCleared reports if the "blocks" edge to the Blocks entity was cleared.
+func (m *SitesMutation) BlocksCleared() bool {
+	return m.clearedblocks
+}
+
+// RemoveBlockIDs removes the "blocks" edge to the Blocks entity by IDs.
+func (m *SitesMutation) RemoveBlockIDs(ids ...int) {
+	if m.removedblocks == nil {
+		m.removedblocks = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.blocks, ids[i])
+		m.removedblocks[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedBlocks returns the removed IDs of the "blocks" edge to the Blocks entity.
+func (m *SitesMutation) RemovedBlocksIDs() (ids []int) {
+	for id := range m.removedblocks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// BlocksIDs returns the "blocks" edge IDs in the mutation.
+func (m *SitesMutation) BlocksIDs() (ids []int) {
+	for id := range m.blocks {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetBlocks resets all changes to the "blocks" edge.
+func (m *SitesMutation) ResetBlocks() {
+	m.blocks = nil
+	m.clearedblocks = false
+	m.removedblocks = nil
+}
+
 // Where appends a list predicates to the SitesMutation builder.
 func (m *SitesMutation) Where(ps ...predicate.Sites) {
 	m.predicates = append(m.predicates, ps...)
@@ -1882,48 +2363,84 @@ func (m *SitesMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *SitesMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.blocks != nil {
+		edges = append(edges, sites.EdgeBlocks)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *SitesMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case sites.EdgeBlocks:
+		ids := make([]ent.Value, 0, len(m.blocks))
+		for id := range m.blocks {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *SitesMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.removedblocks != nil {
+		edges = append(edges, sites.EdgeBlocks)
+	}
 	return edges
 }
 
 // RemovedIDs returns all IDs (to other nodes) that were removed for the edge with
 // the given name in this mutation.
 func (m *SitesMutation) RemovedIDs(name string) []ent.Value {
+	switch name {
+	case sites.EdgeBlocks:
+		ids := make([]ent.Value, 0, len(m.removedblocks))
+		for id := range m.removedblocks {
+			ids = append(ids, id)
+		}
+		return ids
+	}
 	return nil
 }
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *SitesMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedblocks {
+		edges = append(edges, sites.EdgeBlocks)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *SitesMutation) EdgeCleared(name string) bool {
+	switch name {
+	case sites.EdgeBlocks:
+		return m.clearedblocks
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *SitesMutation) ClearEdge(name string) error {
+	switch name {
+	}
 	return fmt.Errorf("unknown Sites unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *SitesMutation) ResetEdge(name string) error {
+	switch name {
+	case sites.EdgeBlocks:
+		m.ResetBlocks()
+		return nil
+	}
 	return fmt.Errorf("unknown Sites edge %s", name)
 }

@@ -57,7 +57,6 @@ CREATE TABLE abuse_reports (
 -- Site_suggestions table
 CREATE TABLE site_suggestions (
     id SERIAL PRIMARY KEY,
-    site_id INT NOT NULL REFERENCES sites(id),
     reason TEXT NOT NULL,
     status VARCHAR(20) NOT NULL DEFAULT 'pending',
     resolved_at TIMESTAMP,

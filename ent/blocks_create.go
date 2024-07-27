@@ -11,6 +11,8 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/blocks"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/isps"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
 )
 
 // BlocksCreate is the builder for creating a Blocks entity.
@@ -48,16 +50,60 @@ func (bc *BlocksCreate) SetNillableUpdatedAt(t *time.Time) *BlocksCreate {
 	return bc
 }
 
-// SetIP sets the "ip" field.
-func (bc *BlocksCreate) SetIP(s string) *BlocksCreate {
-	bc.mutation.SetIP(s)
+// SetSiteID sets the "site_id" field.
+func (bc *BlocksCreate) SetSiteID(i int) *BlocksCreate {
+	bc.mutation.SetSiteID(i)
 	return bc
 }
 
-// SetDomain sets the "domain" field.
-func (bc *BlocksCreate) SetDomain(s string) *BlocksCreate {
-	bc.mutation.SetDomain(s)
+// SetIspID sets the "isp_id" field.
+func (bc *BlocksCreate) SetIspID(i int) *BlocksCreate {
+	bc.mutation.SetIspID(i)
 	return bc
+}
+
+// SetBlockReports sets the "block_reports" field.
+func (bc *BlocksCreate) SetBlockReports(i int) *BlocksCreate {
+	bc.mutation.SetBlockReports(i)
+	return bc
+}
+
+// SetNillableBlockReports sets the "block_reports" field if the given value is not nil.
+func (bc *BlocksCreate) SetNillableBlockReports(i *int) *BlocksCreate {
+	if i != nil {
+		bc.SetBlockReports(*i)
+	}
+	return bc
+}
+
+// SetUnblockReports sets the "unblock_reports" field.
+func (bc *BlocksCreate) SetUnblockReports(i int) *BlocksCreate {
+	bc.mutation.SetUnblockReports(i)
+	return bc
+}
+
+// SetNillableUnblockReports sets the "unblock_reports" field if the given value is not nil.
+func (bc *BlocksCreate) SetNillableUnblockReports(i *int) *BlocksCreate {
+	if i != nil {
+		bc.SetUnblockReports(*i)
+	}
+	return bc
+}
+
+// SetLastReportedAt sets the "last_reported_at" field.
+func (bc *BlocksCreate) SetLastReportedAt(t time.Time) *BlocksCreate {
+	bc.mutation.SetLastReportedAt(t)
+	return bc
+}
+
+// SetSite sets the "site" edge to the Sites entity.
+func (bc *BlocksCreate) SetSite(s *Sites) *BlocksCreate {
+	return bc.SetSiteID(s.ID)
+}
+
+// SetIsp sets the "isp" edge to the Isps entity.
+func (bc *BlocksCreate) SetIsp(i *Isps) *BlocksCreate {
+	return bc.SetIspID(i.ID)
 }
 
 // Mutation returns the BlocksMutation object of the builder.
@@ -103,6 +149,14 @@ func (bc *BlocksCreate) defaults() {
 		v := blocks.DefaultUpdatedAt()
 		bc.mutation.SetUpdatedAt(v)
 	}
+	if _, ok := bc.mutation.BlockReports(); !ok {
+		v := blocks.DefaultBlockReports
+		bc.mutation.SetBlockReports(v)
+	}
+	if _, ok := bc.mutation.UnblockReports(); !ok {
+		v := blocks.DefaultUnblockReports
+		bc.mutation.SetUnblockReports(v)
+	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -113,11 +167,26 @@ func (bc *BlocksCreate) check() error {
 	if _, ok := bc.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Blocks.updated_at"`)}
 	}
-	if _, ok := bc.mutation.IP(); !ok {
-		return &ValidationError{Name: "ip", err: errors.New(`ent: missing required field "Blocks.ip"`)}
+	if _, ok := bc.mutation.SiteID(); !ok {
+		return &ValidationError{Name: "site_id", err: errors.New(`ent: missing required field "Blocks.site_id"`)}
 	}
-	if _, ok := bc.mutation.Domain(); !ok {
-		return &ValidationError{Name: "domain", err: errors.New(`ent: missing required field "Blocks.domain"`)}
+	if _, ok := bc.mutation.IspID(); !ok {
+		return &ValidationError{Name: "isp_id", err: errors.New(`ent: missing required field "Blocks.isp_id"`)}
+	}
+	if _, ok := bc.mutation.BlockReports(); !ok {
+		return &ValidationError{Name: "block_reports", err: errors.New(`ent: missing required field "Blocks.block_reports"`)}
+	}
+	if _, ok := bc.mutation.UnblockReports(); !ok {
+		return &ValidationError{Name: "unblock_reports", err: errors.New(`ent: missing required field "Blocks.unblock_reports"`)}
+	}
+	if _, ok := bc.mutation.LastReportedAt(); !ok {
+		return &ValidationError{Name: "last_reported_at", err: errors.New(`ent: missing required field "Blocks.last_reported_at"`)}
+	}
+	if _, ok := bc.mutation.SiteID(); !ok {
+		return &ValidationError{Name: "site", err: errors.New(`ent: missing required edge "Blocks.site"`)}
+	}
+	if _, ok := bc.mutation.IspID(); !ok {
+		return &ValidationError{Name: "isp", err: errors.New(`ent: missing required edge "Blocks.isp"`)}
 	}
 	return nil
 }
@@ -153,13 +222,51 @@ func (bc *BlocksCreate) createSpec() (*Blocks, *sqlgraph.CreateSpec) {
 		_spec.SetField(blocks.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := bc.mutation.IP(); ok {
-		_spec.SetField(blocks.FieldIP, field.TypeString, value)
-		_node.IP = value
+	if value, ok := bc.mutation.BlockReports(); ok {
+		_spec.SetField(blocks.FieldBlockReports, field.TypeInt, value)
+		_node.BlockReports = value
 	}
-	if value, ok := bc.mutation.Domain(); ok {
-		_spec.SetField(blocks.FieldDomain, field.TypeString, value)
-		_node.Domain = value
+	if value, ok := bc.mutation.UnblockReports(); ok {
+		_spec.SetField(blocks.FieldUnblockReports, field.TypeInt, value)
+		_node.UnblockReports = value
+	}
+	if value, ok := bc.mutation.LastReportedAt(); ok {
+		_spec.SetField(blocks.FieldLastReportedAt, field.TypeTime, value)
+		_node.LastReportedAt = value
+	}
+	if nodes := bc.mutation.SiteIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   blocks.SiteTable,
+			Columns: []string{blocks.SiteColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sites.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.SiteID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := bc.mutation.IspIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   blocks.IspTable,
+			Columns: []string{blocks.IspColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(isps.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.IspID = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

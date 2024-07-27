@@ -11,6 +11,7 @@ import (
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/blocks"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/predicate"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
 )
@@ -48,9 +49,45 @@ func (su *SitesUpdate) SetNillableDomain(s *string) *SitesUpdate {
 	return su
 }
 
+// AddBlockIDs adds the "blocks" edge to the Blocks entity by IDs.
+func (su *SitesUpdate) AddBlockIDs(ids ...int) *SitesUpdate {
+	su.mutation.AddBlockIDs(ids...)
+	return su
+}
+
+// AddBlocks adds the "blocks" edges to the Blocks entity.
+func (su *SitesUpdate) AddBlocks(b ...*Blocks) *SitesUpdate {
+	ids := make([]int, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return su.AddBlockIDs(ids...)
+}
+
 // Mutation returns the SitesMutation object of the builder.
 func (su *SitesUpdate) Mutation() *SitesMutation {
 	return su.mutation
+}
+
+// ClearBlocks clears all "blocks" edges to the Blocks entity.
+func (su *SitesUpdate) ClearBlocks() *SitesUpdate {
+	su.mutation.ClearBlocks()
+	return su
+}
+
+// RemoveBlockIDs removes the "blocks" edge to Blocks entities by IDs.
+func (su *SitesUpdate) RemoveBlockIDs(ids ...int) *SitesUpdate {
+	su.mutation.RemoveBlockIDs(ids...)
+	return su
+}
+
+// RemoveBlocks removes "blocks" edges to Blocks entities.
+func (su *SitesUpdate) RemoveBlocks(b ...*Blocks) *SitesUpdate {
+	ids := make([]int, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return su.RemoveBlockIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -104,6 +141,51 @@ func (su *SitesUpdate) sqlSave(ctx context.Context) (n int, err error) {
 	if value, ok := su.mutation.Domain(); ok {
 		_spec.SetField(sites.FieldDomain, field.TypeString, value)
 	}
+	if su.mutation.BlocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   sites.BlocksTable,
+			Columns: []string{sites.BlocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.RemovedBlocksIDs(); len(nodes) > 0 && !su.mutation.BlocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   sites.BlocksTable,
+			Columns: []string{sites.BlocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := su.mutation.BlocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   sites.BlocksTable,
+			Columns: []string{sites.BlocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
 	if n, err = sqlgraph.UpdateNodes(ctx, su.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{sites.Label}
@@ -144,9 +226,45 @@ func (suo *SitesUpdateOne) SetNillableDomain(s *string) *SitesUpdateOne {
 	return suo
 }
 
+// AddBlockIDs adds the "blocks" edge to the Blocks entity by IDs.
+func (suo *SitesUpdateOne) AddBlockIDs(ids ...int) *SitesUpdateOne {
+	suo.mutation.AddBlockIDs(ids...)
+	return suo
+}
+
+// AddBlocks adds the "blocks" edges to the Blocks entity.
+func (suo *SitesUpdateOne) AddBlocks(b ...*Blocks) *SitesUpdateOne {
+	ids := make([]int, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return suo.AddBlockIDs(ids...)
+}
+
 // Mutation returns the SitesMutation object of the builder.
 func (suo *SitesUpdateOne) Mutation() *SitesMutation {
 	return suo.mutation
+}
+
+// ClearBlocks clears all "blocks" edges to the Blocks entity.
+func (suo *SitesUpdateOne) ClearBlocks() *SitesUpdateOne {
+	suo.mutation.ClearBlocks()
+	return suo
+}
+
+// RemoveBlockIDs removes the "blocks" edge to Blocks entities by IDs.
+func (suo *SitesUpdateOne) RemoveBlockIDs(ids ...int) *SitesUpdateOne {
+	suo.mutation.RemoveBlockIDs(ids...)
+	return suo
+}
+
+// RemoveBlocks removes "blocks" edges to Blocks entities.
+func (suo *SitesUpdateOne) RemoveBlocks(b ...*Blocks) *SitesUpdateOne {
+	ids := make([]int, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return suo.RemoveBlockIDs(ids...)
 }
 
 // Where appends a list predicates to the SitesUpdate builder.
@@ -229,6 +347,51 @@ func (suo *SitesUpdateOne) sqlSave(ctx context.Context) (_node *Sites, err error
 	}
 	if value, ok := suo.mutation.Domain(); ok {
 		_spec.SetField(sites.FieldDomain, field.TypeString, value)
+	}
+	if suo.mutation.BlocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   sites.BlocksTable,
+			Columns: []string{sites.BlocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.RemovedBlocksIDs(); len(nodes) > 0 && !suo.mutation.BlocksCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   sites.BlocksTable,
+			Columns: []string{sites.BlocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := suo.mutation.BlocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   sites.BlocksTable,
+			Columns: []string{sites.BlocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &Sites{config: suo.config}
 	_spec.Assign = _node.assignValues

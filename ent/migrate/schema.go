@@ -13,19 +13,36 @@ var (
 		{Name: "id", Type: field.TypeInt, Increment: true},
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
-		{Name: "ip", Type: field.TypeString, Unique: true},
-		{Name: "domain", Type: field.TypeString},
+		{Name: "block_reports", Type: field.TypeInt, Default: 0},
+		{Name: "unblock_reports", Type: field.TypeInt, Default: 0},
+		{Name: "last_reported_at", Type: field.TypeTime},
+		{Name: "isp_id", Type: field.TypeInt},
+		{Name: "site_id", Type: field.TypeInt},
 	}
 	// BlocksTable holds the schema information for the "blocks" table.
 	BlocksTable = &schema.Table{
 		Name:       "blocks",
 		Columns:    BlocksColumns,
 		PrimaryKey: []*schema.Column{BlocksColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "blocks_isps_isp_blocks",
+				Columns:    []*schema.Column{BlocksColumns[6]},
+				RefColumns: []*schema.Column{IspsColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+			{
+				Symbol:     "blocks_sites_blocks",
+				Columns:    []*schema.Column{BlocksColumns[7]},
+				RefColumns: []*schema.Column{SitesColumns[0]},
+				OnDelete:   schema.NoAction,
+			},
+		},
 		Indexes: []*schema.Index{
 			{
-				Name:    "blocks_ip",
+				Name:    "blocks_site_id_isp_id",
 				Unique:  true,
-				Columns: []*schema.Column{BlocksColumns[3]},
+				Columns: []*schema.Column{BlocksColumns[7], BlocksColumns[6]},
 			},
 		},
 	}
@@ -85,4 +102,6 @@ var (
 )
 
 func init() {
+	BlocksTable.ForeignKeys[0].RefTable = IspsTable
+	BlocksTable.ForeignKeys[1].RefTable = SitesTable
 }

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/predicate"
 )
 
@@ -64,14 +65,29 @@ func UpdatedAt(v time.Time) predicate.Blocks {
 	return predicate.Blocks(sql.FieldEQ(FieldUpdatedAt, v))
 }
 
-// IP applies equality check predicate on the "ip" field. It's identical to IPEQ.
-func IP(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldEQ(FieldIP, v))
+// SiteID applies equality check predicate on the "site_id" field. It's identical to SiteIDEQ.
+func SiteID(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldEQ(FieldSiteID, v))
 }
 
-// Domain applies equality check predicate on the "domain" field. It's identical to DomainEQ.
-func Domain(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldEQ(FieldDomain, v))
+// IspID applies equality check predicate on the "isp_id" field. It's identical to IspIDEQ.
+func IspID(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldEQ(FieldIspID, v))
+}
+
+// BlockReports applies equality check predicate on the "block_reports" field. It's identical to BlockReportsEQ.
+func BlockReports(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldEQ(FieldBlockReports, v))
+}
+
+// UnblockReports applies equality check predicate on the "unblock_reports" field. It's identical to UnblockReportsEQ.
+func UnblockReports(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldEQ(FieldUnblockReports, v))
+}
+
+// LastReportedAt applies equality check predicate on the "last_reported_at" field. It's identical to LastReportedAtEQ.
+func LastReportedAt(v time.Time) predicate.Blocks {
+	return predicate.Blocks(sql.FieldEQ(FieldLastReportedAt, v))
 }
 
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
@@ -154,134 +170,210 @@ func UpdatedAtLTE(v time.Time) predicate.Blocks {
 	return predicate.Blocks(sql.FieldLTE(FieldUpdatedAt, v))
 }
 
-// IPEQ applies the EQ predicate on the "ip" field.
-func IPEQ(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldEQ(FieldIP, v))
+// SiteIDEQ applies the EQ predicate on the "site_id" field.
+func SiteIDEQ(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldEQ(FieldSiteID, v))
 }
 
-// IPNEQ applies the NEQ predicate on the "ip" field.
-func IPNEQ(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldNEQ(FieldIP, v))
+// SiteIDNEQ applies the NEQ predicate on the "site_id" field.
+func SiteIDNEQ(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldNEQ(FieldSiteID, v))
 }
 
-// IPIn applies the In predicate on the "ip" field.
-func IPIn(vs ...string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldIn(FieldIP, vs...))
+// SiteIDIn applies the In predicate on the "site_id" field.
+func SiteIDIn(vs ...int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldIn(FieldSiteID, vs...))
 }
 
-// IPNotIn applies the NotIn predicate on the "ip" field.
-func IPNotIn(vs ...string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldNotIn(FieldIP, vs...))
+// SiteIDNotIn applies the NotIn predicate on the "site_id" field.
+func SiteIDNotIn(vs ...int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldNotIn(FieldSiteID, vs...))
 }
 
-// IPGT applies the GT predicate on the "ip" field.
-func IPGT(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldGT(FieldIP, v))
+// IspIDEQ applies the EQ predicate on the "isp_id" field.
+func IspIDEQ(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldEQ(FieldIspID, v))
 }
 
-// IPGTE applies the GTE predicate on the "ip" field.
-func IPGTE(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldGTE(FieldIP, v))
+// IspIDNEQ applies the NEQ predicate on the "isp_id" field.
+func IspIDNEQ(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldNEQ(FieldIspID, v))
 }
 
-// IPLT applies the LT predicate on the "ip" field.
-func IPLT(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldLT(FieldIP, v))
+// IspIDIn applies the In predicate on the "isp_id" field.
+func IspIDIn(vs ...int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldIn(FieldIspID, vs...))
 }
 
-// IPLTE applies the LTE predicate on the "ip" field.
-func IPLTE(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldLTE(FieldIP, v))
+// IspIDNotIn applies the NotIn predicate on the "isp_id" field.
+func IspIDNotIn(vs ...int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldNotIn(FieldIspID, vs...))
 }
 
-// IPContains applies the Contains predicate on the "ip" field.
-func IPContains(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldContains(FieldIP, v))
+// BlockReportsEQ applies the EQ predicate on the "block_reports" field.
+func BlockReportsEQ(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldEQ(FieldBlockReports, v))
 }
 
-// IPHasPrefix applies the HasPrefix predicate on the "ip" field.
-func IPHasPrefix(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldHasPrefix(FieldIP, v))
+// BlockReportsNEQ applies the NEQ predicate on the "block_reports" field.
+func BlockReportsNEQ(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldNEQ(FieldBlockReports, v))
 }
 
-// IPHasSuffix applies the HasSuffix predicate on the "ip" field.
-func IPHasSuffix(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldHasSuffix(FieldIP, v))
+// BlockReportsIn applies the In predicate on the "block_reports" field.
+func BlockReportsIn(vs ...int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldIn(FieldBlockReports, vs...))
 }
 
-// IPEqualFold applies the EqualFold predicate on the "ip" field.
-func IPEqualFold(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldEqualFold(FieldIP, v))
+// BlockReportsNotIn applies the NotIn predicate on the "block_reports" field.
+func BlockReportsNotIn(vs ...int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldNotIn(FieldBlockReports, vs...))
 }
 
-// IPContainsFold applies the ContainsFold predicate on the "ip" field.
-func IPContainsFold(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldContainsFold(FieldIP, v))
+// BlockReportsGT applies the GT predicate on the "block_reports" field.
+func BlockReportsGT(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldGT(FieldBlockReports, v))
 }
 
-// DomainEQ applies the EQ predicate on the "domain" field.
-func DomainEQ(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldEQ(FieldDomain, v))
+// BlockReportsGTE applies the GTE predicate on the "block_reports" field.
+func BlockReportsGTE(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldGTE(FieldBlockReports, v))
 }
 
-// DomainNEQ applies the NEQ predicate on the "domain" field.
-func DomainNEQ(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldNEQ(FieldDomain, v))
+// BlockReportsLT applies the LT predicate on the "block_reports" field.
+func BlockReportsLT(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldLT(FieldBlockReports, v))
 }
 
-// DomainIn applies the In predicate on the "domain" field.
-func DomainIn(vs ...string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldIn(FieldDomain, vs...))
+// BlockReportsLTE applies the LTE predicate on the "block_reports" field.
+func BlockReportsLTE(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldLTE(FieldBlockReports, v))
 }
 
-// DomainNotIn applies the NotIn predicate on the "domain" field.
-func DomainNotIn(vs ...string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldNotIn(FieldDomain, vs...))
+// UnblockReportsEQ applies the EQ predicate on the "unblock_reports" field.
+func UnblockReportsEQ(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldEQ(FieldUnblockReports, v))
 }
 
-// DomainGT applies the GT predicate on the "domain" field.
-func DomainGT(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldGT(FieldDomain, v))
+// UnblockReportsNEQ applies the NEQ predicate on the "unblock_reports" field.
+func UnblockReportsNEQ(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldNEQ(FieldUnblockReports, v))
 }
 
-// DomainGTE applies the GTE predicate on the "domain" field.
-func DomainGTE(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldGTE(FieldDomain, v))
+// UnblockReportsIn applies the In predicate on the "unblock_reports" field.
+func UnblockReportsIn(vs ...int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldIn(FieldUnblockReports, vs...))
 }
 
-// DomainLT applies the LT predicate on the "domain" field.
-func DomainLT(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldLT(FieldDomain, v))
+// UnblockReportsNotIn applies the NotIn predicate on the "unblock_reports" field.
+func UnblockReportsNotIn(vs ...int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldNotIn(FieldUnblockReports, vs...))
 }
 
-// DomainLTE applies the LTE predicate on the "domain" field.
-func DomainLTE(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldLTE(FieldDomain, v))
+// UnblockReportsGT applies the GT predicate on the "unblock_reports" field.
+func UnblockReportsGT(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldGT(FieldUnblockReports, v))
 }
 
-// DomainContains applies the Contains predicate on the "domain" field.
-func DomainContains(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldContains(FieldDomain, v))
+// UnblockReportsGTE applies the GTE predicate on the "unblock_reports" field.
+func UnblockReportsGTE(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldGTE(FieldUnblockReports, v))
 }
 
-// DomainHasPrefix applies the HasPrefix predicate on the "domain" field.
-func DomainHasPrefix(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldHasPrefix(FieldDomain, v))
+// UnblockReportsLT applies the LT predicate on the "unblock_reports" field.
+func UnblockReportsLT(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldLT(FieldUnblockReports, v))
 }
 
-// DomainHasSuffix applies the HasSuffix predicate on the "domain" field.
-func DomainHasSuffix(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldHasSuffix(FieldDomain, v))
+// UnblockReportsLTE applies the LTE predicate on the "unblock_reports" field.
+func UnblockReportsLTE(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldLTE(FieldUnblockReports, v))
 }
 
-// DomainEqualFold applies the EqualFold predicate on the "domain" field.
-func DomainEqualFold(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldEqualFold(FieldDomain, v))
+// LastReportedAtEQ applies the EQ predicate on the "last_reported_at" field.
+func LastReportedAtEQ(v time.Time) predicate.Blocks {
+	return predicate.Blocks(sql.FieldEQ(FieldLastReportedAt, v))
 }
 
-// DomainContainsFold applies the ContainsFold predicate on the "domain" field.
-func DomainContainsFold(v string) predicate.Blocks {
-	return predicate.Blocks(sql.FieldContainsFold(FieldDomain, v))
+// LastReportedAtNEQ applies the NEQ predicate on the "last_reported_at" field.
+func LastReportedAtNEQ(v time.Time) predicate.Blocks {
+	return predicate.Blocks(sql.FieldNEQ(FieldLastReportedAt, v))
+}
+
+// LastReportedAtIn applies the In predicate on the "last_reported_at" field.
+func LastReportedAtIn(vs ...time.Time) predicate.Blocks {
+	return predicate.Blocks(sql.FieldIn(FieldLastReportedAt, vs...))
+}
+
+// LastReportedAtNotIn applies the NotIn predicate on the "last_reported_at" field.
+func LastReportedAtNotIn(vs ...time.Time) predicate.Blocks {
+	return predicate.Blocks(sql.FieldNotIn(FieldLastReportedAt, vs...))
+}
+
+// LastReportedAtGT applies the GT predicate on the "last_reported_at" field.
+func LastReportedAtGT(v time.Time) predicate.Blocks {
+	return predicate.Blocks(sql.FieldGT(FieldLastReportedAt, v))
+}
+
+// LastReportedAtGTE applies the GTE predicate on the "last_reported_at" field.
+func LastReportedAtGTE(v time.Time) predicate.Blocks {
+	return predicate.Blocks(sql.FieldGTE(FieldLastReportedAt, v))
+}
+
+// LastReportedAtLT applies the LT predicate on the "last_reported_at" field.
+func LastReportedAtLT(v time.Time) predicate.Blocks {
+	return predicate.Blocks(sql.FieldLT(FieldLastReportedAt, v))
+}
+
+// LastReportedAtLTE applies the LTE predicate on the "last_reported_at" field.
+func LastReportedAtLTE(v time.Time) predicate.Blocks {
+	return predicate.Blocks(sql.FieldLTE(FieldLastReportedAt, v))
+}
+
+// HasSite applies the HasEdge predicate on the "site" edge.
+func HasSite() predicate.Blocks {
+	return predicate.Blocks(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, SiteTable, SiteColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSiteWith applies the HasEdge predicate on the "site" edge with a given conditions (other predicates).
+func HasSiteWith(preds ...predicate.Sites) predicate.Blocks {
+	return predicate.Blocks(func(s *sql.Selector) {
+		step := newSiteStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
+// HasIsp applies the HasEdge predicate on the "isp" edge.
+func HasIsp() predicate.Blocks {
+	return predicate.Blocks(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, IspTable, IspColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasIspWith applies the HasEdge predicate on the "isp" edge with a given conditions (other predicates).
+func HasIspWith(preds ...predicate.Isps) predicate.Blocks {
+	return predicate.Blocks(func(s *sql.Selector) {
+		step := newIspStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

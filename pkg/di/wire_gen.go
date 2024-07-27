@@ -246,6 +246,23 @@ func InjectConfig() (*config.Config, error) {
 	return configConfig, nil
 }
 
+func InjectTxHandler() (*repository.TxHandler, error) {
+	configConfig, err := config.ProvideConfig()
+	if err != nil {
+		return nil, err
+	}
+	sqlDB, err := db.ProvideRawDB(configConfig)
+	if err != nil {
+		return nil, err
+	}
+	client, err := db.ProvideDB(sqlDB, configConfig)
+	if err != nil {
+		return nil, err
+	}
+	txHandler := repository.NewTxHandler(client)
+	return txHandler, nil
+}
+
 // wire.go:
 
 var dbSet = wire.NewSet(db.ProvideDB, db.ProvideRawDB, config.ProvideConfig)

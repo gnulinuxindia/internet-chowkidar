@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/predicate"
 )
 
@@ -212,6 +213,29 @@ func DomainEqualFold(v string) predicate.Sites {
 // DomainContainsFold applies the ContainsFold predicate on the "domain" field.
 func DomainContainsFold(v string) predicate.Sites {
 	return predicate.Sites(sql.FieldContainsFold(FieldDomain, v))
+}
+
+// HasBlocks applies the HasEdge predicate on the "blocks" edge.
+func HasBlocks() predicate.Sites {
+	return predicate.Sites(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, BlocksTable, BlocksColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasBlocksWith applies the HasEdge predicate on the "blocks" edge with a given conditions (other predicates).
+func HasBlocksWith(preds ...predicate.Blocks) predicate.Sites {
+	return predicate.Sites(func(s *sql.Selector) {
+		step := newBlocksStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

@@ -10,6 +10,8 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/blocks"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/isps"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
 )
 
 // Blocks is the model entity for the Blocks schema.
@@ -21,11 +23,53 @@ type Blocks struct {
 	CreatedAt time.Time `json:"created_at,omitempty"`
 	// UpdatedAt holds the value of the "updated_at" field.
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
-	// IP holds the value of the "ip" field.
-	IP string `json:"ip,omitempty"`
-	// Domain holds the value of the "domain" field.
-	Domain       string `json:"domain,omitempty"`
+	// SiteID holds the value of the "site_id" field.
+	SiteID int `json:"site_id,omitempty"`
+	// IspID holds the value of the "isp_id" field.
+	IspID int `json:"isp_id,omitempty"`
+	// BlockReports holds the value of the "block_reports" field.
+	BlockReports int `json:"block_reports,omitempty"`
+	// UnblockReports holds the value of the "unblock_reports" field.
+	UnblockReports int `json:"unblock_reports,omitempty"`
+	// LastReportedAt holds the value of the "last_reported_at" field.
+	LastReportedAt time.Time `json:"last_reported_at,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the BlocksQuery when eager-loading is set.
+	Edges        BlocksEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// BlocksEdges holds the relations/edges for other nodes in the graph.
+type BlocksEdges struct {
+	// Site holds the value of the site edge.
+	Site *Sites `json:"site,omitempty"`
+	// Isp holds the value of the isp edge.
+	Isp *Isps `json:"isp,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [2]bool
+}
+
+// SiteOrErr returns the Site value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e BlocksEdges) SiteOrErr() (*Sites, error) {
+	if e.Site != nil {
+		return e.Site, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: sites.Label}
+	}
+	return nil, &NotLoadedError{edge: "site"}
+}
+
+// IspOrErr returns the Isp value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e BlocksEdges) IspOrErr() (*Isps, error) {
+	if e.Isp != nil {
+		return e.Isp, nil
+	} else if e.loadedTypes[1] {
+		return nil, &NotFoundError{label: isps.Label}
+	}
+	return nil, &NotLoadedError{edge: "isp"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -33,11 +77,9 @@ func (*Blocks) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case blocks.FieldID:
+		case blocks.FieldID, blocks.FieldSiteID, blocks.FieldIspID, blocks.FieldBlockReports, blocks.FieldUnblockReports:
 			values[i] = new(sql.NullInt64)
-		case blocks.FieldIP, blocks.FieldDomain:
-			values[i] = new(sql.NullString)
-		case blocks.FieldCreatedAt, blocks.FieldUpdatedAt:
+		case blocks.FieldCreatedAt, blocks.FieldUpdatedAt, blocks.FieldLastReportedAt:
 			values[i] = new(sql.NullTime)
 		default:
 			values[i] = new(sql.UnknownType)
@@ -72,17 +114,35 @@ func (b *Blocks) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				b.UpdatedAt = value.Time
 			}
-		case blocks.FieldIP:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field ip", values[i])
+		case blocks.FieldSiteID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field site_id", values[i])
 			} else if value.Valid {
-				b.IP = value.String
+				b.SiteID = int(value.Int64)
 			}
-		case blocks.FieldDomain:
-			if value, ok := values[i].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field domain", values[i])
+		case blocks.FieldIspID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field isp_id", values[i])
 			} else if value.Valid {
-				b.Domain = value.String
+				b.IspID = int(value.Int64)
+			}
+		case blocks.FieldBlockReports:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field block_reports", values[i])
+			} else if value.Valid {
+				b.BlockReports = int(value.Int64)
+			}
+		case blocks.FieldUnblockReports:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field unblock_reports", values[i])
+			} else if value.Valid {
+				b.UnblockReports = int(value.Int64)
+			}
+		case blocks.FieldLastReportedAt:
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field last_reported_at", values[i])
+			} else if value.Valid {
+				b.LastReportedAt = value.Time
 			}
 		default:
 			b.selectValues.Set(columns[i], values[i])
@@ -95,6 +155,16 @@ func (b *Blocks) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (b *Blocks) Value(name string) (ent.Value, error) {
 	return b.selectValues.Get(name)
+}
+
+// QuerySite queries the "site" edge of the Blocks entity.
+func (b *Blocks) QuerySite() *SitesQuery {
+	return NewBlocksClient(b.config).QuerySite(b)
+}
+
+// QueryIsp queries the "isp" edge of the Blocks entity.
+func (b *Blocks) QueryIsp() *IspsQuery {
+	return NewBlocksClient(b.config).QueryIsp(b)
 }
 
 // Update returns a builder for updating this Blocks.
@@ -126,11 +196,20 @@ func (b *Blocks) String() string {
 	builder.WriteString("updated_at=")
 	builder.WriteString(b.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
-	builder.WriteString("ip=")
-	builder.WriteString(b.IP)
+	builder.WriteString("site_id=")
+	builder.WriteString(fmt.Sprintf("%v", b.SiteID))
 	builder.WriteString(", ")
-	builder.WriteString("domain=")
-	builder.WriteString(b.Domain)
+	builder.WriteString("isp_id=")
+	builder.WriteString(fmt.Sprintf("%v", b.IspID))
+	builder.WriteString(", ")
+	builder.WriteString("block_reports=")
+	builder.WriteString(fmt.Sprintf("%v", b.BlockReports))
+	builder.WriteString(", ")
+	builder.WriteString("unblock_reports=")
+	builder.WriteString(fmt.Sprintf("%v", b.UnblockReports))
+	builder.WriteString(", ")
+	builder.WriteString("last_reported_at=")
+	builder.WriteString(b.LastReportedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -19,8 +20,17 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDomain holds the string denoting the domain field in the database.
 	FieldDomain = "domain"
+	// EdgeBlocks holds the string denoting the blocks edge name in mutations.
+	EdgeBlocks = "blocks"
 	// Table holds the table name of the sites in the database.
 	Table = "sites"
+	// BlocksTable is the table that holds the blocks relation/edge.
+	BlocksTable = "blocks"
+	// BlocksInverseTable is the table name for the Blocks entity.
+	// It exists in this package in order to avoid circular dependency with the "blocks" package.
+	BlocksInverseTable = "blocks"
+	// BlocksColumn is the table column denoting the blocks relation/edge.
+	BlocksColumn = "site_id"
 )
 
 // Columns holds all SQL columns for sites fields.
@@ -71,4 +81,25 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByDomain orders the results by the domain field.
 func ByDomain(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDomain, opts...).ToFunc()
+}
+
+// ByBlocksCount orders the results by blocks count.
+func ByBlocksCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newBlocksStep(), opts...)
+	}
+}
+
+// ByBlocks orders the results by blocks terms.
+func ByBlocks(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newBlocksStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newBlocksStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(BlocksInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, BlocksTable, BlocksColumn),
+	)
 }

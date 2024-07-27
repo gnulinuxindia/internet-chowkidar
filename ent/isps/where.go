@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/predicate"
 )
 
@@ -302,6 +303,29 @@ func NameEqualFold(v string) predicate.Isps {
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.Isps {
 	return predicate.Isps(sql.FieldContainsFold(FieldName, v))
+}
+
+// HasIspBlocks applies the HasEdge predicate on the "isp_blocks" edge.
+func HasIspBlocks() predicate.Isps {
+	return predicate.Isps(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, IspBlocksTable, IspBlocksColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasIspBlocksWith applies the HasEdge predicate on the "isp_blocks" edge with a given conditions (other predicates).
+func HasIspBlocksWith(preds ...predicate.Blocks) predicate.Isps {
+	return predicate.Isps(func(s *sql.Selector) {
+		step := newIspBlocksStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

@@ -26,8 +26,29 @@ type Isps struct {
 	// Longitude holds the value of the "longitude" field.
 	Longitude float64 `json:"longitude,omitempty"`
 	// Name holds the value of the "name" field.
-	Name         string `json:"name,omitempty"`
+	Name string `json:"name,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the IspsQuery when eager-loading is set.
+	Edges        IspsEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// IspsEdges holds the relations/edges for other nodes in the graph.
+type IspsEdges struct {
+	// IspBlocks holds the value of the isp_blocks edge.
+	IspBlocks []*Blocks `json:"isp_blocks,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// IspBlocksOrErr returns the IspBlocks value or an error if the edge
+// was not loaded in eager-loading.
+func (e IspsEdges) IspBlocksOrErr() ([]*Blocks, error) {
+	if e.loadedTypes[0] {
+		return e.IspBlocks, nil
+	}
+	return nil, &NotLoadedError{edge: "isp_blocks"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -105,6 +126,11 @@ func (i *Isps) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (i *Isps) Value(name string) (ent.Value, error) {
 	return i.selectValues.Get(name)
+}
+
+// QueryIspBlocks queries the "isp_blocks" edge of the Isps entity.
+func (i *Isps) QueryIspBlocks() *BlocksQuery {
+	return NewIspsClient(i.config).QueryIspBlocks(i)
 }
 
 // Update returns a builder for updating this Isps.

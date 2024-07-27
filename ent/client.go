@@ -14,6 +14,7 @@ import (
 	"entgo.io/ent"
 	"entgo.io/ent/dialect"
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/blocks"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/counter"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/isps"
@@ -334,6 +335,38 @@ func (c *BlocksClient) GetX(ctx context.Context, id int) *Blocks {
 	return obj
 }
 
+// QuerySite queries the site edge of a Blocks.
+func (c *BlocksClient) QuerySite(b *Blocks) *SitesQuery {
+	query := (&SitesClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(blocks.Table, blocks.FieldID, id),
+			sqlgraph.To(sites.Table, sites.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, blocks.SiteTable, blocks.SiteColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QueryIsp queries the isp edge of a Blocks.
+func (c *BlocksClient) QueryIsp(b *Blocks) *IspsQuery {
+	query := (&IspsClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := b.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(blocks.Table, blocks.FieldID, id),
+			sqlgraph.To(isps.Table, isps.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, blocks.IspTable, blocks.IspColumn),
+		)
+		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *BlocksClient) Hooks() []Hook {
 	return c.hooks.Blocks
@@ -600,6 +633,22 @@ func (c *IspsClient) GetX(ctx context.Context, id int) *Isps {
 	return obj
 }
 
+// QueryIspBlocks queries the isp_blocks edge of a Isps.
+func (c *IspsClient) QueryIspBlocks(i *Isps) *BlocksQuery {
+	query := (&BlocksClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := i.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(isps.Table, isps.FieldID, id),
+			sqlgraph.To(blocks.Table, blocks.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, isps.IspBlocksTable, isps.IspBlocksColumn),
+		)
+		fromV = sqlgraph.Neighbors(i.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *IspsClient) Hooks() []Hook {
 	return c.hooks.Isps
@@ -731,6 +780,22 @@ func (c *SitesClient) GetX(ctx context.Context, id int) *Sites {
 		panic(err)
 	}
 	return obj
+}
+
+// QueryBlocks queries the blocks edge of a Sites.
+func (c *SitesClient) QueryBlocks(s *Sites) *BlocksQuery {
+	query := (&BlocksClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := s.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(sites.Table, sites.FieldID, id),
+			sqlgraph.To(blocks.Table, blocks.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, sites.BlocksTable, sites.BlocksColumn),
+		)
+		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
 }
 
 // Hooks returns the client hooks.

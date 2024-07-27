@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -23,8 +24,17 @@ const (
 	FieldLongitude = "longitude"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// EdgeIspBlocks holds the string denoting the isp_blocks edge name in mutations.
+	EdgeIspBlocks = "isp_blocks"
 	// Table holds the table name of the isps in the database.
 	Table = "isps"
+	// IspBlocksTable is the table that holds the isp_blocks relation/edge.
+	IspBlocksTable = "blocks"
+	// IspBlocksInverseTable is the table name for the Blocks entity.
+	// It exists in this package in order to avoid circular dependency with the "blocks" package.
+	IspBlocksInverseTable = "blocks"
+	// IspBlocksColumn is the table column denoting the isp_blocks relation/edge.
+	IspBlocksColumn = "isp_id"
 )
 
 // Columns holds all SQL columns for isps fields.
@@ -87,4 +97,25 @@ func ByLongitude(opts ...sql.OrderTermOption) OrderOption {
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByIspBlocksCount orders the results by isp_blocks count.
+func ByIspBlocksCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newIspBlocksStep(), opts...)
+	}
+}
+
+// ByIspBlocks orders the results by isp_blocks terms.
+func ByIspBlocks(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newIspBlocksStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+func newIspBlocksStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(IspBlocksInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, IspBlocksTable, IspBlocksColumn),
+	)
 }

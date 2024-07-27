@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/blocks"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/isps"
 )
 
@@ -64,6 +65,21 @@ func (ic *IspsCreate) SetLongitude(f float64) *IspsCreate {
 func (ic *IspsCreate) SetName(s string) *IspsCreate {
 	ic.mutation.SetName(s)
 	return ic
+}
+
+// AddIspBlockIDs adds the "isp_blocks" edge to the Blocks entity by IDs.
+func (ic *IspsCreate) AddIspBlockIDs(ids ...int) *IspsCreate {
+	ic.mutation.AddIspBlockIDs(ids...)
+	return ic
+}
+
+// AddIspBlocks adds the "isp_blocks" edges to the Blocks entity.
+func (ic *IspsCreate) AddIspBlocks(b ...*Blocks) *IspsCreate {
+	ids := make([]int, len(b))
+	for i := range b {
+		ids[i] = b[i].ID
+	}
+	return ic.AddIspBlockIDs(ids...)
 }
 
 // Mutation returns the IspsMutation object of the builder.
@@ -173,6 +189,22 @@ func (ic *IspsCreate) createSpec() (*Isps, *sqlgraph.CreateSpec) {
 	if value, ok := ic.mutation.Name(); ok {
 		_spec.SetField(isps.FieldName, field.TypeString, value)
 		_node.Name = value
+	}
+	if nodes := ic.mutation.IspBlocksIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   isps.IspBlocksTable,
+			Columns: []string{isps.IspBlocksColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }
