@@ -11,6 +11,14 @@ func ProvideBlocksService(
 	}
 }
 
+func ProvideCategoriesService(
+	categoriesRepository repository.CategoriesRepository,
+) CategoriesService {
+	return &categoriesServiceImpl{
+		categoriesRepository: categoriesRepository,
+	}
+}
+
 func ProvideIspService(
 	repo repository.IspRepository,
 ) IspService {

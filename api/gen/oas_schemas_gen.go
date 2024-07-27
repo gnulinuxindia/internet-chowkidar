@@ -287,52 +287,63 @@ func (s *BlockInput) SetIsBlocked(val bool) {
 
 // Ref: #/components/schemas/Category
 type Category struct {
-	Name      OptString   `json:"name"`
-	CreatedAt OptDateTime `json:"created_at"`
-	UpdatedAt OptDateTime `json:"updated_at"`
+	ID        int       `json:"id"`
+	Name      string    `json:"name"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// GetID returns the value of ID.
+func (s *Category) GetID() int {
+	return s.ID
 }
 
 // GetName returns the value of Name.
-func (s *Category) GetName() OptString {
+func (s *Category) GetName() string {
 	return s.Name
 }
 
 // GetCreatedAt returns the value of CreatedAt.
-func (s *Category) GetCreatedAt() OptDateTime {
+func (s *Category) GetCreatedAt() time.Time {
 	return s.CreatedAt
 }
 
 // GetUpdatedAt returns the value of UpdatedAt.
-func (s *Category) GetUpdatedAt() OptDateTime {
+func (s *Category) GetUpdatedAt() time.Time {
 	return s.UpdatedAt
 }
 
+// SetID sets the value of ID.
+func (s *Category) SetID(val int) {
+	s.ID = val
+}
+
 // SetName sets the value of Name.
-func (s *Category) SetName(val OptString) {
+func (s *Category) SetName(val string) {
 	s.Name = val
 }
 
 // SetCreatedAt sets the value of CreatedAt.
-func (s *Category) SetCreatedAt(val OptDateTime) {
+func (s *Category) SetCreatedAt(val time.Time) {
 	s.CreatedAt = val
 }
 
 // SetUpdatedAt sets the value of UpdatedAt.
-func (s *Category) SetUpdatedAt(val OptDateTime) {
+func (s *Category) SetUpdatedAt(val time.Time) {
 	s.UpdatedAt = val
 }
 
 type CreateCategoryReq struct {
-	Name OptString `json:"name"`
+	Name string `json:"name"`
 }
 
 // GetName returns the value of Name.
-func (s *CreateCategoryReq) GetName() OptString {
+func (s *CreateCategoryReq) GetName() string {
 	return s.Name
 }
 
 // SetName sets the value of Name.
-func (s *CreateCategoryReq) SetName(val OptString) {
+func (s *CreateCategoryReq) SetName(val string) {
 	s.Name = val
 }
 

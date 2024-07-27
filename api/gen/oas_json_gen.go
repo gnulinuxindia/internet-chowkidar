@@ -654,29 +654,28 @@ func (s *Category) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *Category) encodeFields(e *jx.Encoder) {
 	{
-		if s.Name.Set {
-			e.FieldStart("name")
-			s.Name.Encode(e)
-		}
+		e.FieldStart("id")
+		e.Int(s.ID)
 	}
 	{
-		if s.CreatedAt.Set {
-			e.FieldStart("created_at")
-			s.CreatedAt.Encode(e, json.EncodeDateTime)
-		}
+		e.FieldStart("name")
+		e.Str(s.Name)
 	}
 	{
-		if s.UpdatedAt.Set {
-			e.FieldStart("updated_at")
-			s.UpdatedAt.Encode(e, json.EncodeDateTime)
-		}
+		e.FieldStart("created_at")
+		json.EncodeDateTime(e, s.CreatedAt)
+	}
+	{
+		e.FieldStart("updated_at")
+		json.EncodeDateTime(e, s.UpdatedAt)
 	}
 }
 
-var jsonFieldsNameOfCategory = [3]string{
-	0: "name",
-	1: "created_at",
-	2: "updated_at",
+var jsonFieldsNameOfCategory = [4]string{
+	0: "id",
+	1: "name",
+	2: "created_at",
+	3: "updated_at",
 }
 
 // Decode decodes Category from json.
@@ -684,13 +683,28 @@ func (s *Category) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode Category to nil")
 	}
+	var requiredBitSet [1]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
-		case "name":
+		case "id":
+			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				s.Name.Reset()
-				if err := s.Name.Decode(d); err != nil {
+				v, err := d.Int()
+				s.ID = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"id\"")
+			}
+		case "name":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := d.Str()
+				s.Name = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -698,9 +712,11 @@ func (s *Category) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"name\"")
 			}
 		case "created_at":
+			requiredBitSet[0] |= 1 << 2
 			if err := func() error {
-				s.CreatedAt.Reset()
-				if err := s.CreatedAt.Decode(d, json.DecodeDateTime); err != nil {
+				v, err := json.DecodeDateTime(d)
+				s.CreatedAt = v
+				if err != nil {
 					return err
 				}
 				return nil
@@ -708,9 +724,11 @@ func (s *Category) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"created_at\"")
 			}
 		case "updated_at":
+			requiredBitSet[0] |= 1 << 3
 			if err := func() error {
-				s.UpdatedAt.Reset()
-				if err := s.UpdatedAt.Decode(d, json.DecodeDateTime); err != nil {
+				v, err := json.DecodeDateTime(d)
+				s.UpdatedAt = v
+				if err != nil {
 					return err
 				}
 				return nil
@@ -723,6 +741,38 @@ func (s *Category) Decode(d *jx.Decoder) error {
 		return nil
 	}); err != nil {
 		return errors.Wrap(err, "decode Category")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00001111,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfCategory) {
+					name = jsonFieldsNameOfCategory[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
 	}
 
 	return nil
@@ -751,10 +801,8 @@ func (s *CreateCategoryReq) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *CreateCategoryReq) encodeFields(e *jx.Encoder) {
 	{
-		if s.Name.Set {
-			e.FieldStart("name")
-			s.Name.Encode(e)
-		}
+		e.FieldStart("name")
+		e.Str(s.Name)
 	}
 }
 
@@ -767,13 +815,16 @@ func (s *CreateCategoryReq) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode CreateCategoryReq to nil")
 	}
+	var requiredBitSet [1]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
 		case "name":
+			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				s.Name.Reset()
-				if err := s.Name.Decode(d); err != nil {
+				v, err := d.Str()
+				s.Name = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -786,6 +837,38 @@ func (s *CreateCategoryReq) Decode(d *jx.Decoder) error {
 		return nil
 	}); err != nil {
 		return errors.Wrap(err, "decode CreateCategoryReq")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000001,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfCreateCategoryReq) {
+					name = jsonFieldsNameOfCreateCategoryReq[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
 	}
 
 	return nil

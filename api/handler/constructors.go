@@ -14,8 +14,12 @@ func ProvideBlocksHandler(
 	}
 }
 
-func ProvideCategoryHandler() CategoryHandler {
-	return &categoryHandlerImpl{}
+func ProvideCategoryHandler(
+	categoriesService service.CategoriesService,
+) CategoryHandler {
+	return &categoryHandlerImpl{
+		categoriesService: categoriesService,
+	}
 }
 
 func ProvideHealthHandler() HealthHandler {

@@ -11,6 +11,14 @@ func ProvideBlocksRepository(
 	}
 }
 
+func ProvideCategoriesRepository(
+	db *ent.Client,
+) CategoriesRepository {
+	return &categoriesRepositoryImpl{
+		db: db,
+	}
+}
+
 func ProvideCounterRepository(
 	db *ent.Client,
 ) CounterRepository {

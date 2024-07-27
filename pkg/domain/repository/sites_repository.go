@@ -128,6 +128,7 @@ func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.Lis
 			c[i] = category.Name
 		}
 
+		// map domain to site struct
 		sites[dbSite.Domain] = &genapi.Site{
 			ID:         dbSite.ID,
 			Domain:     dbSite.Domain,
@@ -136,37 +137,11 @@ func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.Lis
 			UpdatedAt:  dbSite.UpdatedAt,
 		}
 	}
-			
 
 	for _, block := range blocks {
 		site := block.Edges.Site
 
-		if _, ok := sites[site.Domain]; !ok {
-
-			// Get the site categories
-			categories, err := site.QueryCategories().All(ctx)
-			if err != nil {
-				// no need to be a fatal error, just log it
-				slog.Error("failed to get site categories", "error", err)
-			}
-
-			c := make([]string, len(categories))
-			for i, category := range categories {
-				c[i] = category.Name
-			}
-
-			// Add the site to the map
-			sites[site.Domain] = &genapi.Site{
-				ID:             site.ID,
-				Domain:         site.Domain,
-				BlockReports:   block.BlockReports,
-				UnblockReports: block.UnblockReports,
-				LastReportedAt: block.LastReportedAt,
-				Categories:     c,
-				CreatedAt:      site.CreatedAt,
-				UpdatedAt:      site.UpdatedAt,
-			}
-		} else {
+		if _, ok := sites[site.Domain]; ok {
 			// Update the existing site
 			// Add the block and unblock reports
 			sites[site.Domain].BlockReports += block.BlockReports
@@ -176,6 +151,9 @@ func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.Lis
 			if sites[site.Domain].LastReportedAt.Before(block.LastReportedAt) {
 				sites[site.Domain].LastReportedAt = block.LastReportedAt
 			}
+		} else {
+			// An invariant has been violated
+			slog.Warn("site not found: THIS SHOULD NEVER HAPPEN", "site", site.Domain)
 		}
 	}
 

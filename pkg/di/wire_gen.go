@@ -43,7 +43,9 @@ func InjectHandlers() (*api.Handlers, error) {
 	sitesRepository := repository.ProvideSitesRepository(client)
 	sitesService := service.ProvideSitesService(sitesRepository, blocksRepository)
 	blocksHandler := handler.ProvideBlocksHandler(blocksService, sitesService)
-	categoryHandler := handler.ProvideCategoryHandler()
+	categoriesRepository := repository.ProvideCategoriesRepository(client)
+	categoriesService := service.ProvideCategoriesService(categoriesRepository)
+	categoryHandler := handler.ProvideCategoryHandler(categoriesService)
 	healthHandler := handler.ProvideHealthHandler()
 	ispRepository := repository.ProvideIspRepository(client)
 	ispService := service.ProvideIspService(ispRepository)
@@ -79,7 +81,9 @@ func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
 	sitesRepository := repository.ProvideSitesRepository(client)
 	sitesService := service.ProvideSitesService(sitesRepository, blocksRepository)
 	blocksHandler := handler.ProvideBlocksHandler(blocksService, sitesService)
-	categoryHandler := handler.ProvideCategoryHandler()
+	categoriesRepository := repository.ProvideCategoriesRepository(client)
+	categoriesService := service.ProvideCategoriesService(categoriesRepository)
+	categoryHandler := handler.ProvideCategoryHandler(categoriesService)
 	healthHandler := handler.ProvideHealthHandler()
 	ispRepository := repository.ProvideIspRepository(client)
 	ispService := service.ProvideIspService(ispRepository)
@@ -113,14 +117,17 @@ func InjectServices() (*di.Services, error) {
 	}
 	blocksRepository := repository.ProvideBlocksRepository(client)
 	blocksService := service.ProvideBlocksService(blocksRepository)
+	categoriesRepository := repository.ProvideCategoriesRepository(client)
+	categoriesService := service.ProvideCategoriesService(categoriesRepository)
 	ispRepository := repository.ProvideIspRepository(client)
 	ispService := service.ProvideIspService(ispRepository)
 	sitesRepository := repository.ProvideSitesRepository(client)
 	sitesService := service.ProvideSitesService(sitesRepository, blocksRepository)
 	services := &di.Services{
-		BlocksService: blocksService,
-		IspService:    ispService,
-		SitesService:  sitesService,
+		BlocksService:     blocksService,
+		CategoriesService: categoriesService,
+		IspService:        ispService,
+		SitesService:      sitesService,
 	}
 	return services, nil
 }
@@ -140,14 +147,17 @@ func InjectMockServices(ctrl *gomock.Controller) (*di.Services, error) {
 	}
 	blocksRepository := repository.ProvideBlocksRepository(client)
 	blocksService := service.ProvideBlocksService(blocksRepository)
+	categoriesRepository := repository.ProvideCategoriesRepository(client)
+	categoriesService := service.ProvideCategoriesService(categoriesRepository)
 	ispRepository := repository.ProvideIspRepository(client)
 	ispService := service.ProvideIspService(ispRepository)
 	sitesRepository := repository.ProvideSitesRepository(client)
 	sitesService := service.ProvideSitesService(sitesRepository, blocksRepository)
 	services := &di.Services{
-		BlocksService: blocksService,
-		IspService:    ispService,
-		SitesService:  sitesService,
+		BlocksService:     blocksService,
+		CategoriesService: categoriesService,
+		IspService:        ispService,
+		SitesService:      sitesService,
 	}
 	return services, nil
 }
@@ -167,16 +177,18 @@ func InjectRepository() (*di.Repositories, error) {
 		return nil, err
 	}
 	blocksRepository := repository.ProvideBlocksRepository(client)
+	categoriesRepository := repository.ProvideCategoriesRepository(client)
 	counterRepository := repository.ProvideCounterRepository(client)
 	ispRepository := repository.ProvideIspRepository(client)
 	reportsRepository := repository.ProvideReportsRepository(client)
 	sitesRepository := repository.ProvideSitesRepository(client)
 	repositories := &di.Repositories{
-		BlocksRepository:  blocksRepository,
-		CounterRepository: counterRepository,
-		IspRepository:     ispRepository,
-		ReportsRepository: reportsRepository,
-		SitesRepository:   sitesRepository,
+		BlocksRepository:     blocksRepository,
+		CategoriesRepository: categoriesRepository,
+		CounterRepository:    counterRepository,
+		IspRepository:        ispRepository,
+		ReportsRepository:    reportsRepository,
+		SitesRepository:      sitesRepository,
 	}
 	return repositories, nil
 }
@@ -195,16 +207,18 @@ func InjectMockRepository(ctrl *gomock.Controller) (*di.Repositories, error) {
 		return nil, err
 	}
 	blocksRepository := repository.ProvideBlocksRepository(client)
+	categoriesRepository := repository.ProvideCategoriesRepository(client)
 	counterRepository := repository.ProvideCounterRepository(client)
 	ispRepository := repository.ProvideIspRepository(client)
 	reportsRepository := repository.ProvideReportsRepository(client)
 	sitesRepository := repository.ProvideSitesRepository(client)
 	repositories := &di.Repositories{
-		BlocksRepository:  blocksRepository,
-		CounterRepository: counterRepository,
-		IspRepository:     ispRepository,
-		ReportsRepository: reportsRepository,
-		SitesRepository:   sitesRepository,
+		BlocksRepository:     blocksRepository,
+		CategoriesRepository: categoriesRepository,
+		CounterRepository:    counterRepository,
+		IspRepository:        ispRepository,
+		ReportsRepository:    reportsRepository,
+		SitesRepository:      sitesRepository,
 	}
 	return repositories, nil
 }
