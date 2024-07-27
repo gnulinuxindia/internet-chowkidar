@@ -2,6 +2,7 @@ package tracing
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/gnulinuxindia/internet-chowkidar/internal/config"
 	"go.opentelemetry.io/otel/attribute"
@@ -18,7 +19,7 @@ func ProvideTracerProvider(conf *config.Config) (*sdktrace.TracerProvider, error
 	if tp == nil {
 		ctx := context.Background()
 		// ─── Configure Tracer Provider ────────────────────────────────────────
-		exporter, err := otlptracehttp.New(ctx, otlptracehttp.WithEndpoint("localhost:4318"), otlptracehttp.WithInsecure())
+		exporter, err := otlptracehttp.New(ctx, otlptracehttp.WithEndpoint(fmt.Sprintf("%s:%s", conf.TracingHost, conf.TracingPort)), otlptracehttp.WithInsecure())
 		if err != nil {
 			return nil, err
 		}

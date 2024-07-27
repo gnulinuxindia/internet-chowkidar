@@ -25,6 +25,8 @@ type Config struct {
 	ServiceName     string `koanf:"SERVICE_NAME"`
 	ServiceVersion  string `koanf:"SERVICE_VERSION"`
 	TracingExporter string `koanf:"TRACING_EXPORTER"`
+	TracingHost     string `koanf:"TRACING_HOST"`
+	TracingPort     string `koanf:"TRACING_PORT"`
 
 	// general
 	Env    string `koanf:"ENV"`
@@ -50,6 +52,8 @@ var defaultConfigProvider = confmap.Provider(map[string]any{
 	"ENV":              "debug",
 	"PORT":             "9000",
 	"LISTEN":           "0.0.0.0",
+	"TRACING_HOST":     "localhost",
+	"TRACING_PORT":     "4318",
 }, "")
 
 func ProvideConfig() (*Config, error) {

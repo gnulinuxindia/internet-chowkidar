@@ -30,6 +30,8 @@ services:
       - PORT=8080
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/inetc
       - DATABASE_DRIVER=postgres
+      - TRACING_HOST=jaeger
+      - TRACING_PORT=4318
     depends_on:
       - db
 
