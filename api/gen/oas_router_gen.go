@@ -60,9 +60,9 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 			switch elem[0] {
-			case 'c': // Prefix: "counter"
+			case 'a': // Prefix: "abuse-reports"
 				origElem := elem
-				if l := len("counter"); len(elem) >= l && elem[0:l] == "counter" {
+				if l := len("abuse-reports"); len(elem) >= l && elem[0:l] == "abuse-reports" {
 					elem = elem[l:]
 				} else {
 					break
@@ -72,18 +72,20 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					// Leaf node.
 					switch r.Method {
 					case "GET":
-						s.handleGetCurrentCountRequest([0]string{}, elemIsEscaped, w, r)
+						s.handleListAbuseReportsRequest([0]string{}, elemIsEscaped, w, r)
+					case "POST":
+						s.handleCreateAbuseReportRequest([0]string{}, elemIsEscaped, w, r)
 					default:
-						s.notAllowed(w, r, "GET")
+						s.notAllowed(w, r, "GET,POST")
 					}
 
 					return
 				}
 
 				elem = origElem
-			case 'i': // Prefix: "increment"
+			case 'b': // Prefix: "blocks"
 				origElem := elem
-				if l := len("increment"); len(elem) >= l && elem[0:l] == "increment" {
+				if l := len("blocks"); len(elem) >= l && elem[0:l] == "blocks" {
 					elem = elem[l:]
 				} else {
 					break
@@ -92,13 +94,99 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				if len(elem) == 0 {
 					// Leaf node.
 					switch r.Method {
+					case "GET":
+						s.handleListBlocksRequest([0]string{}, elemIsEscaped, w, r)
 					case "POST":
-						s.handleIncrementCountRequest([0]string{}, elemIsEscaped, w, r)
+						s.handleCreateBlockRequest([0]string{}, elemIsEscaped, w, r)
 					default:
-						s.notAllowed(w, r, "POST")
+						s.notAllowed(w, r, "GET,POST")
 					}
 
 					return
+				}
+
+				elem = origElem
+			case 'i': // Prefix: "isps"
+				origElem := elem
+				if l := len("isps"); len(elem) >= l && elem[0:l] == "isps" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch r.Method {
+					case "GET":
+						s.handleListISPsRequest([0]string{}, elemIsEscaped, w, r)
+					case "POST":
+						s.handleCreateISPRequest([0]string{}, elemIsEscaped, w, r)
+					default:
+						s.notAllowed(w, r, "GET,POST")
+					}
+
+					return
+				}
+
+				elem = origElem
+			case 's': // Prefix: "site"
+				origElem := elem
+				if l := len("site"); len(elem) >= l && elem[0:l] == "site" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					break
+				}
+				switch elem[0] {
+				case '-': // Prefix: "-suggestions"
+					origElem := elem
+					if l := len("-suggestions"); len(elem) >= l && elem[0:l] == "-suggestions" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "GET":
+							s.handleListSiteSuggestionsRequest([0]string{}, elemIsEscaped, w, r)
+						case "POST":
+							s.handleCreateSiteSuggestionRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "GET,POST")
+						}
+
+						return
+					}
+
+					elem = origElem
+				case 's': // Prefix: "s"
+					origElem := elem
+					if l := len("s"); len(elem) >= l && elem[0:l] == "s" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "GET":
+							s.handleListSitesRequest([0]string{}, elemIsEscaped, w, r)
+						case "POST":
+							s.handleCreateSiteRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "GET,POST")
+						}
+
+						return
+					}
+
+					elem = origElem
 				}
 
 				elem = origElem
@@ -197,9 +285,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				break
 			}
 			switch elem[0] {
-			case 'c': // Prefix: "counter"
+			case 'a': // Prefix: "abuse-reports"
 				origElem := elem
-				if l := len("counter"); len(elem) >= l && elem[0:l] == "counter" {
+				if l := len("abuse-reports"); len(elem) >= l && elem[0:l] == "abuse-reports" {
 					elem = elem[l:]
 				} else {
 					break
@@ -208,11 +296,20 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				if len(elem) == 0 {
 					switch method {
 					case "GET":
-						// Leaf: GetCurrentCount
-						r.name = "GetCurrentCount"
-						r.summary = "Get current counter value"
-						r.operationID = "getCurrentCount"
-						r.pathPattern = "/counter"
+						// Leaf: ListAbuseReports
+						r.name = "ListAbuseReports"
+						r.summary = "List all abuse reports"
+						r.operationID = "listAbuseReports"
+						r.pathPattern = "/abuse-reports"
+						r.args = args
+						r.count = 0
+						return r, true
+					case "POST":
+						// Leaf: CreateAbuseReport
+						r.name = "CreateAbuseReport"
+						r.summary = "Create a new abuse report"
+						r.operationID = "createAbuseReport"
+						r.pathPattern = "/abuse-reports"
 						r.args = args
 						r.count = 0
 						return r, true
@@ -222,9 +319,9 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				}
 
 				elem = origElem
-			case 'i': // Prefix: "increment"
+			case 'b': // Prefix: "blocks"
 				origElem := elem
-				if l := len("increment"); len(elem) >= l && elem[0:l] == "increment" {
+				if l := len("blocks"); len(elem) >= l && elem[0:l] == "blocks" {
 					elem = elem[l:]
 				} else {
 					break
@@ -232,18 +329,144 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 
 				if len(elem) == 0 {
 					switch method {
+					case "GET":
+						// Leaf: ListBlocks
+						r.name = "ListBlocks"
+						r.summary = "List all blocks"
+						r.operationID = "listBlocks"
+						r.pathPattern = "/blocks"
+						r.args = args
+						r.count = 0
+						return r, true
 					case "POST":
-						// Leaf: IncrementCount
-						r.name = "IncrementCount"
-						r.summary = "Increment current counter value"
-						r.operationID = "incrementCount"
-						r.pathPattern = "/increment"
+						// Leaf: CreateBlock
+						r.name = "CreateBlock"
+						r.summary = "Create a new block"
+						r.operationID = "createBlock"
+						r.pathPattern = "/blocks"
 						r.args = args
 						r.count = 0
 						return r, true
 					default:
 						return
 					}
+				}
+
+				elem = origElem
+			case 'i': // Prefix: "isps"
+				origElem := elem
+				if l := len("isps"); len(elem) >= l && elem[0:l] == "isps" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					switch method {
+					case "GET":
+						// Leaf: ListISPs
+						r.name = "ListISPs"
+						r.summary = "List all ISPs"
+						r.operationID = "listISPs"
+						r.pathPattern = "/isps"
+						r.args = args
+						r.count = 0
+						return r, true
+					case "POST":
+						// Leaf: CreateISP
+						r.name = "CreateISP"
+						r.summary = "Create a new ISP"
+						r.operationID = "createISP"
+						r.pathPattern = "/isps"
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
+					}
+				}
+
+				elem = origElem
+			case 's': // Prefix: "site"
+				origElem := elem
+				if l := len("site"); len(elem) >= l && elem[0:l] == "site" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					break
+				}
+				switch elem[0] {
+				case '-': // Prefix: "-suggestions"
+					origElem := elem
+					if l := len("-suggestions"); len(elem) >= l && elem[0:l] == "-suggestions" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						switch method {
+						case "GET":
+							// Leaf: ListSiteSuggestions
+							r.name = "ListSiteSuggestions"
+							r.summary = "List all site suggestions"
+							r.operationID = "listSiteSuggestions"
+							r.pathPattern = "/site-suggestions"
+							r.args = args
+							r.count = 0
+							return r, true
+						case "POST":
+							// Leaf: CreateSiteSuggestion
+							r.name = "CreateSiteSuggestion"
+							r.summary = "Create a new site suggestion"
+							r.operationID = "createSiteSuggestion"
+							r.pathPattern = "/site-suggestions"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
+					}
+
+					elem = origElem
+				case 's': // Prefix: "s"
+					origElem := elem
+					if l := len("s"); len(elem) >= l && elem[0:l] == "s" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						switch method {
+						case "GET":
+							// Leaf: ListSites
+							r.name = "ListSites"
+							r.summary = "List all sites"
+							r.operationID = "listSites"
+							r.pathPattern = "/sites"
+							r.args = args
+							r.count = 0
+							return r, true
+						case "POST":
+							// Leaf: CreateSite
+							r.name = "CreateSite"
+							r.summary = "Create a new site"
+							r.operationID = "createSite"
+							r.pathPattern = "/sites"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
+					}
+
+					elem = origElem
 				}
 
 				elem = origElem

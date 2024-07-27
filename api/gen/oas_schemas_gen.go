@@ -2,70 +2,417 @@
 
 package genapi
 
-// Ref: #/components/schemas/counter
-type Counter struct {
-	// Ok.
-	Count float64 `json:"count"`
+import (
+	"time"
+
+	"github.com/go-faster/errors"
+)
+
+// Ref: #/components/schemas/AbuseReport
+type AbuseReport struct {
+	ID         OptInt               `json:"id"`
+	SiteID     OptInt               `json:"site_id"`
+	Reason     OptString            `json:"reason"`
+	Status     OptAbuseReportStatus `json:"status"`
+	ResolvedAt OptDateTime          `json:"resolved_at"`
+	CreatedAt  OptDateTime          `json:"created_at"`
+	UpdatedAt  OptDateTime          `json:"updated_at"`
 }
 
-// GetCount returns the value of Count.
-func (s *Counter) GetCount() float64 {
-	return s.Count
+// GetID returns the value of ID.
+func (s *AbuseReport) GetID() OptInt {
+	return s.ID
 }
 
-// SetCount sets the value of Count.
-func (s *Counter) SetCount(val float64) {
-	s.Count = val
+// GetSiteID returns the value of SiteID.
+func (s *AbuseReport) GetSiteID() OptInt {
+	return s.SiteID
 }
 
-// Ref: #/components/schemas/increment
-type Increment struct {
-	// An optional amount to increment by.
-	Amount OptInt `json:"amount"`
+// GetReason returns the value of Reason.
+func (s *AbuseReport) GetReason() OptString {
+	return s.Reason
 }
 
-// GetAmount returns the value of Amount.
-func (s *Increment) GetAmount() OptInt {
-	return s.Amount
+// GetStatus returns the value of Status.
+func (s *AbuseReport) GetStatus() OptAbuseReportStatus {
+	return s.Status
 }
 
-// SetAmount sets the value of Amount.
-func (s *Increment) SetAmount(val OptInt) {
-	s.Amount = val
+// GetResolvedAt returns the value of ResolvedAt.
+func (s *AbuseReport) GetResolvedAt() OptDateTime {
+	return s.ResolvedAt
 }
 
-// NewOptIncrement returns new OptIncrement with value set to v.
-func NewOptIncrement(v Increment) OptIncrement {
-	return OptIncrement{
+// GetCreatedAt returns the value of CreatedAt.
+func (s *AbuseReport) GetCreatedAt() OptDateTime {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *AbuseReport) GetUpdatedAt() OptDateTime {
+	return s.UpdatedAt
+}
+
+// SetID sets the value of ID.
+func (s *AbuseReport) SetID(val OptInt) {
+	s.ID = val
+}
+
+// SetSiteID sets the value of SiteID.
+func (s *AbuseReport) SetSiteID(val OptInt) {
+	s.SiteID = val
+}
+
+// SetReason sets the value of Reason.
+func (s *AbuseReport) SetReason(val OptString) {
+	s.Reason = val
+}
+
+// SetStatus sets the value of Status.
+func (s *AbuseReport) SetStatus(val OptAbuseReportStatus) {
+	s.Status = val
+}
+
+// SetResolvedAt sets the value of ResolvedAt.
+func (s *AbuseReport) SetResolvedAt(val OptDateTime) {
+	s.ResolvedAt = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *AbuseReport) SetCreatedAt(val OptDateTime) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *AbuseReport) SetUpdatedAt(val OptDateTime) {
+	s.UpdatedAt = val
+}
+
+// Ref: #/components/schemas/AbuseReportInput
+type AbuseReportInput struct {
+	SiteID int    `json:"site_id"`
+	Reason string `json:"reason"`
+}
+
+// GetSiteID returns the value of SiteID.
+func (s *AbuseReportInput) GetSiteID() int {
+	return s.SiteID
+}
+
+// GetReason returns the value of Reason.
+func (s *AbuseReportInput) GetReason() string {
+	return s.Reason
+}
+
+// SetSiteID sets the value of SiteID.
+func (s *AbuseReportInput) SetSiteID(val int) {
+	s.SiteID = val
+}
+
+// SetReason sets the value of Reason.
+func (s *AbuseReportInput) SetReason(val string) {
+	s.Reason = val
+}
+
+type AbuseReportStatus string
+
+const (
+	AbuseReportStatusPending  AbuseReportStatus = "pending"
+	AbuseReportStatusResolved AbuseReportStatus = "resolved"
+)
+
+// AllValues returns all AbuseReportStatus values.
+func (AbuseReportStatus) AllValues() []AbuseReportStatus {
+	return []AbuseReportStatus{
+		AbuseReportStatusPending,
+		AbuseReportStatusResolved,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s AbuseReportStatus) MarshalText() ([]byte, error) {
+	switch s {
+	case AbuseReportStatusPending:
+		return []byte(s), nil
+	case AbuseReportStatusResolved:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *AbuseReportStatus) UnmarshalText(data []byte) error {
+	switch AbuseReportStatus(data) {
+	case AbuseReportStatusPending:
+		*s = AbuseReportStatusPending
+		return nil
+	case AbuseReportStatusResolved:
+		*s = AbuseReportStatusResolved
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
+// Ref: #/components/schemas/Block
+type Block struct {
+	ID             OptInt      `json:"id"`
+	SiteID         OptInt      `json:"site_id"`
+	IspID          OptInt      `json:"isp_id"`
+	LastReportedAt OptDateTime `json:"last_reported_at"`
+	BlockReports   OptInt      `json:"block_reports"`
+	UnblockReports OptInt      `json:"unblock_reports"`
+	CreatedAt      OptDateTime `json:"created_at"`
+	UpdatedAt      OptDateTime `json:"updated_at"`
+}
+
+// GetID returns the value of ID.
+func (s *Block) GetID() OptInt {
+	return s.ID
+}
+
+// GetSiteID returns the value of SiteID.
+func (s *Block) GetSiteID() OptInt {
+	return s.SiteID
+}
+
+// GetIspID returns the value of IspID.
+func (s *Block) GetIspID() OptInt {
+	return s.IspID
+}
+
+// GetLastReportedAt returns the value of LastReportedAt.
+func (s *Block) GetLastReportedAt() OptDateTime {
+	return s.LastReportedAt
+}
+
+// GetBlockReports returns the value of BlockReports.
+func (s *Block) GetBlockReports() OptInt {
+	return s.BlockReports
+}
+
+// GetUnblockReports returns the value of UnblockReports.
+func (s *Block) GetUnblockReports() OptInt {
+	return s.UnblockReports
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *Block) GetCreatedAt() OptDateTime {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *Block) GetUpdatedAt() OptDateTime {
+	return s.UpdatedAt
+}
+
+// SetID sets the value of ID.
+func (s *Block) SetID(val OptInt) {
+	s.ID = val
+}
+
+// SetSiteID sets the value of SiteID.
+func (s *Block) SetSiteID(val OptInt) {
+	s.SiteID = val
+}
+
+// SetIspID sets the value of IspID.
+func (s *Block) SetIspID(val OptInt) {
+	s.IspID = val
+}
+
+// SetLastReportedAt sets the value of LastReportedAt.
+func (s *Block) SetLastReportedAt(val OptDateTime) {
+	s.LastReportedAt = val
+}
+
+// SetBlockReports sets the value of BlockReports.
+func (s *Block) SetBlockReports(val OptInt) {
+	s.BlockReports = val
+}
+
+// SetUnblockReports sets the value of UnblockReports.
+func (s *Block) SetUnblockReports(val OptInt) {
+	s.UnblockReports = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *Block) SetCreatedAt(val OptDateTime) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *Block) SetUpdatedAt(val OptDateTime) {
+	s.UpdatedAt = val
+}
+
+// Ref: #/components/schemas/BlockInput
+type BlockInput struct {
+	SiteID int `json:"site_id"`
+	IspID  int `json:"isp_id"`
+}
+
+// GetSiteID returns the value of SiteID.
+func (s *BlockInput) GetSiteID() int {
+	return s.SiteID
+}
+
+// GetIspID returns the value of IspID.
+func (s *BlockInput) GetIspID() int {
+	return s.IspID
+}
+
+// SetSiteID sets the value of SiteID.
+func (s *BlockInput) SetSiteID(val int) {
+	s.SiteID = val
+}
+
+// SetIspID sets the value of IspID.
+func (s *BlockInput) SetIspID(val int) {
+	s.IspID = val
+}
+
+// Ref: #/components/schemas/ISP
+type ISP struct {
+	ID        OptInt      `json:"id"`
+	Latitude  OptFloat32  `json:"latitude"`
+	Longitude OptFloat32  `json:"longitude"`
+	Name      OptString   `json:"name"`
+	CreatedAt OptDateTime `json:"created_at"`
+	UpdatedAt OptDateTime `json:"updated_at"`
+}
+
+// GetID returns the value of ID.
+func (s *ISP) GetID() OptInt {
+	return s.ID
+}
+
+// GetLatitude returns the value of Latitude.
+func (s *ISP) GetLatitude() OptFloat32 {
+	return s.Latitude
+}
+
+// GetLongitude returns the value of Longitude.
+func (s *ISP) GetLongitude() OptFloat32 {
+	return s.Longitude
+}
+
+// GetName returns the value of Name.
+func (s *ISP) GetName() OptString {
+	return s.Name
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *ISP) GetCreatedAt() OptDateTime {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *ISP) GetUpdatedAt() OptDateTime {
+	return s.UpdatedAt
+}
+
+// SetID sets the value of ID.
+func (s *ISP) SetID(val OptInt) {
+	s.ID = val
+}
+
+// SetLatitude sets the value of Latitude.
+func (s *ISP) SetLatitude(val OptFloat32) {
+	s.Latitude = val
+}
+
+// SetLongitude sets the value of Longitude.
+func (s *ISP) SetLongitude(val OptFloat32) {
+	s.Longitude = val
+}
+
+// SetName sets the value of Name.
+func (s *ISP) SetName(val OptString) {
+	s.Name = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *ISP) SetCreatedAt(val OptDateTime) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *ISP) SetUpdatedAt(val OptDateTime) {
+	s.UpdatedAt = val
+}
+
+// Ref: #/components/schemas/ISPInput
+type ISPInput struct {
+	Latitude  float32 `json:"latitude"`
+	Longitude float32 `json:"longitude"`
+	Name      string  `json:"name"`
+}
+
+// GetLatitude returns the value of Latitude.
+func (s *ISPInput) GetLatitude() float32 {
+	return s.Latitude
+}
+
+// GetLongitude returns the value of Longitude.
+func (s *ISPInput) GetLongitude() float32 {
+	return s.Longitude
+}
+
+// GetName returns the value of Name.
+func (s *ISPInput) GetName() string {
+	return s.Name
+}
+
+// SetLatitude sets the value of Latitude.
+func (s *ISPInput) SetLatitude(val float32) {
+	s.Latitude = val
+}
+
+// SetLongitude sets the value of Longitude.
+func (s *ISPInput) SetLongitude(val float32) {
+	s.Longitude = val
+}
+
+// SetName sets the value of Name.
+func (s *ISPInput) SetName(val string) {
+	s.Name = val
+}
+
+// NewOptAbuseReportStatus returns new OptAbuseReportStatus with value set to v.
+func NewOptAbuseReportStatus(v AbuseReportStatus) OptAbuseReportStatus {
+	return OptAbuseReportStatus{
 		Value: v,
 		Set:   true,
 	}
 }
 
-// OptIncrement is optional Increment.
-type OptIncrement struct {
-	Value Increment
+// OptAbuseReportStatus is optional AbuseReportStatus.
+type OptAbuseReportStatus struct {
+	Value AbuseReportStatus
 	Set   bool
 }
 
-// IsSet returns true if OptIncrement was set.
-func (o OptIncrement) IsSet() bool { return o.Set }
+// IsSet returns true if OptAbuseReportStatus was set.
+func (o OptAbuseReportStatus) IsSet() bool { return o.Set }
 
 // Reset unsets value.
-func (o *OptIncrement) Reset() {
-	var v Increment
+func (o *OptAbuseReportStatus) Reset() {
+	var v AbuseReportStatus
 	o.Value = v
 	o.Set = false
 }
 
 // SetTo sets value to v.
-func (o *OptIncrement) SetTo(v Increment) {
+func (o *OptAbuseReportStatus) SetTo(v AbuseReportStatus) {
 	o.Set = true
 	o.Value = v
 }
 
 // Get returns value and boolean that denotes whether value was set.
-func (o OptIncrement) Get() (v Increment, ok bool) {
+func (o OptAbuseReportStatus) Get() (v AbuseReportStatus, ok bool) {
 	if !o.Set {
 		return v, false
 	}
@@ -73,7 +420,99 @@ func (o OptIncrement) Get() (v Increment, ok bool) {
 }
 
 // Or returns value if set, or given parameter if does not.
-func (o OptIncrement) Or(d Increment) Increment {
+func (o OptAbuseReportStatus) Or(d AbuseReportStatus) AbuseReportStatus {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptDateTime returns new OptDateTime with value set to v.
+func NewOptDateTime(v time.Time) OptDateTime {
+	return OptDateTime{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptDateTime is optional time.Time.
+type OptDateTime struct {
+	Value time.Time
+	Set   bool
+}
+
+// IsSet returns true if OptDateTime was set.
+func (o OptDateTime) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptDateTime) Reset() {
+	var v time.Time
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptDateTime) SetTo(v time.Time) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptDateTime) Get() (v time.Time, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptDateTime) Or(d time.Time) time.Time {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptFloat32 returns new OptFloat32 with value set to v.
+func NewOptFloat32(v float32) OptFloat32 {
+	return OptFloat32{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptFloat32 is optional float32.
+type OptFloat32 struct {
+	Value float32
+	Set   bool
+}
+
+// IsSet returns true if OptFloat32 was set.
+func (o OptFloat32) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptFloat32) Reset() {
+	var v float32
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptFloat32) SetTo(v float32) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptFloat32) Get() (v float32, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptFloat32) Or(d float32) float32 {
 	if v, ok := o.Get(); ok {
 		return v
 	}
@@ -124,4 +563,307 @@ func (o OptInt) Or(d int) int {
 		return v
 	}
 	return d
+}
+
+// NewOptSiteSuggestionStatus returns new OptSiteSuggestionStatus with value set to v.
+func NewOptSiteSuggestionStatus(v SiteSuggestionStatus) OptSiteSuggestionStatus {
+	return OptSiteSuggestionStatus{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptSiteSuggestionStatus is optional SiteSuggestionStatus.
+type OptSiteSuggestionStatus struct {
+	Value SiteSuggestionStatus
+	Set   bool
+}
+
+// IsSet returns true if OptSiteSuggestionStatus was set.
+func (o OptSiteSuggestionStatus) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptSiteSuggestionStatus) Reset() {
+	var v SiteSuggestionStatus
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptSiteSuggestionStatus) SetTo(v SiteSuggestionStatus) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptSiteSuggestionStatus) Get() (v SiteSuggestionStatus, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptSiteSuggestionStatus) Or(d SiteSuggestionStatus) SiteSuggestionStatus {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptString returns new OptString with value set to v.
+func NewOptString(v string) OptString {
+	return OptString{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptString is optional string.
+type OptString struct {
+	Value string
+	Set   bool
+}
+
+// IsSet returns true if OptString was set.
+func (o OptString) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptString) Reset() {
+	var v string
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptString) SetTo(v string) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptString) Get() (v string, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptString) Or(d string) string {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// Ref: #/components/schemas/Site
+type Site struct {
+	ID        OptInt      `json:"id"`
+	Domain    OptString   `json:"domain"`
+	CreatedAt OptDateTime `json:"created_at"`
+	UpdatedAt OptDateTime `json:"updated_at"`
+}
+
+// GetID returns the value of ID.
+func (s *Site) GetID() OptInt {
+	return s.ID
+}
+
+// GetDomain returns the value of Domain.
+func (s *Site) GetDomain() OptString {
+	return s.Domain
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *Site) GetCreatedAt() OptDateTime {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *Site) GetUpdatedAt() OptDateTime {
+	return s.UpdatedAt
+}
+
+// SetID sets the value of ID.
+func (s *Site) SetID(val OptInt) {
+	s.ID = val
+}
+
+// SetDomain sets the value of Domain.
+func (s *Site) SetDomain(val OptString) {
+	s.Domain = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *Site) SetCreatedAt(val OptDateTime) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *Site) SetUpdatedAt(val OptDateTime) {
+	s.UpdatedAt = val
+}
+
+// Ref: #/components/schemas/SiteInput
+type SiteInput struct {
+	Domain string `json:"domain"`
+}
+
+// GetDomain returns the value of Domain.
+func (s *SiteInput) GetDomain() string {
+	return s.Domain
+}
+
+// SetDomain sets the value of Domain.
+func (s *SiteInput) SetDomain(val string) {
+	s.Domain = val
+}
+
+// Ref: #/components/schemas/SiteSuggestion
+type SiteSuggestion struct {
+	ID         OptInt                  `json:"id"`
+	SiteID     OptInt                  `json:"site_id"`
+	Reason     OptString               `json:"reason"`
+	Status     OptSiteSuggestionStatus `json:"status"`
+	ResolvedAt OptDateTime             `json:"resolved_at"`
+	CreatedAt  OptDateTime             `json:"created_at"`
+	UpdatedAt  OptDateTime             `json:"updated_at"`
+}
+
+// GetID returns the value of ID.
+func (s *SiteSuggestion) GetID() OptInt {
+	return s.ID
+}
+
+// GetSiteID returns the value of SiteID.
+func (s *SiteSuggestion) GetSiteID() OptInt {
+	return s.SiteID
+}
+
+// GetReason returns the value of Reason.
+func (s *SiteSuggestion) GetReason() OptString {
+	return s.Reason
+}
+
+// GetStatus returns the value of Status.
+func (s *SiteSuggestion) GetStatus() OptSiteSuggestionStatus {
+	return s.Status
+}
+
+// GetResolvedAt returns the value of ResolvedAt.
+func (s *SiteSuggestion) GetResolvedAt() OptDateTime {
+	return s.ResolvedAt
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *SiteSuggestion) GetCreatedAt() OptDateTime {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *SiteSuggestion) GetUpdatedAt() OptDateTime {
+	return s.UpdatedAt
+}
+
+// SetID sets the value of ID.
+func (s *SiteSuggestion) SetID(val OptInt) {
+	s.ID = val
+}
+
+// SetSiteID sets the value of SiteID.
+func (s *SiteSuggestion) SetSiteID(val OptInt) {
+	s.SiteID = val
+}
+
+// SetReason sets the value of Reason.
+func (s *SiteSuggestion) SetReason(val OptString) {
+	s.Reason = val
+}
+
+// SetStatus sets the value of Status.
+func (s *SiteSuggestion) SetStatus(val OptSiteSuggestionStatus) {
+	s.Status = val
+}
+
+// SetResolvedAt sets the value of ResolvedAt.
+func (s *SiteSuggestion) SetResolvedAt(val OptDateTime) {
+	s.ResolvedAt = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *SiteSuggestion) SetCreatedAt(val OptDateTime) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *SiteSuggestion) SetUpdatedAt(val OptDateTime) {
+	s.UpdatedAt = val
+}
+
+// Ref: #/components/schemas/SiteSuggestionInput
+type SiteSuggestionInput struct {
+	SiteID int    `json:"site_id"`
+	Reason string `json:"reason"`
+}
+
+// GetSiteID returns the value of SiteID.
+func (s *SiteSuggestionInput) GetSiteID() int {
+	return s.SiteID
+}
+
+// GetReason returns the value of Reason.
+func (s *SiteSuggestionInput) GetReason() string {
+	return s.Reason
+}
+
+// SetSiteID sets the value of SiteID.
+func (s *SiteSuggestionInput) SetSiteID(val int) {
+	s.SiteID = val
+}
+
+// SetReason sets the value of Reason.
+func (s *SiteSuggestionInput) SetReason(val string) {
+	s.Reason = val
+}
+
+type SiteSuggestionStatus string
+
+const (
+	SiteSuggestionStatusPending  SiteSuggestionStatus = "pending"
+	SiteSuggestionStatusResolved SiteSuggestionStatus = "resolved"
+)
+
+// AllValues returns all SiteSuggestionStatus values.
+func (SiteSuggestionStatus) AllValues() []SiteSuggestionStatus {
+	return []SiteSuggestionStatus{
+		SiteSuggestionStatusPending,
+		SiteSuggestionStatusResolved,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s SiteSuggestionStatus) MarshalText() ([]byte, error) {
+	switch s {
+	case SiteSuggestionStatusPending:
+		return []byte(s), nil
+	case SiteSuggestionStatusResolved:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *SiteSuggestionStatus) UnmarshalText(data []byte) error {
+	switch SiteSuggestionStatus(data) {
+	case SiteSuggestionStatusPending:
+		*s = SiteSuggestionStatusPending
+		return nil
+	case SiteSuggestionStatusResolved:
+		*s = SiteSuggestionStatusResolved
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }

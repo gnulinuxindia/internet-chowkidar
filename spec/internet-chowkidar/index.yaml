@@ -1,0 +1,316 @@
+openapi: 3.0.0
+info:
+  title: Site Blocking API
+  version: 1.0.0
+  description: API for managing site blocking, ISPs, abuse reports, and site suggestions
+
+paths:
+  /sites:
+    get:
+      summary: List all sites
+      operationId: listSites
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:    
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Site'
+    post:
+      operationId: createSite
+      summary: Create a new site
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SiteInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Site'
+
+  /isps:
+    get:
+      summary: List all ISPs
+      operationId: listISPs
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ISP'
+    post:
+      summary: Create a new ISP
+      operationId: createISP
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ISPInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ISP'
+
+  /blocks:
+    get:
+      summary: List all blocks
+      operationId: listBlocks
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Block'
+    post:
+      summary: Create a new block
+      operationId: createBlock
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlockInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Block'
+
+  /abuse-reports:
+    get:
+      summary: List all abuse reports
+      operationId: listAbuseReports
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AbuseReport'
+    post:
+      summary: Create a new abuse report
+      operationId: createAbuseReport
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AbuseReportInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AbuseReport'
+
+  /site-suggestions:
+    get:
+      summary: List all site suggestions
+      operationId: listSiteSuggestions
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SiteSuggestion'
+    post:
+      summary: Create a new site suggestion
+      operationId: createSiteSuggestion
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SiteSuggestionInput'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteSuggestion'
+
+components:
+  schemas:
+    Site:
+      type: object
+      properties:
+        id:
+          type: integer
+        domain:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    SiteInput:
+      type: object
+      required:
+        - domain
+      properties:
+        domain:
+          type: string
+
+    ISP:
+      type: object
+      properties:
+        id:
+          type: integer
+        latitude:
+          type: number
+          format: float
+        longitude:
+          type: number
+          format: float
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    ISPInput:
+      type: object
+      required:
+        - latitude
+        - longitude
+        - name
+      properties:
+        latitude:
+          type: number
+          format: float
+        longitude:
+          type: number
+          format: float
+        name:
+          type: string
+
+    Block:
+      type: object
+      properties:
+        id:
+          type: integer
+        site_id:
+          type: integer
+        isp_id:
+          type: integer
+        last_reported_at:
+          type: string
+          format: date-time
+        block_reports:
+          type: integer
+        unblock_reports:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    BlockInput:
+      type: object
+      required:
+        - site_id
+        - isp_id
+      properties:
+        site_id:
+          type: integer
+        isp_id:
+          type: integer
+
+    AbuseReport:
+      type: object
+      properties:
+        id:
+          type: integer
+        site_id:
+          type: integer
+        reason:
+          type: string
+        status:
+          type: string
+          enum: [pending, resolved]
+        resolved_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    AbuseReportInput:
+      type: object
+      required:
+        - site_id
+        - reason
+      properties:
+        site_id:
+          type: integer
+        reason:
+          type: string
+
+    SiteSuggestion:
+      type: object
+      properties:
+        id:
+          type: integer
+        site_id:
+          type: integer
+        reason:
+          type: string
+        status:
+          type: string
+          enum: [pending, resolved]
+        resolved_at:
+          type: string
+          format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    SiteSuggestionInput:
+      type: object
+      required:
+        - site_id
+        - reason
+      properties:
+        site_id:
+          type: integer
+        reason:
+          type: string

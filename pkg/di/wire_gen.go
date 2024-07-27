@@ -26,6 +26,7 @@ import (
 
 // handlers
 func InjectHandlers() (*api.Handlers, error) {
+	blocksHandler := handler.ProvideBlocksHandler()
 	configConfig, err := config.ProvideConfig()
 	if err != nil {
 		return nil, err
@@ -38,13 +39,19 @@ func InjectHandlers() (*api.Handlers, error) {
 	emailService := service.ProvideEmailService()
 	counterService := service.ProvideCounterService(counterRepository, emailService)
 	counterHandler := handler.ProvideCounterHandler(counterService)
+	ispHandler := handler.ProvideIspHandler()
+	sitesHandler := handler.ProvideSitesHandler()
 	handlers := &api.Handlers{
+		BlocksHandler:  blocksHandler,
 		CounterHandler: counterHandler,
+		IspHandler:     ispHandler,
+		SitesHandler:   sitesHandler,
 	}
 	return handlers, nil
 }
 
 func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
+	blocksHandler := handler.ProvideBlocksHandler()
 	configConfig, err := config.ProvideConfig()
 	if err != nil {
 		return nil, err
@@ -57,8 +64,13 @@ func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
 	emailService := di.ProvideMockEmailService(ctrl)
 	counterService := service.ProvideCounterService(counterRepository, emailService)
 	counterHandler := handler.ProvideCounterHandler(counterService)
+	ispHandler := handler.ProvideIspHandler()
+	sitesHandler := handler.ProvideSitesHandler()
 	handlers := &api.Handlers{
+		BlocksHandler:  blocksHandler,
 		CounterHandler: counterHandler,
+		IspHandler:     ispHandler,
+		SitesHandler:   sitesHandler,
 	}
 	return handlers, nil
 }

@@ -22,18 +22,66 @@ import (
 
 // Invoker invokes operations described by OpenAPI v3 specification.
 type Invoker interface {
-	// GetCurrentCount invokes getCurrentCount operation.
+	// CreateAbuseReport invokes createAbuseReport operation.
 	//
-	// Get current counter value.
+	// Create a new abuse report.
 	//
-	// GET /counter
-	GetCurrentCount(ctx context.Context) (*Counter, error)
-	// IncrementCount invokes incrementCount operation.
+	// POST /abuse-reports
+	CreateAbuseReport(ctx context.Context, request *AbuseReportInput) (*AbuseReport, error)
+	// CreateBlock invokes createBlock operation.
 	//
-	// Increment current counter value.
+	// Create a new block.
 	//
-	// POST /increment
-	IncrementCount(ctx context.Context, request OptIncrement) (*Counter, error)
+	// POST /blocks
+	CreateBlock(ctx context.Context, request *BlockInput) (*Block, error)
+	// CreateISP invokes createISP operation.
+	//
+	// Create a new ISP.
+	//
+	// POST /isps
+	CreateISP(ctx context.Context, request *ISPInput) (*ISP, error)
+	// CreateSite invokes createSite operation.
+	//
+	// Create a new site.
+	//
+	// POST /sites
+	CreateSite(ctx context.Context, request *SiteInput) (*Site, error)
+	// CreateSiteSuggestion invokes createSiteSuggestion operation.
+	//
+	// Create a new site suggestion.
+	//
+	// POST /site-suggestions
+	CreateSiteSuggestion(ctx context.Context, request *SiteSuggestionInput) (*SiteSuggestion, error)
+	// ListAbuseReports invokes listAbuseReports operation.
+	//
+	// List all abuse reports.
+	//
+	// GET /abuse-reports
+	ListAbuseReports(ctx context.Context) ([]AbuseReport, error)
+	// ListBlocks invokes listBlocks operation.
+	//
+	// List all blocks.
+	//
+	// GET /blocks
+	ListBlocks(ctx context.Context) ([]Block, error)
+	// ListISPs invokes listISPs operation.
+	//
+	// List all ISPs.
+	//
+	// GET /isps
+	ListISPs(ctx context.Context) ([]ISP, error)
+	// ListSiteSuggestions invokes listSiteSuggestions operation.
+	//
+	// List all site suggestions.
+	//
+	// GET /site-suggestions
+	ListSiteSuggestions(ctx context.Context) ([]SiteSuggestion, error)
+	// ListSites invokes listSites operation.
+	//
+	// List all sites.
+	//
+	// GET /sites
+	ListSites(ctx context.Context) ([]Site, error)
 }
 
 // Client implements OAS client.
@@ -84,21 +132,21 @@ func (c *Client) requestURL(ctx context.Context) *url.URL {
 	return u
 }
 
-// GetCurrentCount invokes getCurrentCount operation.
+// CreateAbuseReport invokes createAbuseReport operation.
 //
-// Get current counter value.
+// Create a new abuse report.
 //
-// GET /counter
-func (c *Client) GetCurrentCount(ctx context.Context) (*Counter, error) {
-	res, err := c.sendGetCurrentCount(ctx)
+// POST /abuse-reports
+func (c *Client) CreateAbuseReport(ctx context.Context, request *AbuseReportInput) (*AbuseReport, error) {
+	res, err := c.sendCreateAbuseReport(ctx, request)
 	return res, err
 }
 
-func (c *Client) sendGetCurrentCount(ctx context.Context) (res *Counter, err error) {
+func (c *Client) sendCreateAbuseReport(ctx context.Context, request *AbuseReportInput) (res *AbuseReport, err error) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("getCurrentCount"),
-		semconv.HTTPMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/counter"),
+		otelogen.OperationID("createAbuseReport"),
+		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/abuse-reports"),
 	}
 
 	// Run stopwatch.
@@ -113,7 +161,7 @@ func (c *Client) sendGetCurrentCount(ctx context.Context) (res *Counter, err err
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "GetCurrentCount",
+	ctx, span := c.cfg.Tracer.Start(ctx, "CreateAbuseReport",
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -131,7 +179,382 @@ func (c *Client) sendGetCurrentCount(ctx context.Context) (res *Counter, err err
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [1]string
-	pathParts[0] = "/counter"
+	pathParts[0] = "/abuse-reports"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "POST", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+	if err := encodeCreateAbuseReportRequest(request, r); err != nil {
+		return res, errors.Wrap(err, "encode request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeCreateAbuseReportResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// CreateBlock invokes createBlock operation.
+//
+// Create a new block.
+//
+// POST /blocks
+func (c *Client) CreateBlock(ctx context.Context, request *BlockInput) (*Block, error) {
+	res, err := c.sendCreateBlock(ctx, request)
+	return res, err
+}
+
+func (c *Client) sendCreateBlock(ctx context.Context, request *BlockInput) (res *Block, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("createBlock"),
+		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/blocks"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "CreateBlock",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/blocks"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "POST", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+	if err := encodeCreateBlockRequest(request, r); err != nil {
+		return res, errors.Wrap(err, "encode request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeCreateBlockResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// CreateISP invokes createISP operation.
+//
+// Create a new ISP.
+//
+// POST /isps
+func (c *Client) CreateISP(ctx context.Context, request *ISPInput) (*ISP, error) {
+	res, err := c.sendCreateISP(ctx, request)
+	return res, err
+}
+
+func (c *Client) sendCreateISP(ctx context.Context, request *ISPInput) (res *ISP, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("createISP"),
+		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/isps"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "CreateISP",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/isps"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "POST", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+	if err := encodeCreateISPRequest(request, r); err != nil {
+		return res, errors.Wrap(err, "encode request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeCreateISPResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// CreateSite invokes createSite operation.
+//
+// Create a new site.
+//
+// POST /sites
+func (c *Client) CreateSite(ctx context.Context, request *SiteInput) (*Site, error) {
+	res, err := c.sendCreateSite(ctx, request)
+	return res, err
+}
+
+func (c *Client) sendCreateSite(ctx context.Context, request *SiteInput) (res *Site, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("createSite"),
+		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/sites"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "CreateSite",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/sites"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "POST", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+	if err := encodeCreateSiteRequest(request, r); err != nil {
+		return res, errors.Wrap(err, "encode request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeCreateSiteResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// CreateSiteSuggestion invokes createSiteSuggestion operation.
+//
+// Create a new site suggestion.
+//
+// POST /site-suggestions
+func (c *Client) CreateSiteSuggestion(ctx context.Context, request *SiteSuggestionInput) (*SiteSuggestion, error) {
+	res, err := c.sendCreateSiteSuggestion(ctx, request)
+	return res, err
+}
+
+func (c *Client) sendCreateSiteSuggestion(ctx context.Context, request *SiteSuggestionInput) (res *SiteSuggestion, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("createSiteSuggestion"),
+		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/site-suggestions"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "CreateSiteSuggestion",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/site-suggestions"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "POST", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+	if err := encodeCreateSiteSuggestionRequest(request, r); err != nil {
+		return res, errors.Wrap(err, "encode request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeCreateSiteSuggestionResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// ListAbuseReports invokes listAbuseReports operation.
+//
+// List all abuse reports.
+//
+// GET /abuse-reports
+func (c *Client) ListAbuseReports(ctx context.Context) ([]AbuseReport, error) {
+	res, err := c.sendListAbuseReports(ctx)
+	return res, err
+}
+
+func (c *Client) sendListAbuseReports(ctx context.Context) (res []AbuseReport, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("listAbuseReports"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/abuse-reports"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "ListAbuseReports",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/abuse-reports"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeRequest"
@@ -148,7 +571,7 @@ func (c *Client) sendGetCurrentCount(ctx context.Context) (res *Counter, err err
 	defer resp.Body.Close()
 
 	stage = "DecodeResponse"
-	result, err := decodeGetCurrentCountResponse(resp)
+	result, err := decodeListAbuseReportsResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
@@ -156,21 +579,21 @@ func (c *Client) sendGetCurrentCount(ctx context.Context) (res *Counter, err err
 	return result, nil
 }
 
-// IncrementCount invokes incrementCount operation.
+// ListBlocks invokes listBlocks operation.
 //
-// Increment current counter value.
+// List all blocks.
 //
-// POST /increment
-func (c *Client) IncrementCount(ctx context.Context, request OptIncrement) (*Counter, error) {
-	res, err := c.sendIncrementCount(ctx, request)
+// GET /blocks
+func (c *Client) ListBlocks(ctx context.Context) ([]Block, error) {
+	res, err := c.sendListBlocks(ctx)
 	return res, err
 }
 
-func (c *Client) sendIncrementCount(ctx context.Context, request OptIncrement) (res *Counter, err error) {
+func (c *Client) sendListBlocks(ctx context.Context) (res []Block, err error) {
 	otelAttrs := []attribute.KeyValue{
-		otelogen.OperationID("incrementCount"),
-		semconv.HTTPMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/increment"),
+		otelogen.OperationID("listBlocks"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/blocks"),
 	}
 
 	// Run stopwatch.
@@ -185,7 +608,7 @@ func (c *Client) sendIncrementCount(ctx context.Context, request OptIncrement) (
 	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
 
 	// Start a span for this request.
-	ctx, span := c.cfg.Tracer.Start(ctx, "IncrementCount",
+	ctx, span := c.cfg.Tracer.Start(ctx, "ListBlocks",
 		trace.WithAttributes(otelAttrs...),
 		clientSpanKind,
 	)
@@ -203,16 +626,13 @@ func (c *Client) sendIncrementCount(ctx context.Context, request OptIncrement) (
 	stage = "BuildURL"
 	u := uri.Clone(c.requestURL(ctx))
 	var pathParts [1]string
-	pathParts[0] = "/increment"
+	pathParts[0] = "/blocks"
 	uri.AddPathParts(u, pathParts[:]...)
 
 	stage = "EncodeRequest"
-	r, err := ht.NewRequest(ctx, "POST", u)
+	r, err := ht.NewRequest(ctx, "GET", u)
 	if err != nil {
 		return res, errors.Wrap(err, "create request")
-	}
-	if err := encodeIncrementCountRequest(request, r); err != nil {
-		return res, errors.Wrap(err, "encode request")
 	}
 
 	stage = "SendRequest"
@@ -223,7 +643,223 @@ func (c *Client) sendIncrementCount(ctx context.Context, request OptIncrement) (
 	defer resp.Body.Close()
 
 	stage = "DecodeResponse"
-	result, err := decodeIncrementCountResponse(resp)
+	result, err := decodeListBlocksResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// ListISPs invokes listISPs operation.
+//
+// List all ISPs.
+//
+// GET /isps
+func (c *Client) ListISPs(ctx context.Context) ([]ISP, error) {
+	res, err := c.sendListISPs(ctx)
+	return res, err
+}
+
+func (c *Client) sendListISPs(ctx context.Context) (res []ISP, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("listISPs"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/isps"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "ListISPs",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/isps"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeListISPsResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// ListSiteSuggestions invokes listSiteSuggestions operation.
+//
+// List all site suggestions.
+//
+// GET /site-suggestions
+func (c *Client) ListSiteSuggestions(ctx context.Context) ([]SiteSuggestion, error) {
+	res, err := c.sendListSiteSuggestions(ctx)
+	return res, err
+}
+
+func (c *Client) sendListSiteSuggestions(ctx context.Context) (res []SiteSuggestion, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("listSiteSuggestions"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/site-suggestions"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "ListSiteSuggestions",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/site-suggestions"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeListSiteSuggestionsResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// ListSites invokes listSites operation.
+//
+// List all sites.
+//
+// GET /sites
+func (c *Client) ListSites(ctx context.Context) ([]Site, error) {
+	res, err := c.sendListSites(ctx)
+	return res, err
+}
+
+func (c *Client) sendListSites(ctx context.Context) (res []Site, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("listSites"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/sites"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "ListSites",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/sites"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeListSitesResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
