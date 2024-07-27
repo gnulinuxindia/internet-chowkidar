@@ -67,6 +67,15 @@ func (UnimplementedHandler) CreateSiteSuggestion(ctx context.Context, req *SiteS
 	return r, ht.ErrNotImplemented
 }
 
+// HealthCheck implements healthCheck operation.
+//
+// Health check.
+//
+// GET /health
+func (UnimplementedHandler) HealthCheck(ctx context.Context) (r string, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // ListAbuseReports implements listAbuseReports operation.
 //
 // List all abuse reports.

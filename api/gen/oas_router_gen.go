@@ -129,6 +129,27 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 
 				elem = origElem
+			case 'h': // Prefix: "health"
+				origElem := elem
+				if l := len("health"); len(elem) >= l && elem[0:l] == "health" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch r.Method {
+					case "GET":
+						s.handleHealthCheckRequest([0]string{}, elemIsEscaped, w, r)
+					default:
+						s.notAllowed(w, r, "GET")
+					}
+
+					return
+				}
+
+				elem = origElem
 			case 'i': // Prefix: "isps"
 				origElem := elem
 				if l := len("isps"); len(elem) >= l && elem[0:l] == "isps" {
@@ -387,6 +408,31 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.summary = "Create a new category"
 						r.operationID = "createCategory"
 						r.pathPattern = "/categories"
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
+					}
+				}
+
+				elem = origElem
+			case 'h': // Prefix: "health"
+				origElem := elem
+				if l := len("health"); len(elem) >= l && elem[0:l] == "health" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					switch method {
+					case "GET":
+						// Leaf: HealthCheck
+						r.name = "HealthCheck"
+						r.summary = "Health check"
+						r.operationID = "healthCheck"
+						r.pathPattern = "/health"
 						r.args = args
 						r.count = 0
 						return r, true

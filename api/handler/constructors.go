@@ -11,6 +11,10 @@ func ProvideCategoryHandler() CategoryHandler {
 	return &categoryHandlerImpl{}
 }
 
+func ProvideHealthHandler() HealthHandler {
+	return &healthHandlerImpl{}
+}
+
 func ProvideIspHandler(
 	ispService service.IspService,
 ) IspHandler {

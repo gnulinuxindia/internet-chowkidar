@@ -28,6 +28,7 @@ import (
 func InjectHandlers() (*api.Handlers, error) {
 	blocksHandler := handler.ProvideBlocksHandler()
 	categoryHandler := handler.ProvideCategoryHandler()
+	healthHandler := handler.ProvideHealthHandler()
 	configConfig, err := config.ProvideConfig()
 	if err != nil {
 		return nil, err
@@ -50,6 +51,7 @@ func InjectHandlers() (*api.Handlers, error) {
 	handlers := &api.Handlers{
 		BlocksHandler:   blocksHandler,
 		CategoryHandler: categoryHandler,
+		HealthHandler:   healthHandler,
 		IspHandler:      ispHandler,
 		ReportsHandler:  reportsHandler,
 		SitesHandler:    sitesHandler,
@@ -60,6 +62,7 @@ func InjectHandlers() (*api.Handlers, error) {
 func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
 	blocksHandler := handler.ProvideBlocksHandler()
 	categoryHandler := handler.ProvideCategoryHandler()
+	healthHandler := handler.ProvideHealthHandler()
 	configConfig, err := config.ProvideConfig()
 	if err != nil {
 		return nil, err
@@ -82,6 +85,7 @@ func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
 	handlers := &api.Handlers{
 		BlocksHandler:   blocksHandler,
 		CategoryHandler: categoryHandler,
+		HealthHandler:   healthHandler,
 		IspHandler:      ispHandler,
 		ReportsHandler:  reportsHandler,
 		SitesHandler:    sitesHandler,

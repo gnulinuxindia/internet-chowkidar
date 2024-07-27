@@ -59,6 +59,12 @@ type Invoker interface {
 	//
 	// POST /sites/suggestions
 	CreateSiteSuggestion(ctx context.Context, request *SiteSuggestionInput) (*SiteSuggestion, error)
+	// HealthCheck invokes healthCheck operation.
+	//
+	// Health check.
+	//
+	// GET /health
+	HealthCheck(ctx context.Context) (string, error)
 	// ListAbuseReports invokes listAbuseReports operation.
 	//
 	// List all abuse reports.
@@ -588,6 +594,78 @@ func (c *Client) sendCreateSiteSuggestion(ctx context.Context, request *SiteSugg
 
 	stage = "DecodeResponse"
 	result, err := decodeCreateSiteSuggestionResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// HealthCheck invokes healthCheck operation.
+//
+// Health check.
+//
+// GET /health
+func (c *Client) HealthCheck(ctx context.Context) (string, error) {
+	res, err := c.sendHealthCheck(ctx)
+	return res, err
+}
+
+func (c *Client) sendHealthCheck(ctx context.Context) (res string, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("healthCheck"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/health"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "HealthCheck",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/health"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeHealthCheckResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
