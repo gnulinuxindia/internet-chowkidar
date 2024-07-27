@@ -20,6 +20,12 @@ type Handler interface {
 	//
 	// POST /blocks
 	CreateBlock(ctx context.Context, req *BlockInput) (*Block, error)
+	// CreateCategory implements createCategory operation.
+	//
+	// Create a new category.
+	//
+	// POST /categories
+	CreateCategory(ctx context.Context, req *CreateCategoryReq) (*Category, error)
 	// CreateISP implements createISP operation.
 	//
 	// Create a new ISP.
@@ -50,6 +56,12 @@ type Handler interface {
 	//
 	// GET /blocks
 	ListBlocks(ctx context.Context) ([]Block, error)
+	// ListCategories implements listCategories operation.
+	//
+	// List all categories.
+	//
+	// GET /categories
+	ListCategories(ctx context.Context) ([]Category, error)
 	// ListISPs implements listISPs operation.
 	//
 	// List all ISPs.

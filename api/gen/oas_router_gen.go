@@ -106,6 +106,29 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				}
 
 				elem = origElem
+			case 'c': // Prefix: "categories"
+				origElem := elem
+				if l := len("categories"); len(elem) >= l && elem[0:l] == "categories" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch r.Method {
+					case "GET":
+						s.handleListCategoriesRequest([0]string{}, elemIsEscaped, w, r)
+					case "POST":
+						s.handleCreateCategoryRequest([0]string{}, elemIsEscaped, w, r)
+					default:
+						s.notAllowed(w, r, "GET,POST")
+					}
+
+					return
+				}
+
+				elem = origElem
 			case 'i': // Prefix: "isps"
 				origElem := elem
 				if l := len("isps"); len(elem) >= l && elem[0:l] == "isps" {
@@ -330,6 +353,40 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.summary = "Create a new block"
 						r.operationID = "createBlock"
 						r.pathPattern = "/blocks"
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
+					}
+				}
+
+				elem = origElem
+			case 'c': // Prefix: "categories"
+				origElem := elem
+				if l := len("categories"); len(elem) >= l && elem[0:l] == "categories" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					switch method {
+					case "GET":
+						// Leaf: ListCategories
+						r.name = "ListCategories"
+						r.summary = "List all categories"
+						r.operationID = "listCategories"
+						r.pathPattern = "/categories"
+						r.args = args
+						r.count = 0
+						return r, true
+					case "POST":
+						// Leaf: CreateCategory
+						r.name = "CreateCategory"
+						r.summary = "Create a new category"
+						r.operationID = "createCategory"
+						r.pathPattern = "/categories"
 						r.args = args
 						r.count = 0
 						return r, true

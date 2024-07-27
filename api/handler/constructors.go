@@ -7,6 +7,10 @@ func ProvideBlocksHandler() BlocksHandler {
 	return &blocksHandlerImpl{}
 }
 
+func ProvideCategoryHandler() CategoryHandler {
+	return &categoryHandlerImpl{}
+}
+
 func ProvideIspHandler() IspHandler {
 	return &ispHandlerImpl{}
 }

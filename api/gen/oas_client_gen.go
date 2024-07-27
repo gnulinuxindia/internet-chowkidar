@@ -35,6 +35,12 @@ type Invoker interface {
 	//
 	// POST /blocks
 	CreateBlock(ctx context.Context, request *BlockInput) (*Block, error)
+	// CreateCategory invokes createCategory operation.
+	//
+	// Create a new category.
+	//
+	// POST /categories
+	CreateCategory(ctx context.Context, request *CreateCategoryReq) (*Category, error)
 	// CreateISP invokes createISP operation.
 	//
 	// Create a new ISP.
@@ -65,6 +71,12 @@ type Invoker interface {
 	//
 	// GET /blocks
 	ListBlocks(ctx context.Context) ([]Block, error)
+	// ListCategories invokes listCategories operation.
+	//
+	// List all categories.
+	//
+	// GET /categories
+	ListCategories(ctx context.Context) ([]Category, error)
 	// ListISPs invokes listISPs operation.
 	//
 	// List all ISPs.
@@ -276,6 +288,81 @@ func (c *Client) sendCreateBlock(ctx context.Context, request *BlockInput) (res 
 
 	stage = "DecodeResponse"
 	result, err := decodeCreateBlockResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// CreateCategory invokes createCategory operation.
+//
+// Create a new category.
+//
+// POST /categories
+func (c *Client) CreateCategory(ctx context.Context, request *CreateCategoryReq) (*Category, error) {
+	res, err := c.sendCreateCategory(ctx, request)
+	return res, err
+}
+
+func (c *Client) sendCreateCategory(ctx context.Context, request *CreateCategoryReq) (res *Category, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("createCategory"),
+		semconv.HTTPMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/categories"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "CreateCategory",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/categories"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "POST", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+	if err := encodeCreateCategoryRequest(request, r); err != nil {
+		return res, errors.Wrap(err, "encode request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeCreateCategoryResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
@@ -645,6 +732,78 @@ func (c *Client) sendListBlocks(ctx context.Context) (res []Block, err error) {
 
 	stage = "DecodeResponse"
 	result, err := decodeListBlocksResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// ListCategories invokes listCategories operation.
+//
+// List all categories.
+//
+// GET /categories
+func (c *Client) ListCategories(ctx context.Context) ([]Category, error) {
+	res, err := c.sendListCategories(ctx)
+	return res, err
+}
+
+func (c *Client) sendListCategories(ctx context.Context) (res []Category, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("listCategories"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/categories"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "ListCategories",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/categories"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeListCategoriesResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

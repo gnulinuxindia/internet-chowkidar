@@ -27,6 +27,7 @@ import (
 // handlers
 func InjectHandlers() (*api.Handlers, error) {
 	blocksHandler := handler.ProvideBlocksHandler()
+	categoryHandler := handler.ProvideCategoryHandler()
 	ispHandler := handler.ProvideIspHandler()
 	reportsHandler := handler.ProvideReportsHandler()
 	configConfig, err := config.ProvideConfig()
@@ -45,16 +46,18 @@ func InjectHandlers() (*api.Handlers, error) {
 	sitesService := service.ProvideSitesService(sitesRepository)
 	sitesHandler := handler.ProvideSitesHandler(sitesService)
 	handlers := &api.Handlers{
-		BlocksHandler:  blocksHandler,
-		IspHandler:     ispHandler,
-		ReportsHandler: reportsHandler,
-		SitesHandler:   sitesHandler,
+		BlocksHandler:   blocksHandler,
+		CategoryHandler: categoryHandler,
+		IspHandler:      ispHandler,
+		ReportsHandler:  reportsHandler,
+		SitesHandler:    sitesHandler,
 	}
 	return handlers, nil
 }
 
 func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
 	blocksHandler := handler.ProvideBlocksHandler()
+	categoryHandler := handler.ProvideCategoryHandler()
 	ispHandler := handler.ProvideIspHandler()
 	reportsHandler := handler.ProvideReportsHandler()
 	configConfig, err := config.ProvideConfig()
@@ -73,10 +76,11 @@ func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
 	sitesService := service.ProvideSitesService(sitesRepository)
 	sitesHandler := handler.ProvideSitesHandler(sitesService)
 	handlers := &api.Handlers{
-		BlocksHandler:  blocksHandler,
-		IspHandler:     ispHandler,
-		ReportsHandler: reportsHandler,
-		SitesHandler:   sitesHandler,
+		BlocksHandler:   blocksHandler,
+		CategoryHandler: categoryHandler,
+		IspHandler:      ispHandler,
+		ReportsHandler:  reportsHandler,
+		SitesHandler:    sitesHandler,
 	}
 	return handlers, nil
 }

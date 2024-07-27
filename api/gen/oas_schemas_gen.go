@@ -274,6 +274,57 @@ func (s *BlockInput) SetIspID(val int) {
 	s.IspID = val
 }
 
+// Ref: #/components/schemas/Category
+type Category struct {
+	Name      OptString   `json:"name"`
+	CreatedAt OptDateTime `json:"created_at"`
+	UpdatedAt OptDateTime `json:"updated_at"`
+}
+
+// GetName returns the value of Name.
+func (s *Category) GetName() OptString {
+	return s.Name
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *Category) GetCreatedAt() OptDateTime {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *Category) GetUpdatedAt() OptDateTime {
+	return s.UpdatedAt
+}
+
+// SetName sets the value of Name.
+func (s *Category) SetName(val OptString) {
+	s.Name = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *Category) SetCreatedAt(val OptDateTime) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *Category) SetUpdatedAt(val OptDateTime) {
+	s.UpdatedAt = val
+}
+
+type CreateCategoryReq struct {
+	Name OptString `json:"name"`
+}
+
+// GetName returns the value of Name.
+func (s *CreateCategoryReq) GetName() OptString {
+	return s.Name
+}
+
+// SetName sets the value of Name.
+func (s *CreateCategoryReq) SetName(val OptString) {
+	s.Name = val
+}
+
 // Ref: #/components/schemas/ISP
 type ISP struct {
 	ID        OptInt      `json:"id"`

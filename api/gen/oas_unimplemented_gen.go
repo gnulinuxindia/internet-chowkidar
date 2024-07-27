@@ -31,6 +31,15 @@ func (UnimplementedHandler) CreateBlock(ctx context.Context, req *BlockInput) (r
 	return r, ht.ErrNotImplemented
 }
 
+// CreateCategory implements createCategory operation.
+//
+// Create a new category.
+//
+// POST /categories
+func (UnimplementedHandler) CreateCategory(ctx context.Context, req *CreateCategoryReq) (r *Category, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // CreateISP implements createISP operation.
 //
 // Create a new ISP.
@@ -73,6 +82,15 @@ func (UnimplementedHandler) ListAbuseReports(ctx context.Context) (r []AbuseRepo
 //
 // GET /blocks
 func (UnimplementedHandler) ListBlocks(ctx context.Context) (r []Block, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// ListCategories implements listCategories operation.
+//
+// List all categories.
+//
+// GET /categories
+func (UnimplementedHandler) ListCategories(ctx context.Context) (r []Category, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
