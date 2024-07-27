@@ -1158,15 +1158,15 @@ func (c *Client) sendListSites(ctx context.Context, params ListSitesParams) (res
 	stage = "EncodeQueryParams"
 	q := uri.NewQueryEncoder()
 	{
-		// Encode "tag" parameter.
+		// Encode "category" parameter.
 		cfg := uri.QueryParameterEncodingConfig{
-			Name:    "tag",
+			Name:    "category",
 			Style:   uri.QueryStyleForm,
 			Explode: true,
 		}
 
 		if err := q.EncodeParam(cfg, func(e uri.Encoder) error {
-			if val, ok := params.Tag.Get(); ok {
+			if val, ok := params.Category.Get(); ok {
 				return e.EncodeValue(conv.StringToString(val))
 			}
 			return nil

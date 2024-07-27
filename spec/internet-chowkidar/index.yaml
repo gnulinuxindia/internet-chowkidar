@@ -11,10 +11,10 @@ paths:
       operationId: listSites
       parameters:
         - in: query
-          name: tag
+          name: category
           schema:
             type: string
-          description: Filter sites by tag
+          description: Filter sites by category, separated by commas
         - in: query
           name: limit
           schema:

@@ -269,8 +269,8 @@ func decodeListISPsParams(args [0]string, argsEscaped bool, r *http.Request) (pa
 
 // ListSitesParams is parameters of listSites operation.
 type ListSitesParams struct {
-	// Filter sites by tag.
-	Tag OptString
+	// Filter sites by category, separated by commas.
+	Category OptString
 	// Number of sites to return.
 	Limit OptInt
 	// Number of sites to skip.
@@ -284,11 +284,11 @@ type ListSitesParams struct {
 func unpackListSitesParams(packed middleware.Parameters) (params ListSitesParams) {
 	{
 		key := middleware.ParameterKey{
-			Name: "tag",
+			Name: "category",
 			In:   "query",
 		}
 		if v, ok := packed[key]; ok {
-			params.Tag = v.(OptString)
+			params.Category = v.(OptString)
 		}
 	}
 	{
@@ -332,17 +332,17 @@ func unpackListSitesParams(packed middleware.Parameters) (params ListSitesParams
 
 func decodeListSitesParams(args [0]string, argsEscaped bool, r *http.Request) (params ListSitesParams, _ error) {
 	q := uri.NewQueryDecoder(r.URL.Query())
-	// Decode query: tag.
+	// Decode query: category.
 	if err := func() error {
 		cfg := uri.QueryParameterDecodingConfig{
-			Name:    "tag",
+			Name:    "category",
 			Style:   uri.QueryStyleForm,
 			Explode: true,
 		}
 
 		if err := q.HasParam(cfg); err == nil {
 			if err := q.DecodeParam(cfg, func(d uri.Decoder) error {
-				var paramsDotTagVal string
+				var paramsDotCategoryVal string
 				if err := func() error {
 					val, err := d.DecodeValue()
 					if err != nil {
@@ -354,12 +354,12 @@ func decodeListSitesParams(args [0]string, argsEscaped bool, r *http.Request) (p
 						return err
 					}
 
-					paramsDotTagVal = c
+					paramsDotCategoryVal = c
 					return nil
 				}(); err != nil {
 					return err
 				}
-				params.Tag.SetTo(paramsDotTagVal)
+				params.Category.SetTo(paramsDotCategoryVal)
 				return nil
 			}); err != nil {
 				return err
@@ -368,7 +368,7 @@ func decodeListSitesParams(args [0]string, argsEscaped bool, r *http.Request) (p
 		return nil
 	}(); err != nil {
 		return params, &ogenerrors.DecodeParamError{
-			Name: "tag",
+			Name: "category",
 			In:   "query",
 			Err:  err,
 		}

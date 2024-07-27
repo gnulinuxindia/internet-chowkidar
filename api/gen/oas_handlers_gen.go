@@ -1272,9 +1272,9 @@ func (s *Server) handleListSitesRequest(args [0]string, argsEscaped bool, w http
 			Body:             nil,
 			Params: middleware.Parameters{
 				{
-					Name: "tag",
+					Name: "category",
 					In:   "query",
-				}: params.Tag,
+				}: params.Category,
 				{
 					Name: "limit",
 					In:   "query",
