@@ -10,7 +10,6 @@ require (
 	github.com/go-errors/errors v1.5.1
 	github.com/go-faster/errors v0.7.1
 	github.com/go-faster/jx v1.1.0
-	github.com/golang/mock v1.6.0
 	github.com/google/wire v0.6.0
 	github.com/jackc/pgx/v5 v5.5.5
 	github.com/knadh/koanf/parsers/dotenv v1.0.0
