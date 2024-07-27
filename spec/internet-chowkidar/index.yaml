@@ -216,6 +216,40 @@ paths:
               schema:
                 $ref: '#/components/schemas/SiteSuggestion'
 
+  /categories:
+    get:
+      summary: List all categories
+      operationId: listCategories
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+    post:
+      summary: Create a new category
+      operationId: createCategory
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Category'
+    
+
 components:
   schemas:
     Site:
@@ -395,3 +429,15 @@ components:
           type: integer
         reason:
           type: string
+    
+    Category:
+      type: object
+      properties:
+        name:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
