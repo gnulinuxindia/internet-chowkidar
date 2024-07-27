@@ -985,6 +985,54 @@ func (s *Site) SetUpdatedAt(val time.Time) {
 	s.UpdatedAt = val
 }
 
+// Ref: #/components/schemas/SiteCreate
+type SiteCreate struct {
+	ID        int       `json:"id"`
+	Domain    string    `json:"domain"`
+	CreatedAt time.Time `json:"created_at"`
+	UpdatedAt time.Time `json:"updated_at"`
+}
+
+// GetID returns the value of ID.
+func (s *SiteCreate) GetID() int {
+	return s.ID
+}
+
+// GetDomain returns the value of Domain.
+func (s *SiteCreate) GetDomain() string {
+	return s.Domain
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *SiteCreate) GetCreatedAt() time.Time {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *SiteCreate) GetUpdatedAt() time.Time {
+	return s.UpdatedAt
+}
+
+// SetID sets the value of ID.
+func (s *SiteCreate) SetID(val int) {
+	s.ID = val
+}
+
+// SetDomain sets the value of Domain.
+func (s *SiteCreate) SetDomain(val string) {
+	s.Domain = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *SiteCreate) SetCreatedAt(val time.Time) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *SiteCreate) SetUpdatedAt(val time.Time) {
+	s.UpdatedAt = val
+}
+
 // Ref: #/components/schemas/SiteInput
 type SiteInput struct {
 	Domain string `json:"domain"`

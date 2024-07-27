@@ -52,7 +52,7 @@ type Invoker interface {
 	// Create a new site.
 	//
 	// POST /sites
-	CreateSite(ctx context.Context, request *SiteInput) (*Site, error)
+	CreateSite(ctx context.Context, request *SiteInput) (*SiteCreate, error)
 	// CreateSiteSuggestion invokes createSiteSuggestion operation.
 	//
 	// Create a new site suggestion.
@@ -456,12 +456,12 @@ func (c *Client) sendCreateISP(ctx context.Context, request *ISPInput) (res *ISP
 // Create a new site.
 //
 // POST /sites
-func (c *Client) CreateSite(ctx context.Context, request *SiteInput) (*Site, error) {
+func (c *Client) CreateSite(ctx context.Context, request *SiteInput) (*SiteCreate, error) {
 	res, err := c.sendCreateSite(ctx, request)
 	return res, err
 }
 
-func (c *Client) sendCreateSite(ctx context.Context, request *SiteInput) (res *Site, err error) {
+func (c *Client) sendCreateSite(ctx context.Context, request *SiteInput) (res *SiteCreate, err error) {
 	otelAttrs := []attribute.KeyValue{
 		otelogen.OperationID("createSite"),
 		semconv.HTTPMethodKey.String("POST"),

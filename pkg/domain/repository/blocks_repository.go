@@ -29,6 +29,8 @@ func (b *blocksRepositoryImpl) CreateBlock(ctx context.Context, req *dto.BlockDt
 		return nil, err
 	}
 
+	var blk *ent.Blocks
+
 	// check if block already exists
 	eBlk, err := tx.Blocks.Query().
 		Where(
@@ -47,6 +49,14 @@ func (b *blocksRepositoryImpl) CreateBlock(ctx context.Context, req *dto.BlockDt
 		} else {
 			uQuery.SetUnblockReports(eBlk.UnblockReports + 1)
 		}
+
+		blk, err = uQuery.Save(ctx)
+		if err != nil {
+			slog.Error("failed to update block", "err", err)
+			return nil, rollback(tx, err)
+		}
+
+		slog.Info("block updated", "block", blk)
 	} else {
 		// create new block
 		iQuery := tx.Blocks.Create().
@@ -60,7 +70,7 @@ func (b *blocksRepositoryImpl) CreateBlock(ctx context.Context, req *dto.BlockDt
 			iQuery.SetUnblockReports(1)
 		}
 
-		blk, err := iQuery.Save(ctx)
+		blk, err = iQuery.Save(ctx)
 		if err != nil {
 			slog.Error("failed to create block", "err", err)
 			return nil, rollback(tx, err)
@@ -69,5 +79,5 @@ func (b *blocksRepositoryImpl) CreateBlock(ctx context.Context, req *dto.BlockDt
 		slog.Info("block created", "block", blk)
 	}
 
-	return nil, tx.Commit()
+	return blk, tx.Commit()
 }

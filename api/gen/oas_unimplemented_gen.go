@@ -54,7 +54,7 @@ func (UnimplementedHandler) CreateISP(ctx context.Context, req *ISPInput) (r *IS
 // Create a new site.
 //
 // POST /sites
-func (UnimplementedHandler) CreateSite(ctx context.Context, req *SiteInput) (r *Site, _ error) {
+func (UnimplementedHandler) CreateSite(ctx context.Context, req *SiteInput) (r *SiteCreate, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

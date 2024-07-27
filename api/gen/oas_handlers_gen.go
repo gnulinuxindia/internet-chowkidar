@@ -502,7 +502,7 @@ func (s *Server) handleCreateSiteRequest(args [0]string, argsEscaped bool, w htt
 		}
 	}()
 
-	var response *Site
+	var response *SiteCreate
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
@@ -517,7 +517,7 @@ func (s *Server) handleCreateSiteRequest(args [0]string, argsEscaped bool, w htt
 		type (
 			Request  = *SiteInput
 			Params   = struct{}
-			Response = *Site
+			Response = *SiteCreate
 		)
 		response, err = middleware.HookMiddleware[
 			Request,

@@ -2,6 +2,7 @@ package repository
 
 import (
 	"context"
+	"log/slog"
 
 	genapi "github.com/gnulinuxindia/internet-chowkidar/api/gen"
 	"github.com/gnulinuxindia/internet-chowkidar/ent"
@@ -10,6 +11,7 @@ import (
 )
 
 type SitesRepository interface {
+	CreateSite(ctx context.Context, req *genapi.SiteInput) (*ent.Sites, error)
 	GetAllSites(ctx context.Context, params genapi.ListSitesParams) ([]genapi.Site, error)
 	GetSiteByDomain(ctx context.Context, domain string) (*ent.Sites, error)
 	GetSiteByID(ctx context.Context, id int) (*ent.Sites, error)
@@ -17,6 +19,12 @@ type SitesRepository interface {
 
 type sitesRepositoryImpl struct {
 	db *ent.Client
+}
+
+func (s *sitesRepositoryImpl) CreateSite(ctx context.Context, req *genapi.SiteInput) (*ent.Sites, error) {
+	return s.db.Sites.Create().
+		SetDomain(req.Domain).
+		Save(ctx)
 }
 
 func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.ListSitesParams) ([]genapi.Site, error) {
@@ -38,6 +46,8 @@ func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.Lis
 	if err != nil {
 		return nil, errors.Wrap(err, 0)
 	}
+
+	slog.Debug("blocks", "blocks", blocks)
 
 	sites := map[string]*genapi.Site{}
 

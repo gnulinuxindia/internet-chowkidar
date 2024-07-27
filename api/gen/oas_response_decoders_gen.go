@@ -197,7 +197,7 @@ func decodeCreateISPResponse(resp *http.Response) (res *ISP, _ error) {
 	return res, validate.UnexpectedStatusCode(resp.StatusCode)
 }
 
-func decodeCreateSiteResponse(resp *http.Response) (res *Site, _ error) {
+func decodeCreateSiteResponse(resp *http.Response) (res *SiteCreate, _ error) {
 	switch resp.StatusCode {
 	case 201:
 		// Code 201.
@@ -213,7 +213,7 @@ func decodeCreateSiteResponse(resp *http.Response) (res *Site, _ error) {
 			}
 			d := jx.DecodeBytes(buf)
 
-			var response Site
+			var response SiteCreate
 			if err := func() error {
 				if err := response.Decode(d); err != nil {
 					return err
@@ -229,15 +229,6 @@ func decodeCreateSiteResponse(resp *http.Response) (res *Site, _ error) {
 					Err:         err,
 				}
 				return res, err
-			}
-			// Validate response.
-			if err := func() error {
-				if err := response.Validate(); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return res, errors.Wrap(err, "validate")
 			}
 			return &response, nil
 		default:

@@ -37,7 +37,7 @@ type Handler interface {
 	// Create a new site.
 	//
 	// POST /sites
-	CreateSite(ctx context.Context, req *SiteInput) (*Site, error)
+	CreateSite(ctx context.Context, req *SiteInput) (*SiteCreate, error)
 	// CreateSiteSuggestion implements createSiteSuggestion operation.
 	//
 	// Create a new site suggestion.
