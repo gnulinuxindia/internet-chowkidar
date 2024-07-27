@@ -3,3 +3,6 @@ sqlite.db
 
 .envrc
 .idea
+
+internet-chowkidar
+cmd/chowkidar/chowkidar

@@ -1,0 +1,12 @@
+[Unit]
+Description=Internet Chowkidar
+Documentation=https://gnulinuxindia.sh/blog/plans-for-june-24/
+After=network.target network-online.target
+Requires=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/internet-chowkidar run
+
+[Install]
+WantedBy=default.target
