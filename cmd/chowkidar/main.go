@@ -41,11 +41,11 @@ func Version() string {
 func main() {
 	conf := os.Getenv("XDG_CONFIG_HOME") + "/chowkidar.json"
 	if conf == "/chowkidar.json" {
-		conf = "~/.chowkidar.json"
+		conf = "./chowkidar.json"
 	}
 	data := os.Getenv("XDG_DATA_HOME") + "/chowkidar.db"
 	if data == "/chowkidar.db" {
-		data = "~/.chowkidar.db"
+		data = "./chowkidar.db"
 	}
 	app := &cli.App{
 		Name:    "Internet Chowkidar",
