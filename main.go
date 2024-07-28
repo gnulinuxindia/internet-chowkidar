@@ -27,7 +27,7 @@ func main() {
 	// logger := slog.New(slog.NewJSONHandler(os.Stdout, nil))
 	// slog.SetDefault(logger)
 
-	slog.SetLogLoggerLevel(slog.LevelDebug)
+	//slog.SetLogLoggerLevel(slog.LevelDebug)
 	slog.Info("starting server")
 
 	// config

@@ -19,7 +19,7 @@ func validateServer(server string) bool {
 	return false
 }
 func validateConfig(config Config) bool {
-	if config.ID < 1 {
+	if config.ID < 0 {
 		return false
 	}
 
@@ -45,7 +45,7 @@ func validateConfig(config Config) bool {
 	return true
 }
 func validateCity(city string) (newCity string, lat float64, lon float64, valid bool) {
-	osmOut, err := getRequest("https://nominatim.openstreetmap.org/search?q=" + city + "&format=json&polygon=1&addressdetails=1&limit=1")
+	osmOut, err := getRequest("https://nominatim.openstreetmap.org/search?q=" + url.QueryEscape(city) + "&format=json&polygon=1&addressdetails=1&limit=1")
 	if err != nil {
 		return "", 0.0, 0.0, false
 	}

@@ -8,12 +8,12 @@ import (
 	"runtime/debug"
 	"strconv"
 	"strings"
-
 	"time"
 
 	"github.com/koki-develop/go-fzf"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v2"
+	"go.mills.io/bitcask/v2"
 )
 
 type Config struct {
@@ -39,6 +39,14 @@ func Version() string {
 }
 
 func main() {
+	conf := os.Getenv("XDG_CONFIG_HOME") + "/chowkidar.json"
+	if conf == "" {
+		conf = "~/.chowkidar.json"
+	}
+	data := os.Getenv("XDG_DATA_HOME") + "/chowkidar.db"
+	if data == "" {
+		data = "~/.chowkidar.db"
+	}
 	app := &cli.App{
 		Name:    "Internet Chowkidar",
 		Usage:   "Run the chowkidar daemon to report blocked sites",
@@ -47,7 +55,13 @@ func main() {
 			&cli.StringFlag{
 				Name:    "config",
 				Aliases: []string{"c"},
-				Value:   os.Getenv("XDG_CONFIG_HOME") + "/chowkidar.json",
+				Value:   conf,
+				Usage:   "config file to read from",
+			},
+			&cli.StringFlag{
+				Name:    "database",
+				Aliases: []string{"d"},
+				Value:   data,
 				Usage:   "config file to read from",
 			},
 			&cli.BoolFlag{
@@ -72,9 +86,6 @@ func main() {
 			}
 			log.Println("Starting the daemon")
 
-			// Run once on first run
-			fetchAndRun(config)
-
 			// Figure out frequency based on the mode numbers
 			var duration time.Duration
 			switch config.TestFrequency {
@@ -90,9 +101,32 @@ func main() {
 				duration = 24 * 7 * time.Hour
 			}
 
+			// If it wasn't run before acc to DB, run it now
+			db, _ := bitcask.Open(cCtx.String("database"))
+			defer db.Close()
+			val, err := db.Get([]byte("lastRun"))
+			if err != nil || string(val) == "" {
+				fetchAndRun(config, db)
+			} else {
+				// If it was run before, check if it has been more than `duration` since it happened
+				timeInt, err := strconv.ParseInt("1405544146", 10, 64)
+				if err != nil {
+					return cli.Exit("Database has invalid data or is corrupted.", 1)
+				}
+
+				timeLast := time.Unix(timeInt, 0)
+				durationRemain := time.Now().Sub(timeLast)
+				if durationRemain >= duration {
+					fetchAndRun(config, db)
+				} else {
+					// Wait till duration is complete and then run
+					time.Tick(durationRemain)
+					fetchAndRun(config, db)
+				}
+			}
 			// Do the periodic ones based on the determined duration
 			for range time.Tick(duration) {
-				fetchAndRun(config)
+				fetchAndRun(config, db)
 			}
 			return nil
 		},

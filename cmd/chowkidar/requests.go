@@ -38,7 +38,7 @@ func postRequest(url string, data []byte, contenttype string) (string, error) {
 }
 
 func getRequest(url string) (string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	r, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {

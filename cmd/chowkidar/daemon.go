@@ -3,18 +3,27 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"strconv"
 	"strings"
 
+	"time"
+
 	"github.com/tidwall/gjson"
+	"go.mills.io/bitcask/v2"
 )
 
-func fetchAndRun(config Config) error {
+func fetchAndRun(config Config, db *bitcask.Bitcask) error {
+	err := db.Put([]byte("lastRun"), []byte(strconv.Itoa(int(time.Now().Unix()))))
+	if err != nil {
+		return err
+	}
+
 	catStr := ""
 	for i := range config.CheckCategories {
 		catStr = catStr + "," + config.CheckCategories[i]
 	}
-	catStr = strings.TrimSuffix(catStr, ",")
-	sitesList, err := getRequest(config.Server + "/isps?category=" + catStr)
+	catStr = strings.TrimPrefix(strings.TrimSuffix(catStr, ","), ",")
+	sitesList, err := getRequest(config.Server + "/sites?category=" + catStr)
 	if err != nil {
 		return err
 	}
@@ -39,13 +48,35 @@ func fetchAndRun(config Config) error {
 			SiteID    int  `json:"site_id"`
 			IspID     int  `json:"isp_id"`
 			IsBlocked bool `json:"is_blocked"`
+			Changed   bool `json:"changed"`
 		}
-		blockStruct := BlockStruct{SiteID: i, IspID: config.ID, IsBlocked: blocked}
-		data, err := json.Marshal(blockStruct)
-		if err != nil {
-			return err
+		iStr := strconv.Itoa(i)
+		val, domainErr := db.Get([]byte(domains[i].String() + "_status"))
+		block := ""
+		switch blocked {
+		case true:
+			block = "blocked"
+		case false:
+			block = "unblocked"
 		}
-		_, err = postRequest(config.Server+"/blocks", []byte(data), "application/json")
+		var changed bool
+		if domainErr != nil {
+			changed = false
+		} else if string(val) != block {
+			changed = true
+		}
+		if string(val) != block || domainErr != nil {
+			blockStruct := BlockStruct{SiteID: int(gjson.Get(sitesList, string(iStr)+".id").Int()), IspID: config.ID, IsBlocked: blocked, Changed: changed}
+			data, err := json.Marshal(blockStruct)
+			if err != nil {
+				return err
+			}
+			_, err = postRequest(config.Server+"/blocks", []byte(data), "application/json")
+			if err != nil {
+				return err
+			}
+		}
+		err = db.Put([]byte(domains[i].String()+"_status"), []byte(block))
 		if err != nil {
 			return err
 		}
