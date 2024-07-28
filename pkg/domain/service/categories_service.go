@@ -25,8 +25,8 @@ func (c *categoriesServiceImpl) GetAllCategories(ctx context.Context) ([]genapi.
 	var res []genapi.Category
 	for _, category := range categories {
 		res = append(res, genapi.Category{
-			ID:   category.ID,
-			Name: category.Name,
+			ID:        category.ID,
+			Name:      category.Name,
 			CreatedAt: category.CreatedAt,
 			UpdatedAt: category.UpdatedAt,
 		})
@@ -42,8 +42,8 @@ func (c *categoriesServiceImpl) CreateCategory(ctx context.Context, req *genapi.
 	}
 
 	return &genapi.Category{
-		ID:   category.ID,
-		Name: category.Name,
+		ID:        category.ID,
+		Name:      category.Name,
 		CreatedAt: category.CreatedAt,
 		UpdatedAt: category.UpdatedAt,
 	}, nil

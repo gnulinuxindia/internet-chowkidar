@@ -16,7 +16,7 @@ type IspService interface {
 }
 
 type ispServiceImpl struct {
-	repo repository.IspRepository
+	repo      repository.IspRepository
 	txHandler repository.TxHandler
 }
 
@@ -64,28 +64,27 @@ func (i *ispServiceImpl) GetISP(ctx context.Context, params genapi.GetISPParams)
 	}
 
 	details := &genapi.ISPDetails{
-		ID: isp.ID,
-		Name: isp.Name,
-		Latitude: float32(isp.Latitude),
+		ID:        isp.ID,
+		Name:      isp.Name,
+		Latitude:  float32(isp.Latitude),
 		Longitude: float32(isp.Longitude),
-		Blocks: make([]genapi.ISPBlock, len(blocks)),
+		Blocks:    make([]genapi.ISPBlock, len(blocks)),
 		CreatedAt: isp.CreatedAt,
 		UpdatedAt: isp.UpdatedAt,
 	}
 
 	for i, block := range blocks {
 		details.Blocks[i] = genapi.ISPBlock{
-			ID: block.ID,
-			BlockReports: block.BlockReports,
+			ID:             block.ID,
+			BlockReports:   block.BlockReports,
 			UnblockReports: block.UnblockReports,
 			LastReportedAt: block.LastReportedAt,
-			SiteID: block.Edges.Site.ID,
-			Domain: block.Edges.Site.Domain,
-			CreatedAt: block.CreatedAt,
-			UpdatedAt: block.UpdatedAt,
+			SiteID:         block.Edges.Site.ID,
+			Domain:         block.Edges.Site.Domain,
+			CreatedAt:      block.CreatedAt,
+			UpdatedAt:      block.UpdatedAt,
 		}
 	}
-
 
 	return details, nil
 }

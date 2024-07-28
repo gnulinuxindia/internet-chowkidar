@@ -14,6 +14,7 @@ import (
 	"github.com/gnulinuxindia/internet-chowkidar/middleware"
 	"github.com/gnulinuxindia/internet-chowkidar/pkg/di"
 	"github.com/gnulinuxindia/internet-chowkidar/utils"
+	"github.com/rs/cors"
 
 	_ "github.com/gnulinuxindia/internet-chowkidar/migrations" // necessary to register migrations
 	"github.com/go-errors/errors"
@@ -72,10 +73,20 @@ func main() {
 		handleErr(err)
 	}
 
+	mux := http.NewServeMux()
+	mux.Handle("/", server)
+
+	c := cors.New(cors.Options{
+		AllowedOrigins:   []string{"*"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedHeaders:   []string{"*"},
+		AllowCredentials: true,
+	})
+
 	httpServer := http.Server{
 		ReadHeaderTimeout: time.Second,
 		Addr:              fmt.Sprintf("%s:%s", conf.Listen, conf.Port),
-		Handler:           server,
+		Handler:           c.Handler(mux),
 	}
 
 	go func() {

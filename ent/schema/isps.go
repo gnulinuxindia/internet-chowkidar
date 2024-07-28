@@ -22,7 +22,7 @@ func (Isps) Fields() []ent.Field {
 // Edges of the Isps.
 func (Isps) Edges() []ent.Edge {
 	return []ent.Edge{
-		edge.To("isp_blocks", Blocks.Type),	
+		edge.To("isp_blocks", Blocks.Type),
 	}
 }
 

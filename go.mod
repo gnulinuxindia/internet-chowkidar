@@ -19,6 +19,7 @@ require (
 	github.com/knadh/koanf/v2 v2.1.1
 	github.com/ogen-go/ogen v1.1.0
 	github.com/pressly/goose/v3 v3.20.0
+	github.com/rs/cors v1.11.0
 	github.com/testcontainers/testcontainers-go v0.32.0
 	github.com/testcontainers/testcontainers-go/modules/postgres v0.32.0
 	go.opentelemetry.io/otel v1.26.0

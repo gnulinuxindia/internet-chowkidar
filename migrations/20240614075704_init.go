@@ -68,6 +68,6 @@ CREATE TABLE site_suggestions (
 }
 
 func downInit(ctx context.Context, tx *sql.Tx) error {
-	_, err := tx.Exec("DROP TABLE `blocks`, `abuse_reports`, `site_suggestions`, `sites`, `isps`;");
+	_, err := tx.Exec("DROP TABLE `blocks`, `abuse_reports`, `site_suggestions`, `sites`, `isps`;")
 	return err
 }

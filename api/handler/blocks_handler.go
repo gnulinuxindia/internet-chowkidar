@@ -15,7 +15,7 @@ type BlocksHandler interface {
 
 type blocksHandlerImpl struct {
 	blocksService service.BlocksService
-	sitesService service.SitesService
+	sitesService  service.SitesService
 }
 
 func (b *blocksHandlerImpl) ListBlocks(ctx context.Context) ([]genapi.Block, error) {

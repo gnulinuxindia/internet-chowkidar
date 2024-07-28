@@ -24,10 +24,10 @@ func (b *blocksServiceImpl) GetAllBlocks(ctx context.Context) ([]genapi.Block, e
 }
 
 func (b *blocksServiceImpl) CreateBlock(ctx context.Context, req *genapi.BlockInput) (*genapi.Block, error) {
-	blockDto := &dto.BlockDto{	
-		IspID: req.IspID,
-		SiteID: req.SiteID,
-		IsBlocked: req.IsBlocked,
+	blockDto := &dto.BlockDto{
+		IspID:          req.IspID,
+		SiteID:         req.SiteID,
+		IsBlocked:      req.IsBlocked,
 		LastReportedAt: time.Now(),
 	}
 
@@ -37,14 +37,14 @@ func (b *blocksServiceImpl) CreateBlock(ctx context.Context, req *genapi.BlockIn
 	}
 
 	block := &genapi.Block{
-		ID: genapi.NewOptInt(eb.ID),
-		IspID: genapi.NewOptInt(eb.IspID),
-		SiteID: genapi.NewOptInt(eb.SiteID),
+		ID:             genapi.NewOptInt(eb.ID),
+		IspID:          genapi.NewOptInt(eb.IspID),
+		SiteID:         genapi.NewOptInt(eb.SiteID),
 		LastReportedAt: genapi.NewOptDateTime(eb.LastReportedAt),
-		BlockReports: genapi.NewOptInt(eb.BlockReports),
+		BlockReports:   genapi.NewOptInt(eb.BlockReports),
 		UnblockReports: genapi.NewOptInt(eb.UnblockReports),
-		CreatedAt: genapi.NewOptDateTime(eb.CreatedAt),
-		UpdatedAt: genapi.NewOptDateTime(eb.UpdatedAt),
+		CreatedAt:      genapi.NewOptDateTime(eb.CreatedAt),
+		UpdatedAt:      genapi.NewOptDateTime(eb.UpdatedAt),
 	}
 
 	return block, nil
