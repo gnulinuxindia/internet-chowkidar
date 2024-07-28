@@ -24,11 +24,34 @@ type ispRepositoryImpl struct {
 }
 
 func (i *ispRepositoryImpl) CreateISP(ctx context.Context, isp *genapi.ISPInput) (*ent.Isps, error) {
-	return i.db.Isps.Create().
-		SetName(isp.Name).
-		SetLatitude(float64(isp.Latitude)).
-		SetLongitude(float64(isp.Longitude)).
-		Save(ctx)
+	tx, err := i.db.Tx(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, 0)
+	}
+
+	defer tx.Rollback()
+
+	existing, err := tx.Isps.Query().Where(
+		isps.Name(isp.Name),
+		isps.LatitudeEQ(float64(isp.Latitude)),
+		isps.LongitudeEQ(float64(isp.Longitude)),
+	).First(ctx)
+	var entErr *ent.NotFoundError
+	if errors.As(err, &entErr) {
+		newIsp, err := i.db.Isps.Create().
+			SetName(isp.Name).
+			SetLatitude(float64(isp.Latitude)).
+			SetLongitude(float64(isp.Longitude)).
+			Save(ctx)
+		if err != nil {
+			return nil, errors.Wrap(err, 0)
+		}
+		return newIsp, tx.Commit()
+	} else if err != nil {
+		return nil, errors.Wrap(err, 0)
+	}
+
+	return existing, tx.Commit()
 }
 
 func (i *ispRepositoryImpl) GetAllISPs(ctx context.Context, params genapi.ListISPsParams) ([]genapi.ISP, error) {
@@ -52,11 +75,11 @@ func (i *ispRepositoryImpl) GetAllISPs(ctx context.Context, params genapi.ListIS
 	var res []genapi.ISP
 	for _, isp := range isps {
 		apiIsp := genapi.ISP{
-			ID:        genapi.NewOptInt(isp.ID),
-			Name:      genapi.NewOptString(isp.Name),
-			Latitude:  genapi.NewOptFloat32(float32(isp.Latitude)),
-			Longitude: genapi.NewOptFloat32(float32(isp.Longitude)),
-			BlockReports: genapi.NewOptInt(0),
+			ID:             genapi.NewOptInt(isp.ID),
+			Name:           genapi.NewOptString(isp.Name),
+			Latitude:       genapi.NewOptFloat32(float32(isp.Latitude)),
+			Longitude:      genapi.NewOptFloat32(float32(isp.Longitude)),
+			BlockReports:   genapi.NewOptInt(0),
 			UnblockReports: genapi.NewOptInt(0),
 		}
 
