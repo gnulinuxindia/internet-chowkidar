@@ -18,6 +18,8 @@ type sitesServiceImpl struct {
 }
 
 func (s *sitesServiceImpl) CreateSite(ctx context.Context, req *genapi.SiteInput) (*genapi.SiteCreate, error) {
+	req.Categories = append(req.Categories, "all")
+
 	site, err := s.sitesRepository.CreateSite(ctx, req)
 	if err != nil {
 		return nil, err
