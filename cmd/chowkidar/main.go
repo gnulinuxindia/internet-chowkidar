@@ -6,7 +6,10 @@ import (
 	"log"
 	"os"
 	"runtime/debug"
+	"strconv"
 	"strings"
+
+	"time"
 
 	"github.com/koki-develop/go-fzf"
 	"github.com/tidwall/gjson"
@@ -14,13 +17,14 @@ import (
 )
 
 type Config struct {
-	ID              string   `json:"id"`
-	Server          string   `json:"server"`
-	ISP             string   `json:"isp"`
-	City            string   `json:"city"`
-	Latitude        float64  `json:"lat"`
-	Longitude       float64  `json:"lon"`
-	CheckCategories []string `json:"categories"`
+	ID              int           `json:"id"`
+	Server          string        `json:"server"`
+	ISP             string        `json:"isp"`
+	City            string        `json:"city"`
+	Latitude        float64       `json:"lat"`
+	Longitude       float64       `json:"lon"`
+	CheckCategories []string      `json:"categories"`
+	TestFrequency   time.Duration `json:"testFrequency"`
 }
 
 func Version() string {
@@ -67,6 +71,29 @@ func main() {
 				return cli.Exit("Config "+cCtx.String("config")+" is incomplete, please run `setup` or fix the config manually", 1)
 			}
 			log.Println("Starting the daemon")
+
+			// Run once on first run
+			fetchAndRun(config)
+
+			// Figure out frequency based on the mode numbers
+			var duration time.Duration
+			switch config.TestFrequency {
+			case 1:
+				duration = 1 * time.Hour
+			case 2:
+				duration = 6 * time.Hour
+			case 3:
+				duration = 12 * time.Hour
+			case 4:
+				duration = 24 * time.Hour
+			case 5:
+				duration = 24 * 7 * time.Hour
+			}
+
+			// Do the periodic ones based on the determined duration
+			for range time.Tick(duration) {
+				fetchAndRun(config)
+			}
 			return nil
 		},
 		Commands: []*cli.Command{
@@ -143,6 +170,17 @@ func main() {
 							vars.CheckCategories = append(vars.CheckCategories, gjsonArr[i].String())
 						}
 					}
+					if vars.CheckCategories == nil {
+						vars.CheckCategories = []string{"all"}
+					}
+
+					fmt.Println("Enter frequency you want to check for blocked sites:")
+					fmt.Println("1: hourly")
+					fmt.Println("2: 4 times a day (every 6 hours)")
+					fmt.Println("3: 2 times a day (every 12 hours)")
+					fmt.Println("4: once a day")
+					fmt.Println("5: once a week")
+					fmt.Scanln(&vars.TestFrequency)
 
 					type ISPStruct struct {
 						Latitude  float64 `json:"latitude"`
@@ -159,7 +197,10 @@ func main() {
 						return cli.Exit("Unable to parse server response for ISP creation request", 1)
 					}
 
-					vars.ID = gjson.Get(ISPOut, "id").String()
+					vars.ID, err = strconv.Atoi(gjson.Get(ISPOut, "id").String())
+					if err != nil {
+						return cli.Exit("Unable to retrieve the ID"+err.Error(), 1)
+					}
 
 					data, err = json.Marshal(vars)
 					if err != nil {

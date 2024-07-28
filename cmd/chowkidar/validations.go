@@ -19,10 +19,30 @@ func validateServer(server string) bool {
 	return false
 }
 func validateConfig(config Config) bool {
-	if config.ID != "" && config.City != "" && config.ISP != "" && config.Latitude != 0 && config.Longitude != 0 {
-		return true
+	if config.ID < 1 {
+		return false
 	}
-	return false
+
+	if config.ISP == "" {
+		return false
+	}
+
+	_, _, _, cityValid := validateCity(config.City)
+	if cityValid == false {
+		return false
+	}
+
+	if config.Longitude > 180 || config.Longitude < -180 {
+		return false
+	}
+
+	if config.Latitude > 90 || config.Latitude < -90 {
+		return false
+	}
+	if config.TestFrequency > 5 || config.TestFrequency < 1 {
+		return false
+	}
+	return true
 }
 func validateCity(city string) (newCity string, lat float64, lon float64, valid bool) {
 	osmOut, err := getRequest("https://nominatim.openstreetmap.org/search?q=" + city + "&format=json&polygon=1&addressdetails=1&limit=1")
