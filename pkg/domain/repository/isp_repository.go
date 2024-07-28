@@ -33,7 +33,8 @@ func (i *ispRepositoryImpl) CreateISP(ctx context.Context, isp *genapi.ISPInput)
 func (i *ispRepositoryImpl) GetAllISPs(ctx context.Context, params genapi.ListISPsParams) ([]genapi.ISP, error) {
 	query := i.db.Isps.Query().
 		Limit(params.Limit.Or(50)).
-		Offset(params.Offset.Or(0))
+		Offset(params.Offset.Or(0)).
+		WithIspBlocks()
 
 	if params.Order.Set {
 		if params.Order.Value == genapi.ListISPsOrderAsc {
@@ -49,12 +50,21 @@ func (i *ispRepositoryImpl) GetAllISPs(ctx context.Context, params genapi.ListIS
 	}
 	var res []genapi.ISP
 	for _, isp := range isps {
-		res = append(res, genapi.ISP{
+		apiIsp := genapi.ISP{
 			ID:        genapi.NewOptInt(isp.ID),
 			Name:      genapi.NewOptString(isp.Name),
 			Latitude:  genapi.NewOptFloat32(float32(isp.Latitude)),
 			Longitude: genapi.NewOptFloat32(float32(isp.Longitude)),
-		})
+			BlockReports: genapi.NewOptInt(0),
+			UnblockReports: genapi.NewOptInt(0),
+		}
+
+		for _, block := range isp.Edges.IspBlocks {
+			apiIsp.BlockReports = genapi.NewOptInt(apiIsp.GetBlockReports().Or(0) + block.BlockReports)
+			apiIsp.UnblockReports = genapi.NewOptInt(apiIsp.GetUnblockReports().Or(0) + block.UnblockReports)
+		}
+
+		res = append(res, apiIsp)
 	}
 	return res, nil
 }
