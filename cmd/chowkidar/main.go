@@ -105,11 +105,14 @@ func main() {
 			db, _ := bitcask.Open(cCtx.String("database"))
 			defer db.Close()
 			val, err := db.Get([]byte("lastRun"))
-			if err != nil || string(val) == "" {
-				fetchAndRun(config, db)
+			if err != nil {
+				return err
+			}
+			if string(val) == "" {
+					fetchAndRun(config, db)
 			} else {
 				// If it was run before, check if it has been more than `duration` since it happened
-				timeInt, err := strconv.ParseInt("1405544146", 10, 64)
+				timeInt, err := strconv.ParseInt(string(val), 10, 64)
 				if err != nil {
 					return cli.Exit("Database has invalid data or is corrupted.", 1)
 				}
