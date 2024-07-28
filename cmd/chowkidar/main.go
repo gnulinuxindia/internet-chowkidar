@@ -157,16 +157,6 @@ func main() {
 						return cli.Exit("Server "+vars.Server+" is invalid.", 1)
 					}
 
-					ipInfoOut, err := getRequest("http://ipinfo.io")
-					if err != nil {
-						return cli.Exit("Unable to retrieve ISP details from IPInfo.io", 1)
-					}
-					if !gjson.Valid(ipInfoOut) {
-						return cli.Exit("Unable to parse ISP details from IPInfo.io", 1)
-					}
-
-					vars.ISP = gjson.Get(ipInfoOut, "org").String()
-
 					cityValid := false
 					for cityValid == false {
 						fmt.Println("Enter your city (leave blank for autodetect): ")
@@ -222,6 +212,17 @@ func main() {
 					fmt.Println("4: once a day")
 					fmt.Println("5: once a week")
 					fmt.Scanln(&vars.TestFrequency)
+
+					ipInfoOut, err := getRequest("http://ipinfo.io")
+					if err != nil {
+						return cli.Exit("Unable to retrieve ISP details from IPInfo.io", 1)
+					}
+					if !gjson.Valid(ipInfoOut) {
+						return cli.Exit("Unable to parse ISP details from IPInfo.io", 1)
+					}
+
+					vars.ISP = gjson.Get(ipInfoOut, "org").String()
+					vars.ISP = vars.ISP+" ("vars.City+")"
 
 					type ISPStruct struct {
 						Latitude  float64 `json:"latitude"`
