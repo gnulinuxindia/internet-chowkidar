@@ -84,6 +84,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SiteDetails'
+  
+  /isps/{id}:
+    get:
+      summary: Get an ISP by ID
+      operationId: getISP
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ISPDetails'
     
   /isps:
     get:
@@ -401,6 +419,30 @@ components:
           format: float
         name:
           type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    
+    ISPDetails:
+      type: object
+      properties:
+        id:
+          type: integer
+        latitude:
+          type: number
+          format: float
+        longitude:
+          type: number
+          format: float
+        name:
+          type: string
+        blocks:
+          type: array
+          items:
+            $ref: '#/components/schemas/Block'
         created_at:
           type: string
           format: date-time

@@ -417,6 +417,87 @@ func (s *ISP) SetUpdatedAt(val OptDateTime) {
 	s.UpdatedAt = val
 }
 
+// Ref: #/components/schemas/ISPDetails
+type ISPDetails struct {
+	ID        OptInt      `json:"id"`
+	Latitude  OptFloat32  `json:"latitude"`
+	Longitude OptFloat32  `json:"longitude"`
+	Name      OptString   `json:"name"`
+	Blocks    []Block     `json:"blocks"`
+	CreatedAt OptDateTime `json:"created_at"`
+	UpdatedAt OptDateTime `json:"updated_at"`
+}
+
+// GetID returns the value of ID.
+func (s *ISPDetails) GetID() OptInt {
+	return s.ID
+}
+
+// GetLatitude returns the value of Latitude.
+func (s *ISPDetails) GetLatitude() OptFloat32 {
+	return s.Latitude
+}
+
+// GetLongitude returns the value of Longitude.
+func (s *ISPDetails) GetLongitude() OptFloat32 {
+	return s.Longitude
+}
+
+// GetName returns the value of Name.
+func (s *ISPDetails) GetName() OptString {
+	return s.Name
+}
+
+// GetBlocks returns the value of Blocks.
+func (s *ISPDetails) GetBlocks() []Block {
+	return s.Blocks
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *ISPDetails) GetCreatedAt() OptDateTime {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *ISPDetails) GetUpdatedAt() OptDateTime {
+	return s.UpdatedAt
+}
+
+// SetID sets the value of ID.
+func (s *ISPDetails) SetID(val OptInt) {
+	s.ID = val
+}
+
+// SetLatitude sets the value of Latitude.
+func (s *ISPDetails) SetLatitude(val OptFloat32) {
+	s.Latitude = val
+}
+
+// SetLongitude sets the value of Longitude.
+func (s *ISPDetails) SetLongitude(val OptFloat32) {
+	s.Longitude = val
+}
+
+// SetName sets the value of Name.
+func (s *ISPDetails) SetName(val OptString) {
+	s.Name = val
+}
+
+// SetBlocks sets the value of Blocks.
+func (s *ISPDetails) SetBlocks(val []Block) {
+	s.Blocks = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *ISPDetails) SetCreatedAt(val OptDateTime) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *ISPDetails) SetUpdatedAt(val OptDateTime) {
+	s.UpdatedAt = val
+}
+
 // Ref: #/components/schemas/ISPInput
 type ISPInput struct {
 	Latitude  float32 `json:"latitude"`

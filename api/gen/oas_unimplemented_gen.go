@@ -67,6 +67,15 @@ func (UnimplementedHandler) CreateSiteSuggestion(ctx context.Context, req *SiteS
 	return r, ht.ErrNotImplemented
 }
 
+// GetISP implements getISP operation.
+//
+// Get an ISP by ID.
+//
+// GET /isps/{id}
+func (UnimplementedHandler) GetISP(ctx context.Context, params GetISPParams) (r *ISPDetails, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // GetSite implements getSite operation.
 //
 // Get a site by ID.

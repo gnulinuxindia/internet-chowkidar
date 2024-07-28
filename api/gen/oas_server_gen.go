@@ -44,6 +44,12 @@ type Handler interface {
 	//
 	// POST /sites/suggestions
 	CreateSiteSuggestion(ctx context.Context, req *SiteSuggestionInput) (*SiteSuggestion, error)
+	// GetISP implements getISP operation.
+	//
+	// Get an ISP by ID.
+	//
+	// GET /isps/{id}
+	GetISP(ctx context.Context, params GetISPParams) (*ISPDetails, error)
 	// GetSite implements getSite operation.
 	//
 	// Get a site by ID.
