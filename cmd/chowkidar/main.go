@@ -159,12 +159,8 @@ func main() {
 
 					cityValid := false
 					for cityValid == false {
-						fmt.Println("Enter your city (leave blank for autodetect): ")
+						fmt.Println("Enter your city: ")
 						fmt.Scanln(&vars.City)
-						if vars.City == "" {
-							vars.City = gjson.Get(ipInfoOut, "city").String()
-							cityValid = true
-						}
 						vars.City, vars.Latitude, vars.Longitude, cityValid = validateCity(vars.City)
 						if cityValid == false {
 							log.Println("Invalid City. Please try again...")
@@ -222,7 +218,7 @@ func main() {
 					}
 
 					vars.ISP = gjson.Get(ipInfoOut, "org").String()
-					vars.ISP = vars.ISP+" ("vars.City+")"
+					vars.ISP = vars.ISP+" ("+vars.City+")"
 
 					type ISPStruct struct {
 						Latitude  float64 `json:"latitude"`
