@@ -2,15 +2,20 @@ package repository
 
 import (
 	"context"
+	"log/slog"
 
 	genapi "github.com/gnulinuxindia/internet-chowkidar/api/gen"
 	"github.com/gnulinuxindia/internet-chowkidar/ent"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/blocks"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/isps"
+	"github.com/go-errors/errors"
 )
 
 type IspRepository interface {
 	CreateISP(ctx context.Context, isp *genapi.ISPInput) (*ent.Isps, error)
 	GetAllISPs(ctx context.Context, params genapi.ListISPsParams) ([]genapi.ISP, error)
 	GetISPByID(ctx context.Context, id int) (*ent.Isps, error)
+	GetBlocksForISP(ctx context.Context, id int) ([]*ent.Blocks, error)
 }
 
 type ispRepositoryImpl struct {
@@ -55,5 +60,29 @@ func (i *ispRepositoryImpl) GetAllISPs(ctx context.Context, params genapi.ListIS
 }
 
 func (i *ispRepositoryImpl) GetISPByID(ctx context.Context, id int) (*ent.Isps, error) {
-	return i.db.Isps.Get(ctx, id)
+	db := i.getDb(ctx)
+	return db.Isps.Query().Where(isps.ID(id)).Only(ctx)
+}
+
+func (i *ispRepositoryImpl) GetBlocksForISP(ctx context.Context, id int) ([]*ent.Blocks, error) {
+	db := i.getDb(ctx)
+	blocks, err := db.Blocks.Query().
+		Where(blocks.HasIspWith(isps.ID(id))).
+		WithSite().
+		WithIsp().
+		All(ctx)
+	if err != nil {
+		slog.Error("failed to get blocks for isp", "error", err)
+		return nil, errors.Wrap(err, 0)
+	}
+
+	return blocks, nil
+}
+
+func (i *ispRepositoryImpl) getDb(ctx context.Context) *ent.Client {
+	db := ent.FromContext(ctx)
+	if db == nil {
+		db = i.db
+	}
+	return db
 }

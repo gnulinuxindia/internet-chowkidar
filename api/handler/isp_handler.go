@@ -36,5 +36,10 @@ func (i *ispHandlerImpl) CreateISP(ctx context.Context, req *genapi.ISPInput) (*
 }
 
 func (i *ispHandlerImpl) GetISP(ctx context.Context, params genapi.GetISPParams) (*genapi.ISPDetails, error) {
-	panic("not implemented")
+	isp, err := i.ispService.GetISP(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+
+	return isp, nil
 }

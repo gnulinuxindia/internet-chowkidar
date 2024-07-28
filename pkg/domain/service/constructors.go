@@ -21,9 +21,12 @@ func ProvideCategoriesService(
 
 func ProvideIspService(
 	repo repository.IspRepository,
+	txHandler repository.TxHandler,
 ) IspService {
 	return &ispServiceImpl{
 		repo: repo,
+
+		txHandler: txHandler,
 	}
 }
 

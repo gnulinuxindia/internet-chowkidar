@@ -49,7 +49,7 @@ func InjectHandlers() (*api.Handlers, error) {
 	categoryHandler := handler.ProvideCategoryHandler(categoriesService)
 	healthHandler := handler.ProvideHealthHandler()
 	ispRepository := repository.ProvideIspRepository(client)
-	ispService := service.ProvideIspService(ispRepository)
+	ispService := service.ProvideIspService(ispRepository, txHandler)
 	ispHandler := handler.ProvideIspHandler(ispService)
 	reportsHandler := handler.ProvideReportsHandler()
 	sitesHandler := handler.ProvideSitesHandler(sitesService)
@@ -88,7 +88,7 @@ func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
 	categoryHandler := handler.ProvideCategoryHandler(categoriesService)
 	healthHandler := handler.ProvideHealthHandler()
 	ispRepository := repository.ProvideIspRepository(client)
-	ispService := service.ProvideIspService(ispRepository)
+	ispService := service.ProvideIspService(ispRepository, txHandler)
 	ispHandler := handler.ProvideIspHandler(ispService)
 	reportsHandler := handler.ProvideReportsHandler()
 	sitesHandler := handler.ProvideSitesHandler(sitesService)
@@ -122,9 +122,9 @@ func InjectServices() (*di.Services, error) {
 	categoriesRepository := repository.ProvideCategoriesRepository(client)
 	categoriesService := service.ProvideCategoriesService(categoriesRepository)
 	ispRepository := repository.ProvideIspRepository(client)
-	ispService := service.ProvideIspService(ispRepository)
-	sitesRepository := repository.ProvideSitesRepository(client)
 	txHandler := repository.NewTxHandler(client)
+	ispService := service.ProvideIspService(ispRepository, txHandler)
+	sitesRepository := repository.ProvideSitesRepository(client)
 	sitesService := service.ProvideSitesService(sitesRepository, blocksRepository, txHandler)
 	services := &di.Services{
 		BlocksService:     blocksService,
@@ -153,9 +153,9 @@ func InjectMockServices(ctrl *gomock.Controller) (*di.Services, error) {
 	categoriesRepository := repository.ProvideCategoriesRepository(client)
 	categoriesService := service.ProvideCategoriesService(categoriesRepository)
 	ispRepository := repository.ProvideIspRepository(client)
-	ispService := service.ProvideIspService(ispRepository)
-	sitesRepository := repository.ProvideSitesRepository(client)
 	txHandler := repository.NewTxHandler(client)
+	ispService := service.ProvideIspService(ispRepository, txHandler)
+	sitesRepository := repository.ProvideSitesRepository(client)
 	sitesService := service.ProvideSitesService(sitesRepository, blocksRepository, txHandler)
 	services := &di.Services{
 		BlocksService:     blocksService,

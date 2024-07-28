@@ -340,7 +340,7 @@ components:
       required:
         - id
         - domain
-        - tags
+        - categories
         - block_reports
         - unblock_reports
         - last_reported_at
@@ -428,6 +428,14 @@ components:
     
     ISPDetails:
       type: object
+      required:
+        - id
+        - latitude
+        - longitude
+        - name
+        - blocks
+        - created_at
+        - updated_at
       properties:
         id:
           type: integer
@@ -442,7 +450,7 @@ components:
         blocks:
           type: array
           items:
-            $ref: '#/components/schemas/Block'
+            $ref: '#/components/schemas/ISPBlock'
         created_at:
           type: string
           format: date-time
@@ -474,6 +482,38 @@ components:
         site_id:
           type: integer
         isp_id:
+          type: integer
+        last_reported_at:
+          type: string
+          format: date-time
+        block_reports:
+          type: integer
+        unblock_reports:
+          type: integer
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    
+    ISPBlock:
+      type: object
+      required:
+        - id
+        - site_id
+        - domain
+        - last_reported_at
+        - block_reports
+        - unblock_reports
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: integer
+        domain:
+          type: string
+        site_id:
           type: integer
         last_reported_at:
           type: string

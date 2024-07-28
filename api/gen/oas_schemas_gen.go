@@ -417,84 +417,176 @@ func (s *ISP) SetUpdatedAt(val OptDateTime) {
 	s.UpdatedAt = val
 }
 
-// Ref: #/components/schemas/ISPDetails
-type ISPDetails struct {
-	ID        OptInt      `json:"id"`
-	Latitude  OptFloat32  `json:"latitude"`
-	Longitude OptFloat32  `json:"longitude"`
-	Name      OptString   `json:"name"`
-	Blocks    []Block     `json:"blocks"`
-	CreatedAt OptDateTime `json:"created_at"`
-	UpdatedAt OptDateTime `json:"updated_at"`
+// Ref: #/components/schemas/ISPBlock
+type ISPBlock struct {
+	ID             int       `json:"id"`
+	Domain         string    `json:"domain"`
+	SiteID         int       `json:"site_id"`
+	LastReportedAt time.Time `json:"last_reported_at"`
+	BlockReports   int       `json:"block_reports"`
+	UnblockReports int       `json:"unblock_reports"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
 }
 
 // GetID returns the value of ID.
-func (s *ISPDetails) GetID() OptInt {
+func (s *ISPBlock) GetID() int {
 	return s.ID
 }
 
-// GetLatitude returns the value of Latitude.
-func (s *ISPDetails) GetLatitude() OptFloat32 {
-	return s.Latitude
+// GetDomain returns the value of Domain.
+func (s *ISPBlock) GetDomain() string {
+	return s.Domain
 }
 
-// GetLongitude returns the value of Longitude.
-func (s *ISPDetails) GetLongitude() OptFloat32 {
-	return s.Longitude
+// GetSiteID returns the value of SiteID.
+func (s *ISPBlock) GetSiteID() int {
+	return s.SiteID
 }
 
-// GetName returns the value of Name.
-func (s *ISPDetails) GetName() OptString {
-	return s.Name
+// GetLastReportedAt returns the value of LastReportedAt.
+func (s *ISPBlock) GetLastReportedAt() time.Time {
+	return s.LastReportedAt
 }
 
-// GetBlocks returns the value of Blocks.
-func (s *ISPDetails) GetBlocks() []Block {
-	return s.Blocks
+// GetBlockReports returns the value of BlockReports.
+func (s *ISPBlock) GetBlockReports() int {
+	return s.BlockReports
+}
+
+// GetUnblockReports returns the value of UnblockReports.
+func (s *ISPBlock) GetUnblockReports() int {
+	return s.UnblockReports
 }
 
 // GetCreatedAt returns the value of CreatedAt.
-func (s *ISPDetails) GetCreatedAt() OptDateTime {
+func (s *ISPBlock) GetCreatedAt() time.Time {
 	return s.CreatedAt
 }
 
 // GetUpdatedAt returns the value of UpdatedAt.
-func (s *ISPDetails) GetUpdatedAt() OptDateTime {
+func (s *ISPBlock) GetUpdatedAt() time.Time {
 	return s.UpdatedAt
 }
 
 // SetID sets the value of ID.
-func (s *ISPDetails) SetID(val OptInt) {
+func (s *ISPBlock) SetID(val int) {
 	s.ID = val
 }
 
-// SetLatitude sets the value of Latitude.
-func (s *ISPDetails) SetLatitude(val OptFloat32) {
-	s.Latitude = val
+// SetDomain sets the value of Domain.
+func (s *ISPBlock) SetDomain(val string) {
+	s.Domain = val
 }
 
-// SetLongitude sets the value of Longitude.
-func (s *ISPDetails) SetLongitude(val OptFloat32) {
-	s.Longitude = val
+// SetSiteID sets the value of SiteID.
+func (s *ISPBlock) SetSiteID(val int) {
+	s.SiteID = val
 }
 
-// SetName sets the value of Name.
-func (s *ISPDetails) SetName(val OptString) {
-	s.Name = val
+// SetLastReportedAt sets the value of LastReportedAt.
+func (s *ISPBlock) SetLastReportedAt(val time.Time) {
+	s.LastReportedAt = val
 }
 
-// SetBlocks sets the value of Blocks.
-func (s *ISPDetails) SetBlocks(val []Block) {
-	s.Blocks = val
+// SetBlockReports sets the value of BlockReports.
+func (s *ISPBlock) SetBlockReports(val int) {
+	s.BlockReports = val
+}
+
+// SetUnblockReports sets the value of UnblockReports.
+func (s *ISPBlock) SetUnblockReports(val int) {
+	s.UnblockReports = val
 }
 
 // SetCreatedAt sets the value of CreatedAt.
-func (s *ISPDetails) SetCreatedAt(val OptDateTime) {
+func (s *ISPBlock) SetCreatedAt(val time.Time) {
 	s.CreatedAt = val
 }
 
 // SetUpdatedAt sets the value of UpdatedAt.
-func (s *ISPDetails) SetUpdatedAt(val OptDateTime) {
+func (s *ISPBlock) SetUpdatedAt(val time.Time) {
+	s.UpdatedAt = val
+}
+
+// Ref: #/components/schemas/ISPDetails
+type ISPDetails struct {
+	ID        int        `json:"id"`
+	Latitude  float32    `json:"latitude"`
+	Longitude float32    `json:"longitude"`
+	Name      string     `json:"name"`
+	Blocks    []ISPBlock `json:"blocks"`
+	CreatedAt time.Time  `json:"created_at"`
+	UpdatedAt time.Time  `json:"updated_at"`
+}
+
+// GetID returns the value of ID.
+func (s *ISPDetails) GetID() int {
+	return s.ID
+}
+
+// GetLatitude returns the value of Latitude.
+func (s *ISPDetails) GetLatitude() float32 {
+	return s.Latitude
+}
+
+// GetLongitude returns the value of Longitude.
+func (s *ISPDetails) GetLongitude() float32 {
+	return s.Longitude
+}
+
+// GetName returns the value of Name.
+func (s *ISPDetails) GetName() string {
+	return s.Name
+}
+
+// GetBlocks returns the value of Blocks.
+func (s *ISPDetails) GetBlocks() []ISPBlock {
+	return s.Blocks
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *ISPDetails) GetCreatedAt() time.Time {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *ISPDetails) GetUpdatedAt() time.Time {
+	return s.UpdatedAt
+}
+
+// SetID sets the value of ID.
+func (s *ISPDetails) SetID(val int) {
+	s.ID = val
+}
+
+// SetLatitude sets the value of Latitude.
+func (s *ISPDetails) SetLatitude(val float32) {
+	s.Latitude = val
+}
+
+// SetLongitude sets the value of Longitude.
+func (s *ISPDetails) SetLongitude(val float32) {
+	s.Longitude = val
+}
+
+// SetName sets the value of Name.
+func (s *ISPDetails) SetName(val string) {
+	s.Name = val
+}
+
+// SetBlocks sets the value of Blocks.
+func (s *ISPDetails) SetBlocks(val []ISPBlock) {
+	s.Blocks = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *ISPDetails) SetCreatedAt(val time.Time) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *ISPDetails) SetUpdatedAt(val time.Time) {
 	s.UpdatedAt = val
 }
 
