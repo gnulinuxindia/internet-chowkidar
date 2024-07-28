@@ -349,12 +349,14 @@ func (s *CreateCategoryReq) SetName(val string) {
 
 // Ref: #/components/schemas/ISP
 type ISP struct {
-	ID        OptInt      `json:"id"`
-	Latitude  OptFloat32  `json:"latitude"`
-	Longitude OptFloat32  `json:"longitude"`
-	Name      OptString   `json:"name"`
-	CreatedAt OptDateTime `json:"created_at"`
-	UpdatedAt OptDateTime `json:"updated_at"`
+	ID             OptInt      `json:"id"`
+	Latitude       OptFloat32  `json:"latitude"`
+	Longitude      OptFloat32  `json:"longitude"`
+	Name           OptString   `json:"name"`
+	BlockReports   OptInt      `json:"block_reports"`
+	UnblockReports OptInt      `json:"unblock_reports"`
+	CreatedAt      OptDateTime `json:"created_at"`
+	UpdatedAt      OptDateTime `json:"updated_at"`
 }
 
 // GetID returns the value of ID.
@@ -375,6 +377,16 @@ func (s *ISP) GetLongitude() OptFloat32 {
 // GetName returns the value of Name.
 func (s *ISP) GetName() OptString {
 	return s.Name
+}
+
+// GetBlockReports returns the value of BlockReports.
+func (s *ISP) GetBlockReports() OptInt {
+	return s.BlockReports
+}
+
+// GetUnblockReports returns the value of UnblockReports.
+func (s *ISP) GetUnblockReports() OptInt {
+	return s.UnblockReports
 }
 
 // GetCreatedAt returns the value of CreatedAt.
@@ -405,6 +417,16 @@ func (s *ISP) SetLongitude(val OptFloat32) {
 // SetName sets the value of Name.
 func (s *ISP) SetName(val OptString) {
 	s.Name = val
+}
+
+// SetBlockReports sets the value of BlockReports.
+func (s *ISP) SetBlockReports(val OptInt) {
+	s.BlockReports = val
+}
+
+// SetUnblockReports sets the value of UnblockReports.
+func (s *ISP) SetUnblockReports(val OptInt) {
+	s.UnblockReports = val
 }
 
 // SetCreatedAt sets the value of CreatedAt.

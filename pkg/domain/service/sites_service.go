@@ -86,6 +86,8 @@ func (s *sitesServiceImpl) GetSite(ctx context.Context, params genapi.GetSitePar
 			Name:      genapi.NewOptString(blockIsp.Name),
 			Latitude:  genapi.NewOptFloat32(float32(blockIsp.Latitude)),
 			Longitude: genapi.NewOptFloat32(float32(blockIsp.Longitude)),
+			BlockReports: genapi.NewOptInt(block.BlockReports),
+			UnblockReports: genapi.NewOptInt(block.UnblockReports),
 			CreatedAt: genapi.NewOptDateTime(blockIsp.CreatedAt),
 			UpdatedAt: genapi.NewOptDateTime(blockIsp.UpdatedAt),
 		}

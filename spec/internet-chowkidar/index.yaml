@@ -419,6 +419,10 @@ components:
           format: float
         name:
           type: string
+        block_reports:
+          type: integer
+        unblock_reports:
+          type: integer
         created_at:
           type: string
           format: date-time
