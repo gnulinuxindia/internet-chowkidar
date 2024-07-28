@@ -7,6 +7,7 @@ import (
 
 	genapi "github.com/gnulinuxindia/internet-chowkidar/api/gen"
 	"github.com/gnulinuxindia/internet-chowkidar/ent"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/blocks"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/categories"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/predicate"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
@@ -17,6 +18,7 @@ type SitesRepository interface {
 	CreateSite(ctx context.Context, req *genapi.SiteInput) (*ent.Sites, error)
 	GetAllSites(ctx context.Context, params genapi.ListSitesParams) ([]genapi.Site, error)
 	GetSiteByDomain(ctx context.Context, domain string) (*ent.Sites, error)
+	GetSiteBlocksByID(ctx context.Context, id int) ([]*ent.Blocks, error)
 	GetSiteByID(ctx context.Context, id int) (*ent.Sites, error)
 }
 
@@ -170,7 +172,7 @@ func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.Lis
 				// Add the block and unblock reports
 				sites[site.Domain].BlockReports += block.BlockReports
 				sites[site.Domain].UnblockReports += block.UnblockReports
-	
+
 				// Update the last reported at
 				if sites[site.Domain].LastReportedAt.Before(block.LastReportedAt) {
 					sites[site.Domain].LastReportedAt = block.LastReportedAt
@@ -189,11 +191,43 @@ func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.Lis
 }
 
 func (s *sitesRepositoryImpl) GetSiteByDomain(ctx context.Context, domain string) (*ent.Sites, error) {
-	return s.db.Sites.Query().
+	db := s.getDb(ctx)
+
+	return db.Sites.Query().
 		Where(sites.DomainEQ(domain)).
 		First(ctx)
 }
 
+func (s *sitesRepositoryImpl) GetSiteBlocksByID(ctx context.Context, id int) ([]*ent.Blocks, error) {
+	db := s.getDb(ctx)
+
+	blocks, err := db.Blocks.Query().
+		Where(blocks.HasSiteWith(sites.ID(id))).
+		WithSite().
+		WithIsp().
+		All(ctx)
+	if err != nil {
+		slog.Error("failed to get blocks", "error", err)
+		return nil, errors.Wrap(err, 0)
+	}
+
+	if len(blocks) == 0 {
+		return nil, nil
+	}
+
+	return blocks, nil
+}
+
 func (s *sitesRepositoryImpl) GetSiteByID(ctx context.Context, id int) (*ent.Sites, error) {
-	return s.db.Sites.Get(ctx, id)
+	db := s.getDb(ctx)
+
+	return db.Sites.Query().WithCategories().Where(sites.ID(id)).First(ctx)
+}
+
+func (s *sitesRepositoryImpl) getDb(ctx context.Context) *ent.Client {
+	db := ent.FromContext(ctx)
+	if db == nil {
+		return s.db
+	}
+	return db
 }

@@ -32,7 +32,12 @@ func (s *sitesHandlerImpl) CreateSite(ctx context.Context, req *genapi.SiteInput
 }
 
 func (s *sitesHandlerImpl) GetSite(ctx context.Context, params genapi.GetSiteParams) (*genapi.SiteDetails, error) {
-	panic("not implemented")
+	siteDetails, err := s.sitesService.GetSite(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+
+	return siteDetails, nil
 }
 
 func (s *sitesHandlerImpl) CreateSiteSuggestion(ctx context.Context, req *genapi.SiteSuggestionInput) (*genapi.SiteSuggestion, error) {

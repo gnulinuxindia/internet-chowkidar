@@ -41,7 +41,8 @@ func InjectHandlers() (*api.Handlers, error) {
 	blocksRepository := repository.ProvideBlocksRepository(client)
 	blocksService := service.ProvideBlocksService(blocksRepository)
 	sitesRepository := repository.ProvideSitesRepository(client)
-	sitesService := service.ProvideSitesService(sitesRepository, blocksRepository)
+	txHandler := repository.NewTxHandler(client)
+	sitesService := service.ProvideSitesService(sitesRepository, blocksRepository, txHandler)
 	blocksHandler := handler.ProvideBlocksHandler(blocksService, sitesService)
 	categoriesRepository := repository.ProvideCategoriesRepository(client)
 	categoriesService := service.ProvideCategoriesService(categoriesRepository)
@@ -79,7 +80,8 @@ func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
 	blocksRepository := repository.ProvideBlocksRepository(client)
 	blocksService := service.ProvideBlocksService(blocksRepository)
 	sitesRepository := repository.ProvideSitesRepository(client)
-	sitesService := service.ProvideSitesService(sitesRepository, blocksRepository)
+	txHandler := repository.NewTxHandler(client)
+	sitesService := service.ProvideSitesService(sitesRepository, blocksRepository, txHandler)
 	blocksHandler := handler.ProvideBlocksHandler(blocksService, sitesService)
 	categoriesRepository := repository.ProvideCategoriesRepository(client)
 	categoriesService := service.ProvideCategoriesService(categoriesRepository)
@@ -122,7 +124,8 @@ func InjectServices() (*di.Services, error) {
 	ispRepository := repository.ProvideIspRepository(client)
 	ispService := service.ProvideIspService(ispRepository)
 	sitesRepository := repository.ProvideSitesRepository(client)
-	sitesService := service.ProvideSitesService(sitesRepository, blocksRepository)
+	txHandler := repository.NewTxHandler(client)
+	sitesService := service.ProvideSitesService(sitesRepository, blocksRepository, txHandler)
 	services := &di.Services{
 		BlocksService:     blocksService,
 		CategoriesService: categoriesService,
@@ -152,7 +155,8 @@ func InjectMockServices(ctrl *gomock.Controller) (*di.Services, error) {
 	ispRepository := repository.ProvideIspRepository(client)
 	ispService := service.ProvideIspService(ispRepository)
 	sitesRepository := repository.ProvideSitesRepository(client)
-	sitesService := service.ProvideSitesService(sitesRepository, blocksRepository)
+	txHandler := repository.NewTxHandler(client)
+	sitesService := service.ProvideSitesService(sitesRepository, blocksRepository, txHandler)
 	services := &di.Services{
 		BlocksService:     blocksService,
 		CategoriesService: categoriesService,
@@ -288,18 +292,18 @@ func InjectConfig() (*config.Config, error) {
 	return configConfig, nil
 }
 
-func InjectTxHandler() (*repository.TxHandler, error) {
+func InjectTxHandler() (repository.TxHandler, error) {
 	configConfig, err := config.ProvideConfig()
 	if err != nil {
-		return nil, err
+		return repository.TxHandler{}, err
 	}
 	sqlDB, err := db.ProvideRawDB(configConfig)
 	if err != nil {
-		return nil, err
+		return repository.TxHandler{}, err
 	}
 	client, err := db.ProvideDB(sqlDB, configConfig)
 	if err != nil {
-		return nil, err
+		return repository.TxHandler{}, err
 	}
 	txHandler := repository.NewTxHandler(client)
 	return txHandler, nil
@@ -311,8 +315,8 @@ var dbSet = wire.NewSet(db.ProvideDB, db.ProvideRawDB, config.ProvideConfig)
 
 var mockDbSet = wire.NewSet(db.ProvideDB, db.ProvideRawDB, config.ProvideConfig)
 
-var concreteSet = wire.NewSet(api.HandlerSet, di.RepositorySet, di.ServiceSet)
+var concreteSet = wire.NewSet(api.HandlerSet, di.RepositorySet, di.ServiceSet, repository.NewTxHandler)
 
-var mockSet = wire.NewSet(api.MockHandlerSet, di.MockRepositorySet, di.MockServiceSet)
+var mockSet = wire.NewSet(api.MockHandlerSet, di.MockRepositorySet, di.MockServiceSet, repository.NewTxHandler)
 
 var tracingSet = wire.NewSet(config.ProvideConfig, tracing.ProvideTracerProvider)

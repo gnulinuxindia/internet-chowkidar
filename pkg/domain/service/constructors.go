@@ -30,10 +30,13 @@ func ProvideIspService(
 func ProvideSitesService(
 	sitesRepository repository.SitesRepository,
 	blocksRepository repository.BlocksRepository,
+	txHandler repository.TxHandler,
 ) SitesService {
 	return &sitesServiceImpl{
 		sitesRepository: sitesRepository,
 
 		blocksRepository: blocksRepository,
+
+		txHandler: txHandler,
 	}
 }

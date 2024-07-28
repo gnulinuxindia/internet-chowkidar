@@ -35,12 +35,14 @@ var concreteSet = wire.NewSet(
 	api.HandlerSet,
 	domainProvider.RepositorySet,
 	domainProvider.ServiceSet,
+	repository.NewTxHandler,
 )
 
 var mockSet = wire.NewSet(
 	api.MockHandlerSet,
 	domainProvider.MockRepositorySet,
 	domainProvider.MockServiceSet,
+	repository.NewTxHandler,
 )
 
 var tracingSet = wire.NewSet(
@@ -106,7 +108,7 @@ func InjectConfig() (*config.Config, error) {
 	return &config.Config{}, nil
 }
 
-func InjectTxHandler() (*repository.TxHandler, error) {
+func InjectTxHandler() (repository.TxHandler, error) {
 	wire.Build(dbSet, repository.NewTxHandler)
-	return &repository.TxHandler{}, nil
+	return repository.TxHandler{}, nil
 }

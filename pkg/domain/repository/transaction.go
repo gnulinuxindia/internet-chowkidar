@@ -13,18 +13,13 @@ type TxHandler struct {
 	client *ent.Client
 }
 
-func NewTxHandler(client *ent.Client) *TxHandler {
-	return &TxHandler{client: client}
+func NewTxHandler(client *ent.Client) TxHandler {
+	return TxHandler{client: client}
 }
 
-func (t *TxHandler) Begin(ctx *context.Context) error {
-	tx, err := t.client.Tx(*ctx)
-	if err != nil {
-		return err
-	}
-
-	(*ctx) = context.WithValue(*ctx, TxKey, tx)
-	return nil
+func (t *TxHandler) Begin(ctx context.Context) (*ent.Tx, error) {
+	tx, err := t.client.Tx(ctx)
+	return tx, err
 }
 
 func (t *TxHandler) GetTxFromCtx(ctx context.Context) (*ent.Tx, error) {
