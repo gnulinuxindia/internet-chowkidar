@@ -106,7 +106,11 @@ func main() {
 			defer db.Close()
 			val, err := db.Get([]byte("lastRun"))
 			if err != nil {
-				return err
+				if strings.Contains(err.Error(), "key not found") {
+					fetchAndRun(config,db)
+				} else {
+					return err
+				}
 			}
 			if string(val) == "" {
 					fetchAndRun(config, db)
