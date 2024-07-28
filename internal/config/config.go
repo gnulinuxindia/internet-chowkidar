@@ -32,6 +32,8 @@ type Config struct {
 	Env    string `koanf:"ENV"`
 	Port   string `koanf:"PORT"`
 	Listen string `koanf:"LISTEN"`
+
+	ApiKey string `koanf:"API_KEY"`
 }
 
 var Conf *Config

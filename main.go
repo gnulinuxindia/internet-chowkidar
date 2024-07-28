@@ -61,9 +61,15 @@ func main() {
 		handleErr(err)
 	}
 
+	secHandler, err := di.InjectSecurityHandler()
+	if err != nil {
+		handleErr(err)
+	}
+
 	var server *genapi.Server
 	if server, err = genapi.NewServer(
 		handlers,
+		secHandler,
 		genapi.WithTracerProvider(tp),
 		genapi.WithMiddleware(
 			middleware.PanicCapture(),

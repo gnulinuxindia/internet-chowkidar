@@ -52,6 +52,8 @@ paths:
                 items:
                   $ref: '#/components/schemas/Site'
     post:
+      security:
+        - ApiKeyAuth: []
       operationId: createSite
       summary: Create a new site
       requestBody:
@@ -300,6 +302,11 @@ paths:
                 example: 'ok'
 
 components:
+  securitySchemes:
+      ApiKeyAuth:
+        type: apiKey
+        in: header
+        name: X-Api-Key
   schemas:
     Site:
       type: object

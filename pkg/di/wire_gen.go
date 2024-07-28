@@ -64,6 +64,15 @@ func InjectHandlers() (*api.Handlers, error) {
 	return handlers, nil
 }
 
+func InjectSecurityHandler() (handler.SecurityHandler, error) {
+	configConfig, err := config.ProvideConfig()
+	if err != nil {
+		return nil, err
+	}
+	securityHandler := handler.NewSecurityHandler(configConfig)
+	return securityHandler, nil
+}
+
 func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
 	configConfig, err := config.ProvideConfig()
 	if err != nil {

@@ -7,6 +7,7 @@ import (
 	"database/sql"
 
 	"github.com/gnulinuxindia/internet-chowkidar/api"
+	"github.com/gnulinuxindia/internet-chowkidar/api/handler"
 	"github.com/gnulinuxindia/internet-chowkidar/ent"
 	"github.com/gnulinuxindia/internet-chowkidar/internal/config"
 	"github.com/gnulinuxindia/internet-chowkidar/internal/db"
@@ -54,6 +55,10 @@ var tracingSet = wire.NewSet(
 func InjectHandlers() (*api.Handlers, error) {
 	wire.Build(concreteSet, dbSet)
 	return &api.Handlers{}, nil
+}
+
+func InjectSecurityHandler() (handler.SecurityHandler, error) {
+	panic(wire.Build(config.ProvideConfig, handler.NewSecurityHandler))
 }
 
 func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {

@@ -156,6 +156,20 @@ func (s *AbuseReportStatus) UnmarshalText(data []byte) error {
 	}
 }
 
+type ApiKeyAuth struct {
+	APIKey string
+}
+
+// GetAPIKey returns the value of APIKey.
+func (s *ApiKeyAuth) GetAPIKey() string {
+	return s.APIKey
+}
+
+// SetAPIKey sets the value of APIKey.
+func (s *ApiKeyAuth) SetAPIKey(val string) {
+	s.APIKey = val
+}
+
 // Ref: #/components/schemas/Block
 type Block struct {
 	ID             OptInt      `json:"id"`
