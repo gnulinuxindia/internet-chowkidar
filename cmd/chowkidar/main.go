@@ -17,14 +17,14 @@ import (
 )
 
 type Config struct {
-	ID              int           `json:"id"`
-	Server          string        `json:"server"`
-	ISP             string        `json:"isp"`
-	City            string        `json:"city"`
-	Latitude        float64       `json:"lat"`
-	Longitude       float64       `json:"lon"`
-	CheckCategories []string      `json:"categories"`
-	TestFrequency   time.Duration `json:"testFrequency"`
+	ID              int      `json:"id"`
+	Server          string   `json:"server"`
+	ISP             string   `json:"isp"`
+	City            string   `json:"city"`
+	Latitude        float64  `json:"lat"`
+	Longitude       float64  `json:"lon"`
+	CheckCategories []string `json:"categories"`
+	TestFrequency   int      `json:"testFrequency"`
 }
 
 func Version() string {
@@ -148,9 +148,9 @@ func main() {
 						return cli.Exit("Unable to parse categories from server", 1)
 					}
 
-					gjsonArr := gjson.Get(categoriesOut, "categories").Array()
+					gjsonArr := gjson.Get(categoriesOut, "#.name").Array()
 
-					f, err := fzf.New(fzf.WithNoLimit(true))
+					f, err := fzf.New(fzf.WithNoLimit(true), fzf.WithPrompt("Enter categories you want to use (tab to select; enter to submit): "),)
 					if err != nil {
 						fmt.Println("Unable to initialize go-fzf, printing all categories as is:")
 						for i := range gjsonArr {

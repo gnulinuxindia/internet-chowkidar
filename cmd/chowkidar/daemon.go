@@ -28,7 +28,7 @@ func fetchAndRun(config Config) error {
 
 		var blocked bool
 		// If it times out or has part of the government boilerplate
-		if err != nil || (strings.Contains(siteData, "blocked") && strings.Contains(siteData, "directions")) {
+		if err != nil || (strings.Contains(siteData, "blocked") && (strings.Contains(siteData, "directions") || strings.Contains(siteData, "order"))) {
 			blocked = true
 			fmt.Println("Site " + domains[i].String() + " reported as blocked")
 		} else {
