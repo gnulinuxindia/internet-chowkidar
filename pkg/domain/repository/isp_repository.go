@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"log/slog"
+	"time"
 
 	genapi "github.com/gnulinuxindia/internet-chowkidar/api/gen"
 	"github.com/gnulinuxindia/internet-chowkidar/ent"
@@ -62,6 +63,9 @@ func (i *ispRepositoryImpl) GetAllISPs(ctx context.Context, params genapi.ListIS
 		for _, block := range isp.Edges.IspBlocks {
 			apiIsp.BlockReports = genapi.NewOptInt(apiIsp.GetBlockReports().Or(0) + block.BlockReports)
 			apiIsp.UnblockReports = genapi.NewOptInt(apiIsp.GetUnblockReports().Or(0) + block.UnblockReports)
+			if apiIsp.LastReportedAt.Or(time.Time{}).Before(block.LastReportedAt) {
+				apiIsp.LastReportedAt = genapi.NewOptDateTime(block.LastReportedAt)
+			}
 		}
 
 		res = append(res, apiIsp)

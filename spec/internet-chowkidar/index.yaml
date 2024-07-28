@@ -423,6 +423,9 @@ components:
           type: integer
         unblock_reports:
           type: integer
+        last_reported_at:
+          type: string
+          format: date-time
         created_at:
           type: string
           format: date-time

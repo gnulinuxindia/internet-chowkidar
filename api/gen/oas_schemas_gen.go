@@ -355,6 +355,7 @@ type ISP struct {
 	Name           OptString   `json:"name"`
 	BlockReports   OptInt      `json:"block_reports"`
 	UnblockReports OptInt      `json:"unblock_reports"`
+	LastReportedAt OptDateTime `json:"last_reported_at"`
 	CreatedAt      OptDateTime `json:"created_at"`
 	UpdatedAt      OptDateTime `json:"updated_at"`
 }
@@ -387,6 +388,11 @@ func (s *ISP) GetBlockReports() OptInt {
 // GetUnblockReports returns the value of UnblockReports.
 func (s *ISP) GetUnblockReports() OptInt {
 	return s.UnblockReports
+}
+
+// GetLastReportedAt returns the value of LastReportedAt.
+func (s *ISP) GetLastReportedAt() OptDateTime {
+	return s.LastReportedAt
 }
 
 // GetCreatedAt returns the value of CreatedAt.
@@ -427,6 +433,11 @@ func (s *ISP) SetBlockReports(val OptInt) {
 // SetUnblockReports sets the value of UnblockReports.
 func (s *ISP) SetUnblockReports(val OptInt) {
 	s.UnblockReports = val
+}
+
+// SetLastReportedAt sets the value of LastReportedAt.
+func (s *ISP) SetLastReportedAt(val OptDateTime) {
+	s.LastReportedAt = val
 }
 
 // SetCreatedAt sets the value of CreatedAt.

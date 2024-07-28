@@ -933,6 +933,12 @@ func (s *ISP) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.LastReportedAt.Set {
+			e.FieldStart("last_reported_at")
+			s.LastReportedAt.Encode(e, json.EncodeDateTime)
+		}
+	}
+	{
 		if s.CreatedAt.Set {
 			e.FieldStart("created_at")
 			s.CreatedAt.Encode(e, json.EncodeDateTime)
@@ -946,15 +952,16 @@ func (s *ISP) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfISP = [8]string{
+var jsonFieldsNameOfISP = [9]string{
 	0: "id",
 	1: "latitude",
 	2: "longitude",
 	3: "name",
 	4: "block_reports",
 	5: "unblock_reports",
-	6: "created_at",
-	7: "updated_at",
+	6: "last_reported_at",
+	7: "created_at",
+	8: "updated_at",
 }
 
 // Decode decodes ISP from json.
@@ -1024,6 +1031,16 @@ func (s *ISP) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"unblock_reports\"")
+			}
+		case "last_reported_at":
+			if err := func() error {
+				s.LastReportedAt.Reset()
+				if err := s.LastReportedAt.Decode(d, json.DecodeDateTime); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"last_reported_at\"")
 			}
 		case "created_at":
 			if err := func() error {
