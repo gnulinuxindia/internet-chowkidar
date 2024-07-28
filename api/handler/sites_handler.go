@@ -12,6 +12,7 @@ type SitesHandler interface {
 	ListSiteSuggestions(ctx context.Context) ([]genapi.SiteSuggestion, error)
 	CreateSite(ctx context.Context, req *genapi.SiteInput) (*genapi.SiteCreate, error)
 	CreateSiteSuggestion(ctx context.Context, req *genapi.SiteSuggestionInput) (*genapi.SiteSuggestion, error)
+	GetSite(ctx context.Context, params genapi.GetSiteParams) (*genapi.SiteDetails, error)
 }
 
 type sitesHandlerImpl struct {
@@ -28,6 +29,10 @@ func (s *sitesHandlerImpl) ListSiteSuggestions(ctx context.Context) ([]genapi.Si
 
 func (s *sitesHandlerImpl) CreateSite(ctx context.Context, req *genapi.SiteInput) (*genapi.SiteCreate, error) {
 	return s.sitesService.CreateSite(ctx, req)
+}
+
+func (s *sitesHandlerImpl) GetSite(ctx context.Context, params genapi.GetSiteParams) (*genapi.SiteDetails, error) {
+	panic("not implemented")
 }
 
 func (s *sitesHandlerImpl) CreateSiteSuggestion(ctx context.Context, req *genapi.SiteSuggestionInput) (*genapi.SiteSuggestion, error) {

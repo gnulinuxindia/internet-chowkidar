@@ -1044,6 +1044,109 @@ func (s *SiteCreate) SetUpdatedAt(val time.Time) {
 	s.UpdatedAt = val
 }
 
+// Ref: #/components/schemas/SiteDetails
+type SiteDetails struct {
+	ID             int       `json:"id"`
+	Domain         string    `json:"domain"`
+	Categories     []string  `json:"categories"`
+	BlockReports   int       `json:"block_reports"`
+	UnblockReports int       `json:"unblock_reports"`
+	LastReportedAt time.Time `json:"last_reported_at"`
+	BlockedByIsps  []ISP     `json:"blocked_by_isps"`
+	CreatedAt      time.Time `json:"created_at"`
+	UpdatedAt      time.Time `json:"updated_at"`
+}
+
+// GetID returns the value of ID.
+func (s *SiteDetails) GetID() int {
+	return s.ID
+}
+
+// GetDomain returns the value of Domain.
+func (s *SiteDetails) GetDomain() string {
+	return s.Domain
+}
+
+// GetCategories returns the value of Categories.
+func (s *SiteDetails) GetCategories() []string {
+	return s.Categories
+}
+
+// GetBlockReports returns the value of BlockReports.
+func (s *SiteDetails) GetBlockReports() int {
+	return s.BlockReports
+}
+
+// GetUnblockReports returns the value of UnblockReports.
+func (s *SiteDetails) GetUnblockReports() int {
+	return s.UnblockReports
+}
+
+// GetLastReportedAt returns the value of LastReportedAt.
+func (s *SiteDetails) GetLastReportedAt() time.Time {
+	return s.LastReportedAt
+}
+
+// GetBlockedByIsps returns the value of BlockedByIsps.
+func (s *SiteDetails) GetBlockedByIsps() []ISP {
+	return s.BlockedByIsps
+}
+
+// GetCreatedAt returns the value of CreatedAt.
+func (s *SiteDetails) GetCreatedAt() time.Time {
+	return s.CreatedAt
+}
+
+// GetUpdatedAt returns the value of UpdatedAt.
+func (s *SiteDetails) GetUpdatedAt() time.Time {
+	return s.UpdatedAt
+}
+
+// SetID sets the value of ID.
+func (s *SiteDetails) SetID(val int) {
+	s.ID = val
+}
+
+// SetDomain sets the value of Domain.
+func (s *SiteDetails) SetDomain(val string) {
+	s.Domain = val
+}
+
+// SetCategories sets the value of Categories.
+func (s *SiteDetails) SetCategories(val []string) {
+	s.Categories = val
+}
+
+// SetBlockReports sets the value of BlockReports.
+func (s *SiteDetails) SetBlockReports(val int) {
+	s.BlockReports = val
+}
+
+// SetUnblockReports sets the value of UnblockReports.
+func (s *SiteDetails) SetUnblockReports(val int) {
+	s.UnblockReports = val
+}
+
+// SetLastReportedAt sets the value of LastReportedAt.
+func (s *SiteDetails) SetLastReportedAt(val time.Time) {
+	s.LastReportedAt = val
+}
+
+// SetBlockedByIsps sets the value of BlockedByIsps.
+func (s *SiteDetails) SetBlockedByIsps(val []ISP) {
+	s.BlockedByIsps = val
+}
+
+// SetCreatedAt sets the value of CreatedAt.
+func (s *SiteDetails) SetCreatedAt(val time.Time) {
+	s.CreatedAt = val
+}
+
+// SetUpdatedAt sets the value of UpdatedAt.
+func (s *SiteDetails) SetUpdatedAt(val time.Time) {
+	s.UpdatedAt = val
+}
+
 // Ref: #/components/schemas/SiteInput
 type SiteInput struct {
 	Domain     string   `json:"domain"`

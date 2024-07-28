@@ -67,7 +67,24 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SiteCreate'
-
+  /sites/{id}:
+    get:
+      summary: Get a site by ID
+      operationId: getSite
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteDetails'
+    
   /isps:
     get:
       summary: List all ISPs
@@ -293,6 +310,44 @@ components:
         last_reported_at:
           type: string
           format: date-time
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+
+    SiteDetails:
+      type: object
+      required:
+        - id
+        - domain
+        - tags
+        - block_reports
+        - unblock_reports
+        - last_reported_at
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: integer
+        domain:
+          type: string
+        categories:
+          type: array
+          items:
+            type: string
+        block_reports:
+          type: integer
+        unblock_reports:
+          type: integer
+        last_reported_at:
+          type: string
+          format: date-time
+        blocked_by_isps:
+          type: array
+          items:
+            $ref: '#/components/schemas/ISP'
         created_at:
           type: string
           format: date-time

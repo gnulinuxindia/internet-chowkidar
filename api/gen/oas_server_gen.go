@@ -44,6 +44,12 @@ type Handler interface {
 	//
 	// POST /sites/suggestions
 	CreateSiteSuggestion(ctx context.Context, req *SiteSuggestionInput) (*SiteSuggestion, error)
+	// GetSite implements getSite operation.
+	//
+	// Get a site by ID.
+	//
+	// GET /sites/{id}
+	GetSite(ctx context.Context, params GetSiteParams) (*SiteDetails, error)
 	// HealthCheck implements healthCheck operation.
 	//
 	// Health check.

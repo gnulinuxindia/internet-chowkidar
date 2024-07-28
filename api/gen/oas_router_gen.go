@@ -40,6 +40,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		s.notFound(w, r)
 		return
 	}
+	args := [1]string{}
 
 	// Static code generated router with unwrapped path search.
 	switch {
@@ -194,23 +195,56 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 				switch elem[0] {
-				case '/': // Prefix: "/suggestions"
+				case '/': // Prefix: "/"
 					origElem := elem
-					if l := len("/suggestions"); len(elem) >= l && elem[0:l] == "/suggestions" {
+					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
 					if len(elem) == 0 {
+						break
+					}
+					switch elem[0] {
+					case 's': // Prefix: "suggestions"
+						origElem := elem
+						if l := len("suggestions"); len(elem) >= l && elem[0:l] == "suggestions" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							// Leaf node.
+							switch r.Method {
+							case "GET":
+								s.handleListSiteSuggestionsRequest([0]string{}, elemIsEscaped, w, r)
+							case "POST":
+								s.handleCreateSiteSuggestionRequest([0]string{}, elemIsEscaped, w, r)
+							default:
+								s.notAllowed(w, r, "GET,POST")
+							}
+
+							return
+						}
+
+						elem = origElem
+					}
+					// Param: "id"
+					// Leaf parameter
+					args[0] = elem
+					elem = ""
+
+					if len(elem) == 0 {
 						// Leaf node.
 						switch r.Method {
 						case "GET":
-							s.handleListSiteSuggestionsRequest([0]string{}, elemIsEscaped, w, r)
-						case "POST":
-							s.handleCreateSiteSuggestionRequest([0]string{}, elemIsEscaped, w, r)
+							s.handleGetSiteRequest([1]string{
+								args[0],
+							}, elemIsEscaped, w, r)
 						default:
-							s.notAllowed(w, r, "GET,POST")
+							s.notAllowed(w, r, "GET")
 						}
 
 						return
@@ -235,7 +269,7 @@ type Route struct {
 	operationID string
 	pathPattern string
 	count       int
-	args        [0]string
+	args        [1]string
 }
 
 // Name returns ogen operation name.
@@ -507,33 +541,68 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 				}
 				switch elem[0] {
-				case '/': // Prefix: "/suggestions"
+				case '/': // Prefix: "/"
 					origElem := elem
-					if l := len("/suggestions"); len(elem) >= l && elem[0:l] == "/suggestions" {
+					if l := len("/"); len(elem) >= l && elem[0:l] == "/" {
 						elem = elem[l:]
 					} else {
 						break
 					}
 
 					if len(elem) == 0 {
+						break
+					}
+					switch elem[0] {
+					case 's': // Prefix: "suggestions"
+						origElem := elem
+						if l := len("suggestions"); len(elem) >= l && elem[0:l] == "suggestions" {
+							elem = elem[l:]
+						} else {
+							break
+						}
+
+						if len(elem) == 0 {
+							switch method {
+							case "GET":
+								// Leaf: ListSiteSuggestions
+								r.name = "ListSiteSuggestions"
+								r.summary = "List all site suggestions"
+								r.operationID = "listSiteSuggestions"
+								r.pathPattern = "/sites/suggestions"
+								r.args = args
+								r.count = 0
+								return r, true
+							case "POST":
+								// Leaf: CreateSiteSuggestion
+								r.name = "CreateSiteSuggestion"
+								r.summary = "Create a new site suggestion"
+								r.operationID = "createSiteSuggestion"
+								r.pathPattern = "/sites/suggestions"
+								r.args = args
+								r.count = 0
+								return r, true
+							default:
+								return
+							}
+						}
+
+						elem = origElem
+					}
+					// Param: "id"
+					// Leaf parameter
+					args[0] = elem
+					elem = ""
+
+					if len(elem) == 0 {
 						switch method {
 						case "GET":
-							// Leaf: ListSiteSuggestions
-							r.name = "ListSiteSuggestions"
-							r.summary = "List all site suggestions"
-							r.operationID = "listSiteSuggestions"
-							r.pathPattern = "/sites/suggestions"
+							// Leaf: GetSite
+							r.name = "GetSite"
+							r.summary = "Get a site by ID"
+							r.operationID = "getSite"
+							r.pathPattern = "/sites/{id}"
 							r.args = args
-							r.count = 0
-							return r, true
-						case "POST":
-							// Leaf: CreateSiteSuggestion
-							r.name = "CreateSiteSuggestion"
-							r.summary = "Create a new site suggestion"
-							r.operationID = "createSiteSuggestion"
-							r.pathPattern = "/sites/suggestions"
-							r.args = args
-							r.count = 0
+							r.count = 1
 							return r, true
 						default:
 							return

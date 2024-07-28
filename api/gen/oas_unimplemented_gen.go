@@ -67,6 +67,15 @@ func (UnimplementedHandler) CreateSiteSuggestion(ctx context.Context, req *SiteS
 	return r, ht.ErrNotImplemented
 }
 
+// GetSite implements getSite operation.
+//
+// Get a site by ID.
+//
+// GET /sites/{id}
+func (UnimplementedHandler) GetSite(ctx context.Context, params GetSiteParams) (r *SiteDetails, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // HealthCheck implements healthCheck operation.
 //
 // Health check.

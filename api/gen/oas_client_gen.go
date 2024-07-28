@@ -59,6 +59,12 @@ type Invoker interface {
 	//
 	// POST /sites/suggestions
 	CreateSiteSuggestion(ctx context.Context, request *SiteSuggestionInput) (*SiteSuggestion, error)
+	// GetSite invokes getSite operation.
+	//
+	// Get a site by ID.
+	//
+	// GET /sites/{id}
+	GetSite(ctx context.Context, params GetSiteParams) (*SiteDetails, error)
 	// HealthCheck invokes healthCheck operation.
 	//
 	// Health check.
@@ -594,6 +600,96 @@ func (c *Client) sendCreateSiteSuggestion(ctx context.Context, request *SiteSugg
 
 	stage = "DecodeResponse"
 	result, err := decodeCreateSiteSuggestionResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// GetSite invokes getSite operation.
+//
+// Get a site by ID.
+//
+// GET /sites/{id}
+func (c *Client) GetSite(ctx context.Context, params GetSiteParams) (*SiteDetails, error) {
+	res, err := c.sendGetSite(ctx, params)
+	return res, err
+}
+
+func (c *Client) sendGetSite(ctx context.Context, params GetSiteParams) (res *SiteDetails, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("getSite"),
+		semconv.HTTPMethodKey.String("GET"),
+		semconv.HTTPRouteKey.String("/sites/{id}"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(float64(elapsedDuration)/float64(time.Millisecond)), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, "GetSite",
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [2]string
+	pathParts[0] = "/sites/"
+	{
+		// Encode "id" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "id",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.IntToString(params.ID))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "GET", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeGetSiteResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}
