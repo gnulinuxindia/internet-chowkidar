@@ -5,6 +5,17 @@ info:
   description: API for managing site blocking, ISPs, abuse reports, and site suggestions
 
 paths:
+  /:
+    get:
+      summary: API Docs
+      operationId: apiDocs
+      responses:
+        '200':
+          description: success
+          content:
+            text/html:
+              schema:
+                type: string
   /sites:
     get:
       summary: List all sites

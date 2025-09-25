@@ -14,6 +14,6 @@ for file in `find . -maxdepth 2 -name index.yaml -type f`; do
     pushd $site
         mkdir -p ${build_dir}/
         redocly bundle index.yaml -o ${build_dir}/index.yaml --ext yaml
-        # redocly build-docs ${build_dir}/index.yaml -o ${build_dir}/index.html
+        redocly build-docs ${build_dir}/index.yaml -o ${build_dir}/index.html
     popd
 done
