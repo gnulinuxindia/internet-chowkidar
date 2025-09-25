@@ -73,50 +73,50 @@ func (*Isps) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Isps fields.
-func (i *Isps) assignValues(columns []string, values []any) error {
+func (_m *Isps) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
-	for j := range columns {
-		switch columns[j] {
+	for i := range columns {
+		switch columns[i] {
 		case isps.FieldID:
-			value, ok := values[j].(*sql.NullInt64)
+			value, ok := values[i].(*sql.NullInt64)
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			i.ID = int(value.Int64)
+			_m.ID = int(value.Int64)
 		case isps.FieldCreatedAt:
-			if value, ok := values[j].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field created_at", values[j])
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				i.CreatedAt = value.Time
+				_m.CreatedAt = value.Time
 			}
 		case isps.FieldUpdatedAt:
-			if value, ok := values[j].(*sql.NullTime); !ok {
-				return fmt.Errorf("unexpected type %T for field updated_at", values[j])
+			if value, ok := values[i].(*sql.NullTime); !ok {
+				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				i.UpdatedAt = value.Time
+				_m.UpdatedAt = value.Time
 			}
 		case isps.FieldLatitude:
-			if value, ok := values[j].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field latitude", values[j])
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field latitude", values[i])
 			} else if value.Valid {
-				i.Latitude = value.Float64
+				_m.Latitude = value.Float64
 			}
 		case isps.FieldLongitude:
-			if value, ok := values[j].(*sql.NullFloat64); !ok {
-				return fmt.Errorf("unexpected type %T for field longitude", values[j])
+			if value, ok := values[i].(*sql.NullFloat64); !ok {
+				return fmt.Errorf("unexpected type %T for field longitude", values[i])
 			} else if value.Valid {
-				i.Longitude = value.Float64
+				_m.Longitude = value.Float64
 			}
 		case isps.FieldName:
-			if value, ok := values[j].(*sql.NullString); !ok {
-				return fmt.Errorf("unexpected type %T for field name", values[j])
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
-				i.Name = value.String
+				_m.Name = value.String
 			}
 		default:
-			i.selectValues.Set(columns[j], values[j])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -124,52 +124,52 @@ func (i *Isps) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Isps.
 // This includes values selected through modifiers, order, etc.
-func (i *Isps) Value(name string) (ent.Value, error) {
-	return i.selectValues.Get(name)
+func (_m *Isps) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // QueryIspBlocks queries the "isp_blocks" edge of the Isps entity.
-func (i *Isps) QueryIspBlocks() *BlocksQuery {
-	return NewIspsClient(i.config).QueryIspBlocks(i)
+func (_m *Isps) QueryIspBlocks() *BlocksQuery {
+	return NewIspsClient(_m.config).QueryIspBlocks(_m)
 }
 
 // Update returns a builder for updating this Isps.
 // Note that you need to call Isps.Unwrap() before calling this method if this Isps
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (i *Isps) Update() *IspsUpdateOne {
-	return NewIspsClient(i.config).UpdateOne(i)
+func (_m *Isps) Update() *IspsUpdateOne {
+	return NewIspsClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the Isps entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (i *Isps) Unwrap() *Isps {
-	_tx, ok := i.config.driver.(*txDriver)
+func (_m *Isps) Unwrap() *Isps {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Isps is not a transactional entity")
 	}
-	i.config.driver = _tx.drv
-	return i
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (i *Isps) String() string {
+func (_m *Isps) String() string {
 	var builder strings.Builder
 	builder.WriteString("Isps(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", i.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("created_at=")
-	builder.WriteString(i.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(i.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("latitude=")
-	builder.WriteString(fmt.Sprintf("%v", i.Latitude))
+	builder.WriteString(fmt.Sprintf("%v", _m.Latitude))
 	builder.WriteString(", ")
 	builder.WriteString("longitude=")
-	builder.WriteString(fmt.Sprintf("%v", i.Longitude))
+	builder.WriteString(fmt.Sprintf("%v", _m.Longitude))
 	builder.WriteString(", ")
 	builder.WriteString("name=")
-	builder.WriteString(i.Name)
+	builder.WriteString(_m.Name)
 	builder.WriteByte(')')
 	return builder.String()
 }

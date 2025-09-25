@@ -22,80 +22,80 @@ type IspsCreate struct {
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (ic *IspsCreate) SetCreatedAt(t time.Time) *IspsCreate {
-	ic.mutation.SetCreatedAt(t)
-	return ic
+func (_c *IspsCreate) SetCreatedAt(v time.Time) *IspsCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (ic *IspsCreate) SetNillableCreatedAt(t *time.Time) *IspsCreate {
-	if t != nil {
-		ic.SetCreatedAt(*t)
+func (_c *IspsCreate) SetNillableCreatedAt(v *time.Time) *IspsCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
 	}
-	return ic
+	return _c
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (ic *IspsCreate) SetUpdatedAt(t time.Time) *IspsCreate {
-	ic.mutation.SetUpdatedAt(t)
-	return ic
+func (_c *IspsCreate) SetUpdatedAt(v time.Time) *IspsCreate {
+	_c.mutation.SetUpdatedAt(v)
+	return _c
 }
 
 // SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (ic *IspsCreate) SetNillableUpdatedAt(t *time.Time) *IspsCreate {
-	if t != nil {
-		ic.SetUpdatedAt(*t)
+func (_c *IspsCreate) SetNillableUpdatedAt(v *time.Time) *IspsCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
 	}
-	return ic
+	return _c
 }
 
 // SetLatitude sets the "latitude" field.
-func (ic *IspsCreate) SetLatitude(f float64) *IspsCreate {
-	ic.mutation.SetLatitude(f)
-	return ic
+func (_c *IspsCreate) SetLatitude(v float64) *IspsCreate {
+	_c.mutation.SetLatitude(v)
+	return _c
 }
 
 // SetLongitude sets the "longitude" field.
-func (ic *IspsCreate) SetLongitude(f float64) *IspsCreate {
-	ic.mutation.SetLongitude(f)
-	return ic
+func (_c *IspsCreate) SetLongitude(v float64) *IspsCreate {
+	_c.mutation.SetLongitude(v)
+	return _c
 }
 
 // SetName sets the "name" field.
-func (ic *IspsCreate) SetName(s string) *IspsCreate {
-	ic.mutation.SetName(s)
-	return ic
+func (_c *IspsCreate) SetName(v string) *IspsCreate {
+	_c.mutation.SetName(v)
+	return _c
 }
 
 // AddIspBlockIDs adds the "isp_blocks" edge to the Blocks entity by IDs.
-func (ic *IspsCreate) AddIspBlockIDs(ids ...int) *IspsCreate {
-	ic.mutation.AddIspBlockIDs(ids...)
-	return ic
+func (_c *IspsCreate) AddIspBlockIDs(ids ...int) *IspsCreate {
+	_c.mutation.AddIspBlockIDs(ids...)
+	return _c
 }
 
 // AddIspBlocks adds the "isp_blocks" edges to the Blocks entity.
-func (ic *IspsCreate) AddIspBlocks(b ...*Blocks) *IspsCreate {
-	ids := make([]int, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
+func (_c *IspsCreate) AddIspBlocks(v ...*Blocks) *IspsCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return ic.AddIspBlockIDs(ids...)
+	return _c.AddIspBlockIDs(ids...)
 }
 
 // Mutation returns the IspsMutation object of the builder.
-func (ic *IspsCreate) Mutation() *IspsMutation {
-	return ic.mutation
+func (_c *IspsCreate) Mutation() *IspsMutation {
+	return _c.mutation
 }
 
 // Save creates the Isps in the database.
-func (ic *IspsCreate) Save(ctx context.Context) (*Isps, error) {
-	ic.defaults()
-	return withHooks(ctx, ic.sqlSave, ic.mutation, ic.hooks)
+func (_c *IspsCreate) Save(ctx context.Context) (*Isps, error) {
+	_c.defaults()
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (ic *IspsCreate) SaveX(ctx context.Context) *Isps {
-	v, err := ic.Save(ctx)
+func (_c *IspsCreate) SaveX(ctx context.Context) *Isps {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -103,56 +103,56 @@ func (ic *IspsCreate) SaveX(ctx context.Context) *Isps {
 }
 
 // Exec executes the query.
-func (ic *IspsCreate) Exec(ctx context.Context) error {
-	_, err := ic.Save(ctx)
+func (_c *IspsCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ic *IspsCreate) ExecX(ctx context.Context) {
-	if err := ic.Exec(ctx); err != nil {
+func (_c *IspsCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (ic *IspsCreate) defaults() {
-	if _, ok := ic.mutation.CreatedAt(); !ok {
+func (_c *IspsCreate) defaults() {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := isps.DefaultCreatedAt()
-		ic.mutation.SetCreatedAt(v)
+		_c.mutation.SetCreatedAt(v)
 	}
-	if _, ok := ic.mutation.UpdatedAt(); !ok {
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		v := isps.DefaultUpdatedAt()
-		ic.mutation.SetUpdatedAt(v)
+		_c.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (ic *IspsCreate) check() error {
-	if _, ok := ic.mutation.CreatedAt(); !ok {
+func (_c *IspsCreate) check() error {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Isps.created_at"`)}
 	}
-	if _, ok := ic.mutation.UpdatedAt(); !ok {
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Isps.updated_at"`)}
 	}
-	if _, ok := ic.mutation.Latitude(); !ok {
+	if _, ok := _c.mutation.Latitude(); !ok {
 		return &ValidationError{Name: "latitude", err: errors.New(`ent: missing required field "Isps.latitude"`)}
 	}
-	if _, ok := ic.mutation.Longitude(); !ok {
+	if _, ok := _c.mutation.Longitude(); !ok {
 		return &ValidationError{Name: "longitude", err: errors.New(`ent: missing required field "Isps.longitude"`)}
 	}
-	if _, ok := ic.mutation.Name(); !ok {
+	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Isps.name"`)}
 	}
 	return nil
 }
 
-func (ic *IspsCreate) sqlSave(ctx context.Context) (*Isps, error) {
-	if err := ic.check(); err != nil {
+func (_c *IspsCreate) sqlSave(ctx context.Context) (*Isps, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := ic.createSpec()
-	if err := sqlgraph.CreateNode(ctx, ic.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -160,37 +160,37 @@ func (ic *IspsCreate) sqlSave(ctx context.Context) (*Isps, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = int(id)
-	ic.mutation.id = &_node.ID
-	ic.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (ic *IspsCreate) createSpec() (*Isps, *sqlgraph.CreateSpec) {
+func (_c *IspsCreate) createSpec() (*Isps, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Isps{config: ic.config}
+		_node = &Isps{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(isps.Table, sqlgraph.NewFieldSpec(isps.FieldID, field.TypeInt))
 	)
-	if value, ok := ic.mutation.CreatedAt(); ok {
+	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(isps.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if value, ok := ic.mutation.UpdatedAt(); ok {
+	if value, ok := _c.mutation.UpdatedAt(); ok {
 		_spec.SetField(isps.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := ic.mutation.Latitude(); ok {
+	if value, ok := _c.mutation.Latitude(); ok {
 		_spec.SetField(isps.FieldLatitude, field.TypeFloat64, value)
 		_node.Latitude = value
 	}
-	if value, ok := ic.mutation.Longitude(); ok {
+	if value, ok := _c.mutation.Longitude(); ok {
 		_spec.SetField(isps.FieldLongitude, field.TypeFloat64, value)
 		_node.Longitude = value
 	}
-	if value, ok := ic.mutation.Name(); ok {
+	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(isps.FieldName, field.TypeString, value)
 		_node.Name = value
 	}
-	if nodes := ic.mutation.IspBlocksIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.IspBlocksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -217,16 +217,16 @@ type IspsCreateBulk struct {
 }
 
 // Save creates the Isps entities in the database.
-func (icb *IspsCreateBulk) Save(ctx context.Context) ([]*Isps, error) {
-	if icb.err != nil {
-		return nil, icb.err
+func (_c *IspsCreateBulk) Save(ctx context.Context) ([]*Isps, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(icb.builders))
-	nodes := make([]*Isps, len(icb.builders))
-	mutators := make([]Mutator, len(icb.builders))
-	for i := range icb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*Isps, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := icb.builders[i]
+			builder := _c.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*IspsMutation)
@@ -240,11 +240,11 @@ func (icb *IspsCreateBulk) Save(ctx context.Context) ([]*Isps, error) {
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, icb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, icb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -268,7 +268,7 @@ func (icb *IspsCreateBulk) Save(ctx context.Context) ([]*Isps, error) {
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, icb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -276,8 +276,8 @@ func (icb *IspsCreateBulk) Save(ctx context.Context) ([]*Isps, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (icb *IspsCreateBulk) SaveX(ctx context.Context) []*Isps {
-	v, err := icb.Save(ctx)
+func (_c *IspsCreateBulk) SaveX(ctx context.Context) []*Isps {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -285,14 +285,14 @@ func (icb *IspsCreateBulk) SaveX(ctx context.Context) []*Isps {
 }
 
 // Exec executes the query.
-func (icb *IspsCreateBulk) Exec(ctx context.Context) error {
-	_, err := icb.Save(ctx)
+func (_c *IspsCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (icb *IspsCreateBulk) ExecX(ctx context.Context) {
-	if err := icb.Exec(ctx); err != nil {
+func (_c *IspsCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

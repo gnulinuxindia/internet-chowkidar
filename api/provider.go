@@ -12,6 +12,7 @@ type Handlers struct {
 	handler.HealthHandler
 	handler.IspHandler
 	handler.ReportsHandler
+	handler.SecurityHandler
 	handler.SitesHandler
 }
 
@@ -24,6 +25,7 @@ var HandlerSet = wire.NewSet(
 	handler.ProvideHealthHandler,
 	handler.ProvideIspHandler,
 	handler.ProvideReportsHandler,
+	handler.ProvideSecurityHandler,
 	handler.ProvideSitesHandler,
 	wire.Struct(new(Handlers), "*"),
 )
@@ -36,6 +38,7 @@ var MockHandlerSet = wire.NewSet(
 	handler.ProvideHealthHandler,
 	handler.ProvideIspHandler,
 	handler.ProvideReportsHandler,
+	handler.ProvideSecurityHandler,
 	handler.ProvideSitesHandler,
 	wire.Struct(new(Handlers), "*"),
 	wire.Struct(new(MockHandlers), "*"),

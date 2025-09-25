@@ -16,6 +16,8 @@ type securityHandler struct {
 	conf *config.Config
 }
 
+type securityHandlerImpl struct {}
+
 func NewSecurityHandler(conf *config.Config) SecurityHandler {
 	return &securityHandler{
 		conf: conf,

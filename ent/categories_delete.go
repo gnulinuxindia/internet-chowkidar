@@ -20,56 +20,56 @@ type CategoriesDelete struct {
 }
 
 // Where appends a list predicates to the CategoriesDelete builder.
-func (cd *CategoriesDelete) Where(ps ...predicate.Categories) *CategoriesDelete {
-	cd.mutation.Where(ps...)
-	return cd
+func (_d *CategoriesDelete) Where(ps ...predicate.Categories) *CategoriesDelete {
+	_d.mutation.Where(ps...)
+	return _d
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (cd *CategoriesDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks(ctx, cd.sqlExec, cd.mutation, cd.hooks)
+func (_d *CategoriesDelete) Exec(ctx context.Context) (int, error) {
+	return withHooks(ctx, _d.sqlExec, _d.mutation, _d.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (cd *CategoriesDelete) ExecX(ctx context.Context) int {
-	n, err := cd.Exec(ctx)
+func (_d *CategoriesDelete) ExecX(ctx context.Context) int {
+	n, err := _d.Exec(ctx)
 	if err != nil {
 		panic(err)
 	}
 	return n
 }
 
-func (cd *CategoriesDelete) sqlExec(ctx context.Context) (int, error) {
+func (_d *CategoriesDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := sqlgraph.NewDeleteSpec(categories.Table, sqlgraph.NewFieldSpec(categories.FieldID, field.TypeInt))
-	if ps := cd.mutation.predicates; len(ps) > 0 {
+	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	affected, err := sqlgraph.DeleteNodes(ctx, cd.driver, _spec)
+	affected, err := sqlgraph.DeleteNodes(ctx, _d.driver, _spec)
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
-	cd.mutation.done = true
+	_d.mutation.done = true
 	return affected, err
 }
 
 // CategoriesDeleteOne is the builder for deleting a single Categories entity.
 type CategoriesDeleteOne struct {
-	cd *CategoriesDelete
+	_d *CategoriesDelete
 }
 
 // Where appends a list predicates to the CategoriesDelete builder.
-func (cdo *CategoriesDeleteOne) Where(ps ...predicate.Categories) *CategoriesDeleteOne {
-	cdo.cd.mutation.Where(ps...)
-	return cdo
+func (_d *CategoriesDeleteOne) Where(ps ...predicate.Categories) *CategoriesDeleteOne {
+	_d._d.mutation.Where(ps...)
+	return _d
 }
 
 // Exec executes the deletion query.
-func (cdo *CategoriesDeleteOne) Exec(ctx context.Context) error {
-	n, err := cdo.cd.Exec(ctx)
+func (_d *CategoriesDeleteOne) Exec(ctx context.Context) error {
+	n, err := _d._d.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
@@ -81,8 +81,8 @@ func (cdo *CategoriesDeleteOne) Exec(ctx context.Context) error {
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (cdo *CategoriesDeleteOne) ExecX(ctx context.Context) {
-	if err := cdo.Exec(ctx); err != nil {
+func (_d *CategoriesDeleteOne) ExecX(ctx context.Context) {
+	if err := _d.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

@@ -77,7 +77,7 @@ func (*SitesCategories) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the SitesCategories fields.
-func (sc *SitesCategories) assignValues(columns []string, values []any) error {
+func (_m *SitesCategories) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -88,21 +88,21 @@ func (sc *SitesCategories) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			sc.ID = int(value.Int64)
+			_m.ID = int(value.Int64)
 		case sitescategories.FieldSitesID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field sites_id", values[i])
 			} else if value.Valid {
-				sc.SitesID = int(value.Int64)
+				_m.SitesID = int(value.Int64)
 			}
 		case sitescategories.FieldCategoriesID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field categories_id", values[i])
 			} else if value.Valid {
-				sc.CategoriesID = int(value.Int64)
+				_m.CategoriesID = int(value.Int64)
 			}
 		default:
-			sc.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -110,48 +110,48 @@ func (sc *SitesCategories) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the SitesCategories.
 // This includes values selected through modifiers, order, etc.
-func (sc *SitesCategories) Value(name string) (ent.Value, error) {
-	return sc.selectValues.Get(name)
+func (_m *SitesCategories) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // QuerySites queries the "sites" edge of the SitesCategories entity.
-func (sc *SitesCategories) QuerySites() *SitesQuery {
-	return NewSitesCategoriesClient(sc.config).QuerySites(sc)
+func (_m *SitesCategories) QuerySites() *SitesQuery {
+	return NewSitesCategoriesClient(_m.config).QuerySites(_m)
 }
 
 // QueryCategories queries the "categories" edge of the SitesCategories entity.
-func (sc *SitesCategories) QueryCategories() *CategoriesQuery {
-	return NewSitesCategoriesClient(sc.config).QueryCategories(sc)
+func (_m *SitesCategories) QueryCategories() *CategoriesQuery {
+	return NewSitesCategoriesClient(_m.config).QueryCategories(_m)
 }
 
 // Update returns a builder for updating this SitesCategories.
 // Note that you need to call SitesCategories.Unwrap() before calling this method if this SitesCategories
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (sc *SitesCategories) Update() *SitesCategoriesUpdateOne {
-	return NewSitesCategoriesClient(sc.config).UpdateOne(sc)
+func (_m *SitesCategories) Update() *SitesCategoriesUpdateOne {
+	return NewSitesCategoriesClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the SitesCategories entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (sc *SitesCategories) Unwrap() *SitesCategories {
-	_tx, ok := sc.config.driver.(*txDriver)
+func (_m *SitesCategories) Unwrap() *SitesCategories {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: SitesCategories is not a transactional entity")
 	}
-	sc.config.driver = _tx.drv
-	return sc
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (sc *SitesCategories) String() string {
+func (_m *SitesCategories) String() string {
 	var builder strings.Builder
 	builder.WriteString("SitesCategories(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", sc.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("sites_id=")
-	builder.WriteString(fmt.Sprintf("%v", sc.SitesID))
+	builder.WriteString(fmt.Sprintf("%v", _m.SitesID))
 	builder.WriteString(", ")
 	builder.WriteString("categories_id=")
-	builder.WriteString(fmt.Sprintf("%v", sc.CategoriesID))
+	builder.WriteString(fmt.Sprintf("%v", _m.CategoriesID))
 	builder.WriteByte(')')
 	return builder.String()
 }

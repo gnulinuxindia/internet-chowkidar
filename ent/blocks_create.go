@@ -23,103 +23,103 @@ type BlocksCreate struct {
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (bc *BlocksCreate) SetCreatedAt(t time.Time) *BlocksCreate {
-	bc.mutation.SetCreatedAt(t)
-	return bc
+func (_c *BlocksCreate) SetCreatedAt(v time.Time) *BlocksCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (bc *BlocksCreate) SetNillableCreatedAt(t *time.Time) *BlocksCreate {
-	if t != nil {
-		bc.SetCreatedAt(*t)
+func (_c *BlocksCreate) SetNillableCreatedAt(v *time.Time) *BlocksCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
 	}
-	return bc
+	return _c
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (bc *BlocksCreate) SetUpdatedAt(t time.Time) *BlocksCreate {
-	bc.mutation.SetUpdatedAt(t)
-	return bc
+func (_c *BlocksCreate) SetUpdatedAt(v time.Time) *BlocksCreate {
+	_c.mutation.SetUpdatedAt(v)
+	return _c
 }
 
 // SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (bc *BlocksCreate) SetNillableUpdatedAt(t *time.Time) *BlocksCreate {
-	if t != nil {
-		bc.SetUpdatedAt(*t)
+func (_c *BlocksCreate) SetNillableUpdatedAt(v *time.Time) *BlocksCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
 	}
-	return bc
+	return _c
 }
 
 // SetSiteID sets the "site_id" field.
-func (bc *BlocksCreate) SetSiteID(i int) *BlocksCreate {
-	bc.mutation.SetSiteID(i)
-	return bc
+func (_c *BlocksCreate) SetSiteID(v int) *BlocksCreate {
+	_c.mutation.SetSiteID(v)
+	return _c
 }
 
 // SetIspID sets the "isp_id" field.
-func (bc *BlocksCreate) SetIspID(i int) *BlocksCreate {
-	bc.mutation.SetIspID(i)
-	return bc
+func (_c *BlocksCreate) SetIspID(v int) *BlocksCreate {
+	_c.mutation.SetIspID(v)
+	return _c
 }
 
 // SetBlockReports sets the "block_reports" field.
-func (bc *BlocksCreate) SetBlockReports(i int) *BlocksCreate {
-	bc.mutation.SetBlockReports(i)
-	return bc
+func (_c *BlocksCreate) SetBlockReports(v int) *BlocksCreate {
+	_c.mutation.SetBlockReports(v)
+	return _c
 }
 
 // SetNillableBlockReports sets the "block_reports" field if the given value is not nil.
-func (bc *BlocksCreate) SetNillableBlockReports(i *int) *BlocksCreate {
-	if i != nil {
-		bc.SetBlockReports(*i)
+func (_c *BlocksCreate) SetNillableBlockReports(v *int) *BlocksCreate {
+	if v != nil {
+		_c.SetBlockReports(*v)
 	}
-	return bc
+	return _c
 }
 
 // SetUnblockReports sets the "unblock_reports" field.
-func (bc *BlocksCreate) SetUnblockReports(i int) *BlocksCreate {
-	bc.mutation.SetUnblockReports(i)
-	return bc
+func (_c *BlocksCreate) SetUnblockReports(v int) *BlocksCreate {
+	_c.mutation.SetUnblockReports(v)
+	return _c
 }
 
 // SetNillableUnblockReports sets the "unblock_reports" field if the given value is not nil.
-func (bc *BlocksCreate) SetNillableUnblockReports(i *int) *BlocksCreate {
-	if i != nil {
-		bc.SetUnblockReports(*i)
+func (_c *BlocksCreate) SetNillableUnblockReports(v *int) *BlocksCreate {
+	if v != nil {
+		_c.SetUnblockReports(*v)
 	}
-	return bc
+	return _c
 }
 
 // SetLastReportedAt sets the "last_reported_at" field.
-func (bc *BlocksCreate) SetLastReportedAt(t time.Time) *BlocksCreate {
-	bc.mutation.SetLastReportedAt(t)
-	return bc
+func (_c *BlocksCreate) SetLastReportedAt(v time.Time) *BlocksCreate {
+	_c.mutation.SetLastReportedAt(v)
+	return _c
 }
 
 // SetSite sets the "site" edge to the Sites entity.
-func (bc *BlocksCreate) SetSite(s *Sites) *BlocksCreate {
-	return bc.SetSiteID(s.ID)
+func (_c *BlocksCreate) SetSite(v *Sites) *BlocksCreate {
+	return _c.SetSiteID(v.ID)
 }
 
 // SetIsp sets the "isp" edge to the Isps entity.
-func (bc *BlocksCreate) SetIsp(i *Isps) *BlocksCreate {
-	return bc.SetIspID(i.ID)
+func (_c *BlocksCreate) SetIsp(v *Isps) *BlocksCreate {
+	return _c.SetIspID(v.ID)
 }
 
 // Mutation returns the BlocksMutation object of the builder.
-func (bc *BlocksCreate) Mutation() *BlocksMutation {
-	return bc.mutation
+func (_c *BlocksCreate) Mutation() *BlocksMutation {
+	return _c.mutation
 }
 
 // Save creates the Blocks in the database.
-func (bc *BlocksCreate) Save(ctx context.Context) (*Blocks, error) {
-	bc.defaults()
-	return withHooks(ctx, bc.sqlSave, bc.mutation, bc.hooks)
+func (_c *BlocksCreate) Save(ctx context.Context) (*Blocks, error) {
+	_c.defaults()
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (bc *BlocksCreate) SaveX(ctx context.Context) *Blocks {
-	v, err := bc.Save(ctx)
+func (_c *BlocksCreate) SaveX(ctx context.Context) *Blocks {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -127,76 +127,76 @@ func (bc *BlocksCreate) SaveX(ctx context.Context) *Blocks {
 }
 
 // Exec executes the query.
-func (bc *BlocksCreate) Exec(ctx context.Context) error {
-	_, err := bc.Save(ctx)
+func (_c *BlocksCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (bc *BlocksCreate) ExecX(ctx context.Context) {
-	if err := bc.Exec(ctx); err != nil {
+func (_c *BlocksCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (bc *BlocksCreate) defaults() {
-	if _, ok := bc.mutation.CreatedAt(); !ok {
+func (_c *BlocksCreate) defaults() {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := blocks.DefaultCreatedAt()
-		bc.mutation.SetCreatedAt(v)
+		_c.mutation.SetCreatedAt(v)
 	}
-	if _, ok := bc.mutation.UpdatedAt(); !ok {
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		v := blocks.DefaultUpdatedAt()
-		bc.mutation.SetUpdatedAt(v)
+		_c.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := bc.mutation.BlockReports(); !ok {
+	if _, ok := _c.mutation.BlockReports(); !ok {
 		v := blocks.DefaultBlockReports
-		bc.mutation.SetBlockReports(v)
+		_c.mutation.SetBlockReports(v)
 	}
-	if _, ok := bc.mutation.UnblockReports(); !ok {
+	if _, ok := _c.mutation.UnblockReports(); !ok {
 		v := blocks.DefaultUnblockReports
-		bc.mutation.SetUnblockReports(v)
+		_c.mutation.SetUnblockReports(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (bc *BlocksCreate) check() error {
-	if _, ok := bc.mutation.CreatedAt(); !ok {
+func (_c *BlocksCreate) check() error {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Blocks.created_at"`)}
 	}
-	if _, ok := bc.mutation.UpdatedAt(); !ok {
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Blocks.updated_at"`)}
 	}
-	if _, ok := bc.mutation.SiteID(); !ok {
+	if _, ok := _c.mutation.SiteID(); !ok {
 		return &ValidationError{Name: "site_id", err: errors.New(`ent: missing required field "Blocks.site_id"`)}
 	}
-	if _, ok := bc.mutation.IspID(); !ok {
+	if _, ok := _c.mutation.IspID(); !ok {
 		return &ValidationError{Name: "isp_id", err: errors.New(`ent: missing required field "Blocks.isp_id"`)}
 	}
-	if _, ok := bc.mutation.BlockReports(); !ok {
+	if _, ok := _c.mutation.BlockReports(); !ok {
 		return &ValidationError{Name: "block_reports", err: errors.New(`ent: missing required field "Blocks.block_reports"`)}
 	}
-	if _, ok := bc.mutation.UnblockReports(); !ok {
+	if _, ok := _c.mutation.UnblockReports(); !ok {
 		return &ValidationError{Name: "unblock_reports", err: errors.New(`ent: missing required field "Blocks.unblock_reports"`)}
 	}
-	if _, ok := bc.mutation.LastReportedAt(); !ok {
+	if _, ok := _c.mutation.LastReportedAt(); !ok {
 		return &ValidationError{Name: "last_reported_at", err: errors.New(`ent: missing required field "Blocks.last_reported_at"`)}
 	}
-	if _, ok := bc.mutation.SiteID(); !ok {
+	if len(_c.mutation.SiteIDs()) == 0 {
 		return &ValidationError{Name: "site", err: errors.New(`ent: missing required edge "Blocks.site"`)}
 	}
-	if _, ok := bc.mutation.IspID(); !ok {
+	if len(_c.mutation.IspIDs()) == 0 {
 		return &ValidationError{Name: "isp", err: errors.New(`ent: missing required edge "Blocks.isp"`)}
 	}
 	return nil
 }
 
-func (bc *BlocksCreate) sqlSave(ctx context.Context) (*Blocks, error) {
-	if err := bc.check(); err != nil {
+func (_c *BlocksCreate) sqlSave(ctx context.Context) (*Blocks, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := bc.createSpec()
-	if err := sqlgraph.CreateNode(ctx, bc.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -204,37 +204,37 @@ func (bc *BlocksCreate) sqlSave(ctx context.Context) (*Blocks, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = int(id)
-	bc.mutation.id = &_node.ID
-	bc.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (bc *BlocksCreate) createSpec() (*Blocks, *sqlgraph.CreateSpec) {
+func (_c *BlocksCreate) createSpec() (*Blocks, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Blocks{config: bc.config}
+		_node = &Blocks{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(blocks.Table, sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt))
 	)
-	if value, ok := bc.mutation.CreatedAt(); ok {
+	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(blocks.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if value, ok := bc.mutation.UpdatedAt(); ok {
+	if value, ok := _c.mutation.UpdatedAt(); ok {
 		_spec.SetField(blocks.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := bc.mutation.BlockReports(); ok {
+	if value, ok := _c.mutation.BlockReports(); ok {
 		_spec.SetField(blocks.FieldBlockReports, field.TypeInt, value)
 		_node.BlockReports = value
 	}
-	if value, ok := bc.mutation.UnblockReports(); ok {
+	if value, ok := _c.mutation.UnblockReports(); ok {
 		_spec.SetField(blocks.FieldUnblockReports, field.TypeInt, value)
 		_node.UnblockReports = value
 	}
-	if value, ok := bc.mutation.LastReportedAt(); ok {
+	if value, ok := _c.mutation.LastReportedAt(); ok {
 		_spec.SetField(blocks.FieldLastReportedAt, field.TypeTime, value)
 		_node.LastReportedAt = value
 	}
-	if nodes := bc.mutation.SiteIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.SiteIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -251,7 +251,7 @@ func (bc *BlocksCreate) createSpec() (*Blocks, *sqlgraph.CreateSpec) {
 		_node.SiteID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := bc.mutation.IspIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.IspIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -279,16 +279,16 @@ type BlocksCreateBulk struct {
 }
 
 // Save creates the Blocks entities in the database.
-func (bcb *BlocksCreateBulk) Save(ctx context.Context) ([]*Blocks, error) {
-	if bcb.err != nil {
-		return nil, bcb.err
+func (_c *BlocksCreateBulk) Save(ctx context.Context) ([]*Blocks, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(bcb.builders))
-	nodes := make([]*Blocks, len(bcb.builders))
-	mutators := make([]Mutator, len(bcb.builders))
-	for i := range bcb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*Blocks, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := bcb.builders[i]
+			builder := _c.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*BlocksMutation)
@@ -302,11 +302,11 @@ func (bcb *BlocksCreateBulk) Save(ctx context.Context) ([]*Blocks, error) {
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, bcb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, bcb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -330,7 +330,7 @@ func (bcb *BlocksCreateBulk) Save(ctx context.Context) ([]*Blocks, error) {
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, bcb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -338,8 +338,8 @@ func (bcb *BlocksCreateBulk) Save(ctx context.Context) ([]*Blocks, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (bcb *BlocksCreateBulk) SaveX(ctx context.Context) []*Blocks {
-	v, err := bcb.Save(ctx)
+func (_c *BlocksCreateBulk) SaveX(ctx context.Context) []*Blocks {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -347,14 +347,14 @@ func (bcb *BlocksCreateBulk) SaveX(ctx context.Context) []*Blocks {
 }
 
 // Exec executes the query.
-func (bcb *BlocksCreateBulk) Exec(ctx context.Context) error {
-	_, err := bcb.Save(ctx)
+func (_c *BlocksCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (bcb *BlocksCreateBulk) ExecX(ctx context.Context) {
-	if err := bcb.Exec(ctx); err != nil {
+func (_c *BlocksCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

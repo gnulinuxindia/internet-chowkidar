@@ -89,7 +89,7 @@ func (*Sites) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Sites fields.
-func (s *Sites) assignValues(columns []string, values []any) error {
+func (_m *Sites) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -100,27 +100,27 @@ func (s *Sites) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			s.ID = int(value.Int64)
+			_m.ID = int(value.Int64)
 		case sites.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				s.CreatedAt = value.Time
+				_m.CreatedAt = value.Time
 			}
 		case sites.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				s.UpdatedAt = value.Time
+				_m.UpdatedAt = value.Time
 			}
 		case sites.FieldDomain:
 			if value, ok := values[i].(*sql.NullString); !ok {
 				return fmt.Errorf("unexpected type %T for field domain", values[i])
 			} else if value.Valid {
-				s.Domain = value.String
+				_m.Domain = value.String
 			}
 		default:
-			s.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -128,56 +128,56 @@ func (s *Sites) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Sites.
 // This includes values selected through modifiers, order, etc.
-func (s *Sites) Value(name string) (ent.Value, error) {
-	return s.selectValues.Get(name)
+func (_m *Sites) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // QueryBlocks queries the "blocks" edge of the Sites entity.
-func (s *Sites) QueryBlocks() *BlocksQuery {
-	return NewSitesClient(s.config).QueryBlocks(s)
+func (_m *Sites) QueryBlocks() *BlocksQuery {
+	return NewSitesClient(_m.config).QueryBlocks(_m)
 }
 
 // QueryCategories queries the "categories" edge of the Sites entity.
-func (s *Sites) QueryCategories() *CategoriesQuery {
-	return NewSitesClient(s.config).QueryCategories(s)
+func (_m *Sites) QueryCategories() *CategoriesQuery {
+	return NewSitesClient(_m.config).QueryCategories(_m)
 }
 
 // QuerySitesCategories queries the "sites_categories" edge of the Sites entity.
-func (s *Sites) QuerySitesCategories() *SitesCategoriesQuery {
-	return NewSitesClient(s.config).QuerySitesCategories(s)
+func (_m *Sites) QuerySitesCategories() *SitesCategoriesQuery {
+	return NewSitesClient(_m.config).QuerySitesCategories(_m)
 }
 
 // Update returns a builder for updating this Sites.
 // Note that you need to call Sites.Unwrap() before calling this method if this Sites
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (s *Sites) Update() *SitesUpdateOne {
-	return NewSitesClient(s.config).UpdateOne(s)
+func (_m *Sites) Update() *SitesUpdateOne {
+	return NewSitesClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the Sites entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (s *Sites) Unwrap() *Sites {
-	_tx, ok := s.config.driver.(*txDriver)
+func (_m *Sites) Unwrap() *Sites {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Sites is not a transactional entity")
 	}
-	s.config.driver = _tx.drv
-	return s
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (s *Sites) String() string {
+func (_m *Sites) String() string {
 	var builder strings.Builder
 	builder.WriteString("Sites(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", s.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("created_at=")
-	builder.WriteString(s.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(s.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("domain=")
-	builder.WriteString(s.Domain)
+	builder.WriteString(_m.Domain)
 	builder.WriteByte(')')
 	return builder.String()
 }

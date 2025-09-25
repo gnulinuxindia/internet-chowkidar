@@ -38,6 +38,10 @@ func ProvideReportsHandler() ReportsHandler {
 	return &reportsHandlerImpl{}
 }
 
+func ProvideSecurityHandler() SecurityHandler {
+	return &securityHandlerImpl{}
+}
+
 func ProvideSitesHandler(
 	sitesService service.SitesService,
 ) SitesHandler {

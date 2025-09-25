@@ -20,56 +20,56 @@ type IspsDelete struct {
 }
 
 // Where appends a list predicates to the IspsDelete builder.
-func (id *IspsDelete) Where(ps ...predicate.Isps) *IspsDelete {
-	id.mutation.Where(ps...)
-	return id
+func (_d *IspsDelete) Where(ps ...predicate.Isps) *IspsDelete {
+	_d.mutation.Where(ps...)
+	return _d
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (id *IspsDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks(ctx, id.sqlExec, id.mutation, id.hooks)
+func (_d *IspsDelete) Exec(ctx context.Context) (int, error) {
+	return withHooks(ctx, _d.sqlExec, _d.mutation, _d.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (id *IspsDelete) ExecX(ctx context.Context) int {
-	n, err := id.Exec(ctx)
+func (_d *IspsDelete) ExecX(ctx context.Context) int {
+	n, err := _d.Exec(ctx)
 	if err != nil {
 		panic(err)
 	}
 	return n
 }
 
-func (id *IspsDelete) sqlExec(ctx context.Context) (int, error) {
+func (_d *IspsDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := sqlgraph.NewDeleteSpec(isps.Table, sqlgraph.NewFieldSpec(isps.FieldID, field.TypeInt))
-	if ps := id.mutation.predicates; len(ps) > 0 {
+	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	affected, err := sqlgraph.DeleteNodes(ctx, id.driver, _spec)
+	affected, err := sqlgraph.DeleteNodes(ctx, _d.driver, _spec)
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
-	id.mutation.done = true
+	_d.mutation.done = true
 	return affected, err
 }
 
 // IspsDeleteOne is the builder for deleting a single Isps entity.
 type IspsDeleteOne struct {
-	id *IspsDelete
+	_d *IspsDelete
 }
 
 // Where appends a list predicates to the IspsDelete builder.
-func (ido *IspsDeleteOne) Where(ps ...predicate.Isps) *IspsDeleteOne {
-	ido.id.mutation.Where(ps...)
-	return ido
+func (_d *IspsDeleteOne) Where(ps ...predicate.Isps) *IspsDeleteOne {
+	_d._d.mutation.Where(ps...)
+	return _d
 }
 
 // Exec executes the deletion query.
-func (ido *IspsDeleteOne) Exec(ctx context.Context) error {
-	n, err := ido.id.Exec(ctx)
+func (_d *IspsDeleteOne) Exec(ctx context.Context) error {
+	n, err := _d._d.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
@@ -81,8 +81,8 @@ func (ido *IspsDeleteOne) Exec(ctx context.Context) error {
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ido *IspsDeleteOne) ExecX(ctx context.Context) {
-	if err := ido.Exec(ctx); err != nil {
+func (_d *IspsDeleteOne) ExecX(ctx context.Context) {
+	if err := _d.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

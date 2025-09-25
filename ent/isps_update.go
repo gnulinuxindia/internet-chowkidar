@@ -24,123 +24,123 @@ type IspsUpdate struct {
 }
 
 // Where appends a list predicates to the IspsUpdate builder.
-func (iu *IspsUpdate) Where(ps ...predicate.Isps) *IspsUpdate {
-	iu.mutation.Where(ps...)
-	return iu
+func (_u *IspsUpdate) Where(ps ...predicate.Isps) *IspsUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (iu *IspsUpdate) SetUpdatedAt(t time.Time) *IspsUpdate {
-	iu.mutation.SetUpdatedAt(t)
-	return iu
+func (_u *IspsUpdate) SetUpdatedAt(v time.Time) *IspsUpdate {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetLatitude sets the "latitude" field.
-func (iu *IspsUpdate) SetLatitude(f float64) *IspsUpdate {
-	iu.mutation.ResetLatitude()
-	iu.mutation.SetLatitude(f)
-	return iu
+func (_u *IspsUpdate) SetLatitude(v float64) *IspsUpdate {
+	_u.mutation.ResetLatitude()
+	_u.mutation.SetLatitude(v)
+	return _u
 }
 
 // SetNillableLatitude sets the "latitude" field if the given value is not nil.
-func (iu *IspsUpdate) SetNillableLatitude(f *float64) *IspsUpdate {
-	if f != nil {
-		iu.SetLatitude(*f)
+func (_u *IspsUpdate) SetNillableLatitude(v *float64) *IspsUpdate {
+	if v != nil {
+		_u.SetLatitude(*v)
 	}
-	return iu
+	return _u
 }
 
-// AddLatitude adds f to the "latitude" field.
-func (iu *IspsUpdate) AddLatitude(f float64) *IspsUpdate {
-	iu.mutation.AddLatitude(f)
-	return iu
+// AddLatitude adds value to the "latitude" field.
+func (_u *IspsUpdate) AddLatitude(v float64) *IspsUpdate {
+	_u.mutation.AddLatitude(v)
+	return _u
 }
 
 // SetLongitude sets the "longitude" field.
-func (iu *IspsUpdate) SetLongitude(f float64) *IspsUpdate {
-	iu.mutation.ResetLongitude()
-	iu.mutation.SetLongitude(f)
-	return iu
+func (_u *IspsUpdate) SetLongitude(v float64) *IspsUpdate {
+	_u.mutation.ResetLongitude()
+	_u.mutation.SetLongitude(v)
+	return _u
 }
 
 // SetNillableLongitude sets the "longitude" field if the given value is not nil.
-func (iu *IspsUpdate) SetNillableLongitude(f *float64) *IspsUpdate {
-	if f != nil {
-		iu.SetLongitude(*f)
+func (_u *IspsUpdate) SetNillableLongitude(v *float64) *IspsUpdate {
+	if v != nil {
+		_u.SetLongitude(*v)
 	}
-	return iu
+	return _u
 }
 
-// AddLongitude adds f to the "longitude" field.
-func (iu *IspsUpdate) AddLongitude(f float64) *IspsUpdate {
-	iu.mutation.AddLongitude(f)
-	return iu
+// AddLongitude adds value to the "longitude" field.
+func (_u *IspsUpdate) AddLongitude(v float64) *IspsUpdate {
+	_u.mutation.AddLongitude(v)
+	return _u
 }
 
 // SetName sets the "name" field.
-func (iu *IspsUpdate) SetName(s string) *IspsUpdate {
-	iu.mutation.SetName(s)
-	return iu
+func (_u *IspsUpdate) SetName(v string) *IspsUpdate {
+	_u.mutation.SetName(v)
+	return _u
 }
 
 // SetNillableName sets the "name" field if the given value is not nil.
-func (iu *IspsUpdate) SetNillableName(s *string) *IspsUpdate {
-	if s != nil {
-		iu.SetName(*s)
+func (_u *IspsUpdate) SetNillableName(v *string) *IspsUpdate {
+	if v != nil {
+		_u.SetName(*v)
 	}
-	return iu
+	return _u
 }
 
 // AddIspBlockIDs adds the "isp_blocks" edge to the Blocks entity by IDs.
-func (iu *IspsUpdate) AddIspBlockIDs(ids ...int) *IspsUpdate {
-	iu.mutation.AddIspBlockIDs(ids...)
-	return iu
+func (_u *IspsUpdate) AddIspBlockIDs(ids ...int) *IspsUpdate {
+	_u.mutation.AddIspBlockIDs(ids...)
+	return _u
 }
 
 // AddIspBlocks adds the "isp_blocks" edges to the Blocks entity.
-func (iu *IspsUpdate) AddIspBlocks(b ...*Blocks) *IspsUpdate {
-	ids := make([]int, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
+func (_u *IspsUpdate) AddIspBlocks(v ...*Blocks) *IspsUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return iu.AddIspBlockIDs(ids...)
+	return _u.AddIspBlockIDs(ids...)
 }
 
 // Mutation returns the IspsMutation object of the builder.
-func (iu *IspsUpdate) Mutation() *IspsMutation {
-	return iu.mutation
+func (_u *IspsUpdate) Mutation() *IspsMutation {
+	return _u.mutation
 }
 
 // ClearIspBlocks clears all "isp_blocks" edges to the Blocks entity.
-func (iu *IspsUpdate) ClearIspBlocks() *IspsUpdate {
-	iu.mutation.ClearIspBlocks()
-	return iu
+func (_u *IspsUpdate) ClearIspBlocks() *IspsUpdate {
+	_u.mutation.ClearIspBlocks()
+	return _u
 }
 
 // RemoveIspBlockIDs removes the "isp_blocks" edge to Blocks entities by IDs.
-func (iu *IspsUpdate) RemoveIspBlockIDs(ids ...int) *IspsUpdate {
-	iu.mutation.RemoveIspBlockIDs(ids...)
-	return iu
+func (_u *IspsUpdate) RemoveIspBlockIDs(ids ...int) *IspsUpdate {
+	_u.mutation.RemoveIspBlockIDs(ids...)
+	return _u
 }
 
 // RemoveIspBlocks removes "isp_blocks" edges to Blocks entities.
-func (iu *IspsUpdate) RemoveIspBlocks(b ...*Blocks) *IspsUpdate {
-	ids := make([]int, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
+func (_u *IspsUpdate) RemoveIspBlocks(v ...*Blocks) *IspsUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return iu.RemoveIspBlockIDs(ids...)
+	return _u.RemoveIspBlockIDs(ids...)
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (iu *IspsUpdate) Save(ctx context.Context) (int, error) {
-	iu.defaults()
-	return withHooks(ctx, iu.sqlSave, iu.mutation, iu.hooks)
+func (_u *IspsUpdate) Save(ctx context.Context) (int, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (iu *IspsUpdate) SaveX(ctx context.Context) int {
-	affected, err := iu.Save(ctx)
+func (_u *IspsUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -148,54 +148,54 @@ func (iu *IspsUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (iu *IspsUpdate) Exec(ctx context.Context) error {
-	_, err := iu.Save(ctx)
+func (_u *IspsUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (iu *IspsUpdate) ExecX(ctx context.Context) {
-	if err := iu.Exec(ctx); err != nil {
+func (_u *IspsUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (iu *IspsUpdate) defaults() {
-	if _, ok := iu.mutation.UpdatedAt(); !ok {
+func (_u *IspsUpdate) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := isps.UpdateDefaultUpdatedAt()
-		iu.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
-func (iu *IspsUpdate) sqlSave(ctx context.Context) (n int, err error) {
+func (_u *IspsUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	_spec := sqlgraph.NewUpdateSpec(isps.Table, isps.Columns, sqlgraph.NewFieldSpec(isps.FieldID, field.TypeInt))
-	if ps := iu.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := iu.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(isps.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := iu.mutation.Latitude(); ok {
+	if value, ok := _u.mutation.Latitude(); ok {
 		_spec.SetField(isps.FieldLatitude, field.TypeFloat64, value)
 	}
-	if value, ok := iu.mutation.AddedLatitude(); ok {
+	if value, ok := _u.mutation.AddedLatitude(); ok {
 		_spec.AddField(isps.FieldLatitude, field.TypeFloat64, value)
 	}
-	if value, ok := iu.mutation.Longitude(); ok {
+	if value, ok := _u.mutation.Longitude(); ok {
 		_spec.SetField(isps.FieldLongitude, field.TypeFloat64, value)
 	}
-	if value, ok := iu.mutation.AddedLongitude(); ok {
+	if value, ok := _u.mutation.AddedLongitude(); ok {
 		_spec.AddField(isps.FieldLongitude, field.TypeFloat64, value)
 	}
-	if value, ok := iu.mutation.Name(); ok {
+	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(isps.FieldName, field.TypeString, value)
 	}
-	if iu.mutation.IspBlocksCleared() {
+	if _u.mutation.IspBlocksCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -208,7 +208,7 @@ func (iu *IspsUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := iu.mutation.RemovedIspBlocksIDs(); len(nodes) > 0 && !iu.mutation.IspBlocksCleared() {
+	if nodes := _u.mutation.RemovedIspBlocksIDs(); len(nodes) > 0 && !_u.mutation.IspBlocksCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -224,7 +224,7 @@ func (iu *IspsUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := iu.mutation.IspBlocksIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.IspBlocksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -240,7 +240,7 @@ func (iu *IspsUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, iu.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{isps.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -248,8 +248,8 @@ func (iu *IspsUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
-	iu.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // IspsUpdateOne is the builder for updating a single Isps entity.
@@ -261,130 +261,130 @@ type IspsUpdateOne struct {
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (iuo *IspsUpdateOne) SetUpdatedAt(t time.Time) *IspsUpdateOne {
-	iuo.mutation.SetUpdatedAt(t)
-	return iuo
+func (_u *IspsUpdateOne) SetUpdatedAt(v time.Time) *IspsUpdateOne {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetLatitude sets the "latitude" field.
-func (iuo *IspsUpdateOne) SetLatitude(f float64) *IspsUpdateOne {
-	iuo.mutation.ResetLatitude()
-	iuo.mutation.SetLatitude(f)
-	return iuo
+func (_u *IspsUpdateOne) SetLatitude(v float64) *IspsUpdateOne {
+	_u.mutation.ResetLatitude()
+	_u.mutation.SetLatitude(v)
+	return _u
 }
 
 // SetNillableLatitude sets the "latitude" field if the given value is not nil.
-func (iuo *IspsUpdateOne) SetNillableLatitude(f *float64) *IspsUpdateOne {
-	if f != nil {
-		iuo.SetLatitude(*f)
+func (_u *IspsUpdateOne) SetNillableLatitude(v *float64) *IspsUpdateOne {
+	if v != nil {
+		_u.SetLatitude(*v)
 	}
-	return iuo
+	return _u
 }
 
-// AddLatitude adds f to the "latitude" field.
-func (iuo *IspsUpdateOne) AddLatitude(f float64) *IspsUpdateOne {
-	iuo.mutation.AddLatitude(f)
-	return iuo
+// AddLatitude adds value to the "latitude" field.
+func (_u *IspsUpdateOne) AddLatitude(v float64) *IspsUpdateOne {
+	_u.mutation.AddLatitude(v)
+	return _u
 }
 
 // SetLongitude sets the "longitude" field.
-func (iuo *IspsUpdateOne) SetLongitude(f float64) *IspsUpdateOne {
-	iuo.mutation.ResetLongitude()
-	iuo.mutation.SetLongitude(f)
-	return iuo
+func (_u *IspsUpdateOne) SetLongitude(v float64) *IspsUpdateOne {
+	_u.mutation.ResetLongitude()
+	_u.mutation.SetLongitude(v)
+	return _u
 }
 
 // SetNillableLongitude sets the "longitude" field if the given value is not nil.
-func (iuo *IspsUpdateOne) SetNillableLongitude(f *float64) *IspsUpdateOne {
-	if f != nil {
-		iuo.SetLongitude(*f)
+func (_u *IspsUpdateOne) SetNillableLongitude(v *float64) *IspsUpdateOne {
+	if v != nil {
+		_u.SetLongitude(*v)
 	}
-	return iuo
+	return _u
 }
 
-// AddLongitude adds f to the "longitude" field.
-func (iuo *IspsUpdateOne) AddLongitude(f float64) *IspsUpdateOne {
-	iuo.mutation.AddLongitude(f)
-	return iuo
+// AddLongitude adds value to the "longitude" field.
+func (_u *IspsUpdateOne) AddLongitude(v float64) *IspsUpdateOne {
+	_u.mutation.AddLongitude(v)
+	return _u
 }
 
 // SetName sets the "name" field.
-func (iuo *IspsUpdateOne) SetName(s string) *IspsUpdateOne {
-	iuo.mutation.SetName(s)
-	return iuo
+func (_u *IspsUpdateOne) SetName(v string) *IspsUpdateOne {
+	_u.mutation.SetName(v)
+	return _u
 }
 
 // SetNillableName sets the "name" field if the given value is not nil.
-func (iuo *IspsUpdateOne) SetNillableName(s *string) *IspsUpdateOne {
-	if s != nil {
-		iuo.SetName(*s)
+func (_u *IspsUpdateOne) SetNillableName(v *string) *IspsUpdateOne {
+	if v != nil {
+		_u.SetName(*v)
 	}
-	return iuo
+	return _u
 }
 
 // AddIspBlockIDs adds the "isp_blocks" edge to the Blocks entity by IDs.
-func (iuo *IspsUpdateOne) AddIspBlockIDs(ids ...int) *IspsUpdateOne {
-	iuo.mutation.AddIspBlockIDs(ids...)
-	return iuo
+func (_u *IspsUpdateOne) AddIspBlockIDs(ids ...int) *IspsUpdateOne {
+	_u.mutation.AddIspBlockIDs(ids...)
+	return _u
 }
 
 // AddIspBlocks adds the "isp_blocks" edges to the Blocks entity.
-func (iuo *IspsUpdateOne) AddIspBlocks(b ...*Blocks) *IspsUpdateOne {
-	ids := make([]int, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
+func (_u *IspsUpdateOne) AddIspBlocks(v ...*Blocks) *IspsUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return iuo.AddIspBlockIDs(ids...)
+	return _u.AddIspBlockIDs(ids...)
 }
 
 // Mutation returns the IspsMutation object of the builder.
-func (iuo *IspsUpdateOne) Mutation() *IspsMutation {
-	return iuo.mutation
+func (_u *IspsUpdateOne) Mutation() *IspsMutation {
+	return _u.mutation
 }
 
 // ClearIspBlocks clears all "isp_blocks" edges to the Blocks entity.
-func (iuo *IspsUpdateOne) ClearIspBlocks() *IspsUpdateOne {
-	iuo.mutation.ClearIspBlocks()
-	return iuo
+func (_u *IspsUpdateOne) ClearIspBlocks() *IspsUpdateOne {
+	_u.mutation.ClearIspBlocks()
+	return _u
 }
 
 // RemoveIspBlockIDs removes the "isp_blocks" edge to Blocks entities by IDs.
-func (iuo *IspsUpdateOne) RemoveIspBlockIDs(ids ...int) *IspsUpdateOne {
-	iuo.mutation.RemoveIspBlockIDs(ids...)
-	return iuo
+func (_u *IspsUpdateOne) RemoveIspBlockIDs(ids ...int) *IspsUpdateOne {
+	_u.mutation.RemoveIspBlockIDs(ids...)
+	return _u
 }
 
 // RemoveIspBlocks removes "isp_blocks" edges to Blocks entities.
-func (iuo *IspsUpdateOne) RemoveIspBlocks(b ...*Blocks) *IspsUpdateOne {
-	ids := make([]int, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
+func (_u *IspsUpdateOne) RemoveIspBlocks(v ...*Blocks) *IspsUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return iuo.RemoveIspBlockIDs(ids...)
+	return _u.RemoveIspBlockIDs(ids...)
 }
 
 // Where appends a list predicates to the IspsUpdate builder.
-func (iuo *IspsUpdateOne) Where(ps ...predicate.Isps) *IspsUpdateOne {
-	iuo.mutation.Where(ps...)
-	return iuo
+func (_u *IspsUpdateOne) Where(ps ...predicate.Isps) *IspsUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (iuo *IspsUpdateOne) Select(field string, fields ...string) *IspsUpdateOne {
-	iuo.fields = append([]string{field}, fields...)
-	return iuo
+func (_u *IspsUpdateOne) Select(field string, fields ...string) *IspsUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated Isps entity.
-func (iuo *IspsUpdateOne) Save(ctx context.Context) (*Isps, error) {
-	iuo.defaults()
-	return withHooks(ctx, iuo.sqlSave, iuo.mutation, iuo.hooks)
+func (_u *IspsUpdateOne) Save(ctx context.Context) (*Isps, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (iuo *IspsUpdateOne) SaveX(ctx context.Context) *Isps {
-	node, err := iuo.Save(ctx)
+func (_u *IspsUpdateOne) SaveX(ctx context.Context) *Isps {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -392,34 +392,34 @@ func (iuo *IspsUpdateOne) SaveX(ctx context.Context) *Isps {
 }
 
 // Exec executes the query on the entity.
-func (iuo *IspsUpdateOne) Exec(ctx context.Context) error {
-	_, err := iuo.Save(ctx)
+func (_u *IspsUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (iuo *IspsUpdateOne) ExecX(ctx context.Context) {
-	if err := iuo.Exec(ctx); err != nil {
+func (_u *IspsUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (iuo *IspsUpdateOne) defaults() {
-	if _, ok := iuo.mutation.UpdatedAt(); !ok {
+func (_u *IspsUpdateOne) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := isps.UpdateDefaultUpdatedAt()
-		iuo.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
-func (iuo *IspsUpdateOne) sqlSave(ctx context.Context) (_node *Isps, err error) {
+func (_u *IspsUpdateOne) sqlSave(ctx context.Context) (_node *Isps, err error) {
 	_spec := sqlgraph.NewUpdateSpec(isps.Table, isps.Columns, sqlgraph.NewFieldSpec(isps.FieldID, field.TypeInt))
-	id, ok := iuo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Isps.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := iuo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, isps.FieldID)
 		for _, f := range fields {
@@ -431,32 +431,32 @@ func (iuo *IspsUpdateOne) sqlSave(ctx context.Context) (_node *Isps, err error) 
 			}
 		}
 	}
-	if ps := iuo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := iuo.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(isps.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := iuo.mutation.Latitude(); ok {
+	if value, ok := _u.mutation.Latitude(); ok {
 		_spec.SetField(isps.FieldLatitude, field.TypeFloat64, value)
 	}
-	if value, ok := iuo.mutation.AddedLatitude(); ok {
+	if value, ok := _u.mutation.AddedLatitude(); ok {
 		_spec.AddField(isps.FieldLatitude, field.TypeFloat64, value)
 	}
-	if value, ok := iuo.mutation.Longitude(); ok {
+	if value, ok := _u.mutation.Longitude(); ok {
 		_spec.SetField(isps.FieldLongitude, field.TypeFloat64, value)
 	}
-	if value, ok := iuo.mutation.AddedLongitude(); ok {
+	if value, ok := _u.mutation.AddedLongitude(); ok {
 		_spec.AddField(isps.FieldLongitude, field.TypeFloat64, value)
 	}
-	if value, ok := iuo.mutation.Name(); ok {
+	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(isps.FieldName, field.TypeString, value)
 	}
-	if iuo.mutation.IspBlocksCleared() {
+	if _u.mutation.IspBlocksCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -469,7 +469,7 @@ func (iuo *IspsUpdateOne) sqlSave(ctx context.Context) (_node *Isps, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := iuo.mutation.RemovedIspBlocksIDs(); len(nodes) > 0 && !iuo.mutation.IspBlocksCleared() {
+	if nodes := _u.mutation.RemovedIspBlocksIDs(); len(nodes) > 0 && !_u.mutation.IspBlocksCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -485,7 +485,7 @@ func (iuo *IspsUpdateOne) sqlSave(ctx context.Context) (_node *Isps, err error) 
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := iuo.mutation.IspBlocksIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.IspBlocksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -501,10 +501,10 @@ func (iuo *IspsUpdateOne) sqlSave(ctx context.Context) (_node *Isps, err error) 
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &Isps{config: iuo.config}
+	_node = &Isps{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, iuo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{isps.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -512,6 +512,6 @@ func (iuo *IspsUpdateOne) sqlSave(ctx context.Context) (_node *Isps, err error) 
 		}
 		return nil, err
 	}
-	iuo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

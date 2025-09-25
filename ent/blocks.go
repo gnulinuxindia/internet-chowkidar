@@ -90,7 +90,7 @@ func (*Blocks) scanValues(columns []string) ([]any, error) {
 
 // assignValues assigns the values that were returned from sql.Rows (after scanning)
 // to the Blocks fields.
-func (b *Blocks) assignValues(columns []string, values []any) error {
+func (_m *Blocks) assignValues(columns []string, values []any) error {
 	if m, n := len(values), len(columns); m < n {
 		return fmt.Errorf("mismatch number of scan values: %d != %d", m, n)
 	}
@@ -101,51 +101,51 @@ func (b *Blocks) assignValues(columns []string, values []any) error {
 			if !ok {
 				return fmt.Errorf("unexpected type %T for field id", value)
 			}
-			b.ID = int(value.Int64)
+			_m.ID = int(value.Int64)
 		case blocks.FieldCreatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field created_at", values[i])
 			} else if value.Valid {
-				b.CreatedAt = value.Time
+				_m.CreatedAt = value.Time
 			}
 		case blocks.FieldUpdatedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field updated_at", values[i])
 			} else if value.Valid {
-				b.UpdatedAt = value.Time
+				_m.UpdatedAt = value.Time
 			}
 		case blocks.FieldSiteID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field site_id", values[i])
 			} else if value.Valid {
-				b.SiteID = int(value.Int64)
+				_m.SiteID = int(value.Int64)
 			}
 		case blocks.FieldIspID:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field isp_id", values[i])
 			} else if value.Valid {
-				b.IspID = int(value.Int64)
+				_m.IspID = int(value.Int64)
 			}
 		case blocks.FieldBlockReports:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field block_reports", values[i])
 			} else if value.Valid {
-				b.BlockReports = int(value.Int64)
+				_m.BlockReports = int(value.Int64)
 			}
 		case blocks.FieldUnblockReports:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
 				return fmt.Errorf("unexpected type %T for field unblock_reports", values[i])
 			} else if value.Valid {
-				b.UnblockReports = int(value.Int64)
+				_m.UnblockReports = int(value.Int64)
 			}
 		case blocks.FieldLastReportedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field last_reported_at", values[i])
 			} else if value.Valid {
-				b.LastReportedAt = value.Time
+				_m.LastReportedAt = value.Time
 			}
 		default:
-			b.selectValues.Set(columns[i], values[i])
+			_m.selectValues.Set(columns[i], values[i])
 		}
 	}
 	return nil
@@ -153,63 +153,63 @@ func (b *Blocks) assignValues(columns []string, values []any) error {
 
 // Value returns the ent.Value that was dynamically selected and assigned to the Blocks.
 // This includes values selected through modifiers, order, etc.
-func (b *Blocks) Value(name string) (ent.Value, error) {
-	return b.selectValues.Get(name)
+func (_m *Blocks) Value(name string) (ent.Value, error) {
+	return _m.selectValues.Get(name)
 }
 
 // QuerySite queries the "site" edge of the Blocks entity.
-func (b *Blocks) QuerySite() *SitesQuery {
-	return NewBlocksClient(b.config).QuerySite(b)
+func (_m *Blocks) QuerySite() *SitesQuery {
+	return NewBlocksClient(_m.config).QuerySite(_m)
 }
 
 // QueryIsp queries the "isp" edge of the Blocks entity.
-func (b *Blocks) QueryIsp() *IspsQuery {
-	return NewBlocksClient(b.config).QueryIsp(b)
+func (_m *Blocks) QueryIsp() *IspsQuery {
+	return NewBlocksClient(_m.config).QueryIsp(_m)
 }
 
 // Update returns a builder for updating this Blocks.
 // Note that you need to call Blocks.Unwrap() before calling this method if this Blocks
 // was returned from a transaction, and the transaction was committed or rolled back.
-func (b *Blocks) Update() *BlocksUpdateOne {
-	return NewBlocksClient(b.config).UpdateOne(b)
+func (_m *Blocks) Update() *BlocksUpdateOne {
+	return NewBlocksClient(_m.config).UpdateOne(_m)
 }
 
 // Unwrap unwraps the Blocks entity that was returned from a transaction after it was closed,
 // so that all future queries will be executed through the driver which created the transaction.
-func (b *Blocks) Unwrap() *Blocks {
-	_tx, ok := b.config.driver.(*txDriver)
+func (_m *Blocks) Unwrap() *Blocks {
+	_tx, ok := _m.config.driver.(*txDriver)
 	if !ok {
 		panic("ent: Blocks is not a transactional entity")
 	}
-	b.config.driver = _tx.drv
-	return b
+	_m.config.driver = _tx.drv
+	return _m
 }
 
 // String implements the fmt.Stringer.
-func (b *Blocks) String() string {
+func (_m *Blocks) String() string {
 	var builder strings.Builder
 	builder.WriteString("Blocks(")
-	builder.WriteString(fmt.Sprintf("id=%v, ", b.ID))
+	builder.WriteString(fmt.Sprintf("id=%v, ", _m.ID))
 	builder.WriteString("created_at=")
-	builder.WriteString(b.CreatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.CreatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("updated_at=")
-	builder.WriteString(b.UpdatedAt.Format(time.ANSIC))
+	builder.WriteString(_m.UpdatedAt.Format(time.ANSIC))
 	builder.WriteString(", ")
 	builder.WriteString("site_id=")
-	builder.WriteString(fmt.Sprintf("%v", b.SiteID))
+	builder.WriteString(fmt.Sprintf("%v", _m.SiteID))
 	builder.WriteString(", ")
 	builder.WriteString("isp_id=")
-	builder.WriteString(fmt.Sprintf("%v", b.IspID))
+	builder.WriteString(fmt.Sprintf("%v", _m.IspID))
 	builder.WriteString(", ")
 	builder.WriteString("block_reports=")
-	builder.WriteString(fmt.Sprintf("%v", b.BlockReports))
+	builder.WriteString(fmt.Sprintf("%v", _m.BlockReports))
 	builder.WriteString(", ")
 	builder.WriteString("unblock_reports=")
-	builder.WriteString(fmt.Sprintf("%v", b.UnblockReports))
+	builder.WriteString(fmt.Sprintf("%v", _m.UnblockReports))
 	builder.WriteString(", ")
 	builder.WriteString("last_reported_at=")
-	builder.WriteString(b.LastReportedAt.Format(time.ANSIC))
+	builder.WriteString(_m.LastReportedAt.Format(time.ANSIC))
 	builder.WriteByte(')')
 	return builder.String()
 }

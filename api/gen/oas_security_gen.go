@@ -15,7 +15,7 @@ import (
 // SecurityHandler is handler for security parameters.
 type SecurityHandler interface {
 	// HandleApiKeyAuth handles ApiKeyAuth security.
-	HandleApiKeyAuth(ctx context.Context, operationName string, t ApiKeyAuth) (context.Context, error)
+	HandleApiKeyAuth(ctx context.Context, operationName OperationName, t ApiKeyAuth) (context.Context, error)
 }
 
 func findAuthorization(h http.Header, prefix string) (string, bool) {
@@ -33,7 +33,7 @@ func findAuthorization(h http.Header, prefix string) (string, bool) {
 	return "", false
 }
 
-func (s *Server) securityApiKeyAuth(ctx context.Context, operationName string, req *http.Request) (context.Context, bool, error) {
+func (s *Server) securityApiKeyAuth(ctx context.Context, operationName OperationName, req *http.Request) (context.Context, bool, error) {
 	var t ApiKeyAuth
 	const parameterName = "X-Api-Key"
 	value := req.Header.Get(parameterName)
@@ -53,10 +53,10 @@ func (s *Server) securityApiKeyAuth(ctx context.Context, operationName string, r
 // SecuritySource is provider of security values (tokens, passwords, etc.).
 type SecuritySource interface {
 	// ApiKeyAuth provides ApiKeyAuth security value.
-	ApiKeyAuth(ctx context.Context, operationName string) (ApiKeyAuth, error)
+	ApiKeyAuth(ctx context.Context, operationName OperationName) (ApiKeyAuth, error)
 }
 
-func (s *Client) securityApiKeyAuth(ctx context.Context, operationName string, req *http.Request) error {
+func (s *Client) securityApiKeyAuth(ctx context.Context, operationName OperationName, req *http.Request) error {
 	t, err := s.sec.ApiKeyAuth(ctx, operationName)
 	if err != nil {
 		return errors.Wrap(err, "security source \"ApiKeyAuth\"")

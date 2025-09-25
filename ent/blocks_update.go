@@ -25,137 +25,137 @@ type BlocksUpdate struct {
 }
 
 // Where appends a list predicates to the BlocksUpdate builder.
-func (bu *BlocksUpdate) Where(ps ...predicate.Blocks) *BlocksUpdate {
-	bu.mutation.Where(ps...)
-	return bu
+func (_u *BlocksUpdate) Where(ps ...predicate.Blocks) *BlocksUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (bu *BlocksUpdate) SetUpdatedAt(t time.Time) *BlocksUpdate {
-	bu.mutation.SetUpdatedAt(t)
-	return bu
+func (_u *BlocksUpdate) SetUpdatedAt(v time.Time) *BlocksUpdate {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetSiteID sets the "site_id" field.
-func (bu *BlocksUpdate) SetSiteID(i int) *BlocksUpdate {
-	bu.mutation.SetSiteID(i)
-	return bu
+func (_u *BlocksUpdate) SetSiteID(v int) *BlocksUpdate {
+	_u.mutation.SetSiteID(v)
+	return _u
 }
 
 // SetNillableSiteID sets the "site_id" field if the given value is not nil.
-func (bu *BlocksUpdate) SetNillableSiteID(i *int) *BlocksUpdate {
-	if i != nil {
-		bu.SetSiteID(*i)
+func (_u *BlocksUpdate) SetNillableSiteID(v *int) *BlocksUpdate {
+	if v != nil {
+		_u.SetSiteID(*v)
 	}
-	return bu
+	return _u
 }
 
 // SetIspID sets the "isp_id" field.
-func (bu *BlocksUpdate) SetIspID(i int) *BlocksUpdate {
-	bu.mutation.SetIspID(i)
-	return bu
+func (_u *BlocksUpdate) SetIspID(v int) *BlocksUpdate {
+	_u.mutation.SetIspID(v)
+	return _u
 }
 
 // SetNillableIspID sets the "isp_id" field if the given value is not nil.
-func (bu *BlocksUpdate) SetNillableIspID(i *int) *BlocksUpdate {
-	if i != nil {
-		bu.SetIspID(*i)
+func (_u *BlocksUpdate) SetNillableIspID(v *int) *BlocksUpdate {
+	if v != nil {
+		_u.SetIspID(*v)
 	}
-	return bu
+	return _u
 }
 
 // SetBlockReports sets the "block_reports" field.
-func (bu *BlocksUpdate) SetBlockReports(i int) *BlocksUpdate {
-	bu.mutation.ResetBlockReports()
-	bu.mutation.SetBlockReports(i)
-	return bu
+func (_u *BlocksUpdate) SetBlockReports(v int) *BlocksUpdate {
+	_u.mutation.ResetBlockReports()
+	_u.mutation.SetBlockReports(v)
+	return _u
 }
 
 // SetNillableBlockReports sets the "block_reports" field if the given value is not nil.
-func (bu *BlocksUpdate) SetNillableBlockReports(i *int) *BlocksUpdate {
-	if i != nil {
-		bu.SetBlockReports(*i)
+func (_u *BlocksUpdate) SetNillableBlockReports(v *int) *BlocksUpdate {
+	if v != nil {
+		_u.SetBlockReports(*v)
 	}
-	return bu
+	return _u
 }
 
-// AddBlockReports adds i to the "block_reports" field.
-func (bu *BlocksUpdate) AddBlockReports(i int) *BlocksUpdate {
-	bu.mutation.AddBlockReports(i)
-	return bu
+// AddBlockReports adds value to the "block_reports" field.
+func (_u *BlocksUpdate) AddBlockReports(v int) *BlocksUpdate {
+	_u.mutation.AddBlockReports(v)
+	return _u
 }
 
 // SetUnblockReports sets the "unblock_reports" field.
-func (bu *BlocksUpdate) SetUnblockReports(i int) *BlocksUpdate {
-	bu.mutation.ResetUnblockReports()
-	bu.mutation.SetUnblockReports(i)
-	return bu
+func (_u *BlocksUpdate) SetUnblockReports(v int) *BlocksUpdate {
+	_u.mutation.ResetUnblockReports()
+	_u.mutation.SetUnblockReports(v)
+	return _u
 }
 
 // SetNillableUnblockReports sets the "unblock_reports" field if the given value is not nil.
-func (bu *BlocksUpdate) SetNillableUnblockReports(i *int) *BlocksUpdate {
-	if i != nil {
-		bu.SetUnblockReports(*i)
+func (_u *BlocksUpdate) SetNillableUnblockReports(v *int) *BlocksUpdate {
+	if v != nil {
+		_u.SetUnblockReports(*v)
 	}
-	return bu
+	return _u
 }
 
-// AddUnblockReports adds i to the "unblock_reports" field.
-func (bu *BlocksUpdate) AddUnblockReports(i int) *BlocksUpdate {
-	bu.mutation.AddUnblockReports(i)
-	return bu
+// AddUnblockReports adds value to the "unblock_reports" field.
+func (_u *BlocksUpdate) AddUnblockReports(v int) *BlocksUpdate {
+	_u.mutation.AddUnblockReports(v)
+	return _u
 }
 
 // SetLastReportedAt sets the "last_reported_at" field.
-func (bu *BlocksUpdate) SetLastReportedAt(t time.Time) *BlocksUpdate {
-	bu.mutation.SetLastReportedAt(t)
-	return bu
+func (_u *BlocksUpdate) SetLastReportedAt(v time.Time) *BlocksUpdate {
+	_u.mutation.SetLastReportedAt(v)
+	return _u
 }
 
 // SetNillableLastReportedAt sets the "last_reported_at" field if the given value is not nil.
-func (bu *BlocksUpdate) SetNillableLastReportedAt(t *time.Time) *BlocksUpdate {
-	if t != nil {
-		bu.SetLastReportedAt(*t)
+func (_u *BlocksUpdate) SetNillableLastReportedAt(v *time.Time) *BlocksUpdate {
+	if v != nil {
+		_u.SetLastReportedAt(*v)
 	}
-	return bu
+	return _u
 }
 
 // SetSite sets the "site" edge to the Sites entity.
-func (bu *BlocksUpdate) SetSite(s *Sites) *BlocksUpdate {
-	return bu.SetSiteID(s.ID)
+func (_u *BlocksUpdate) SetSite(v *Sites) *BlocksUpdate {
+	return _u.SetSiteID(v.ID)
 }
 
 // SetIsp sets the "isp" edge to the Isps entity.
-func (bu *BlocksUpdate) SetIsp(i *Isps) *BlocksUpdate {
-	return bu.SetIspID(i.ID)
+func (_u *BlocksUpdate) SetIsp(v *Isps) *BlocksUpdate {
+	return _u.SetIspID(v.ID)
 }
 
 // Mutation returns the BlocksMutation object of the builder.
-func (bu *BlocksUpdate) Mutation() *BlocksMutation {
-	return bu.mutation
+func (_u *BlocksUpdate) Mutation() *BlocksMutation {
+	return _u.mutation
 }
 
 // ClearSite clears the "site" edge to the Sites entity.
-func (bu *BlocksUpdate) ClearSite() *BlocksUpdate {
-	bu.mutation.ClearSite()
-	return bu
+func (_u *BlocksUpdate) ClearSite() *BlocksUpdate {
+	_u.mutation.ClearSite()
+	return _u
 }
 
 // ClearIsp clears the "isp" edge to the Isps entity.
-func (bu *BlocksUpdate) ClearIsp() *BlocksUpdate {
-	bu.mutation.ClearIsp()
-	return bu
+func (_u *BlocksUpdate) ClearIsp() *BlocksUpdate {
+	_u.mutation.ClearIsp()
+	return _u
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (bu *BlocksUpdate) Save(ctx context.Context) (int, error) {
-	bu.defaults()
-	return withHooks(ctx, bu.sqlSave, bu.mutation, bu.hooks)
+func (_u *BlocksUpdate) Save(ctx context.Context) (int, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (bu *BlocksUpdate) SaveX(ctx context.Context) int {
-	affected, err := bu.Save(ctx)
+func (_u *BlocksUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -163,68 +163,68 @@ func (bu *BlocksUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (bu *BlocksUpdate) Exec(ctx context.Context) error {
-	_, err := bu.Save(ctx)
+func (_u *BlocksUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (bu *BlocksUpdate) ExecX(ctx context.Context) {
-	if err := bu.Exec(ctx); err != nil {
+func (_u *BlocksUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (bu *BlocksUpdate) defaults() {
-	if _, ok := bu.mutation.UpdatedAt(); !ok {
+func (_u *BlocksUpdate) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := blocks.UpdateDefaultUpdatedAt()
-		bu.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (bu *BlocksUpdate) check() error {
-	if _, ok := bu.mutation.SiteID(); bu.mutation.SiteCleared() && !ok {
+func (_u *BlocksUpdate) check() error {
+	if _u.mutation.SiteCleared() && len(_u.mutation.SiteIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Blocks.site"`)
 	}
-	if _, ok := bu.mutation.IspID(); bu.mutation.IspCleared() && !ok {
+	if _u.mutation.IspCleared() && len(_u.mutation.IspIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Blocks.isp"`)
 	}
 	return nil
 }
 
-func (bu *BlocksUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := bu.check(); err != nil {
-		return n, err
+func (_u *BlocksUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(blocks.Table, blocks.Columns, sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt))
-	if ps := bu.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := bu.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(blocks.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := bu.mutation.BlockReports(); ok {
+	if value, ok := _u.mutation.BlockReports(); ok {
 		_spec.SetField(blocks.FieldBlockReports, field.TypeInt, value)
 	}
-	if value, ok := bu.mutation.AddedBlockReports(); ok {
+	if value, ok := _u.mutation.AddedBlockReports(); ok {
 		_spec.AddField(blocks.FieldBlockReports, field.TypeInt, value)
 	}
-	if value, ok := bu.mutation.UnblockReports(); ok {
+	if value, ok := _u.mutation.UnblockReports(); ok {
 		_spec.SetField(blocks.FieldUnblockReports, field.TypeInt, value)
 	}
-	if value, ok := bu.mutation.AddedUnblockReports(); ok {
+	if value, ok := _u.mutation.AddedUnblockReports(); ok {
 		_spec.AddField(blocks.FieldUnblockReports, field.TypeInt, value)
 	}
-	if value, ok := bu.mutation.LastReportedAt(); ok {
+	if value, ok := _u.mutation.LastReportedAt(); ok {
 		_spec.SetField(blocks.FieldLastReportedAt, field.TypeTime, value)
 	}
-	if bu.mutation.SiteCleared() {
+	if _u.mutation.SiteCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -237,7 +237,7 @@ func (bu *BlocksUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := bu.mutation.SiteIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.SiteIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -253,7 +253,7 @@ func (bu *BlocksUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if bu.mutation.IspCleared() {
+	if _u.mutation.IspCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -266,7 +266,7 @@ func (bu *BlocksUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := bu.mutation.IspIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.IspIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -282,7 +282,7 @@ func (bu *BlocksUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, bu.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{blocks.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -290,8 +290,8 @@ func (bu *BlocksUpdate) sqlSave(ctx context.Context) (n int, err error) {
 		}
 		return 0, err
 	}
-	bu.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // BlocksUpdateOne is the builder for updating a single Blocks entity.
@@ -303,144 +303,144 @@ type BlocksUpdateOne struct {
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (buo *BlocksUpdateOne) SetUpdatedAt(t time.Time) *BlocksUpdateOne {
-	buo.mutation.SetUpdatedAt(t)
-	return buo
+func (_u *BlocksUpdateOne) SetUpdatedAt(v time.Time) *BlocksUpdateOne {
+	_u.mutation.SetUpdatedAt(v)
+	return _u
 }
 
 // SetSiteID sets the "site_id" field.
-func (buo *BlocksUpdateOne) SetSiteID(i int) *BlocksUpdateOne {
-	buo.mutation.SetSiteID(i)
-	return buo
+func (_u *BlocksUpdateOne) SetSiteID(v int) *BlocksUpdateOne {
+	_u.mutation.SetSiteID(v)
+	return _u
 }
 
 // SetNillableSiteID sets the "site_id" field if the given value is not nil.
-func (buo *BlocksUpdateOne) SetNillableSiteID(i *int) *BlocksUpdateOne {
-	if i != nil {
-		buo.SetSiteID(*i)
+func (_u *BlocksUpdateOne) SetNillableSiteID(v *int) *BlocksUpdateOne {
+	if v != nil {
+		_u.SetSiteID(*v)
 	}
-	return buo
+	return _u
 }
 
 // SetIspID sets the "isp_id" field.
-func (buo *BlocksUpdateOne) SetIspID(i int) *BlocksUpdateOne {
-	buo.mutation.SetIspID(i)
-	return buo
+func (_u *BlocksUpdateOne) SetIspID(v int) *BlocksUpdateOne {
+	_u.mutation.SetIspID(v)
+	return _u
 }
 
 // SetNillableIspID sets the "isp_id" field if the given value is not nil.
-func (buo *BlocksUpdateOne) SetNillableIspID(i *int) *BlocksUpdateOne {
-	if i != nil {
-		buo.SetIspID(*i)
+func (_u *BlocksUpdateOne) SetNillableIspID(v *int) *BlocksUpdateOne {
+	if v != nil {
+		_u.SetIspID(*v)
 	}
-	return buo
+	return _u
 }
 
 // SetBlockReports sets the "block_reports" field.
-func (buo *BlocksUpdateOne) SetBlockReports(i int) *BlocksUpdateOne {
-	buo.mutation.ResetBlockReports()
-	buo.mutation.SetBlockReports(i)
-	return buo
+func (_u *BlocksUpdateOne) SetBlockReports(v int) *BlocksUpdateOne {
+	_u.mutation.ResetBlockReports()
+	_u.mutation.SetBlockReports(v)
+	return _u
 }
 
 // SetNillableBlockReports sets the "block_reports" field if the given value is not nil.
-func (buo *BlocksUpdateOne) SetNillableBlockReports(i *int) *BlocksUpdateOne {
-	if i != nil {
-		buo.SetBlockReports(*i)
+func (_u *BlocksUpdateOne) SetNillableBlockReports(v *int) *BlocksUpdateOne {
+	if v != nil {
+		_u.SetBlockReports(*v)
 	}
-	return buo
+	return _u
 }
 
-// AddBlockReports adds i to the "block_reports" field.
-func (buo *BlocksUpdateOne) AddBlockReports(i int) *BlocksUpdateOne {
-	buo.mutation.AddBlockReports(i)
-	return buo
+// AddBlockReports adds value to the "block_reports" field.
+func (_u *BlocksUpdateOne) AddBlockReports(v int) *BlocksUpdateOne {
+	_u.mutation.AddBlockReports(v)
+	return _u
 }
 
 // SetUnblockReports sets the "unblock_reports" field.
-func (buo *BlocksUpdateOne) SetUnblockReports(i int) *BlocksUpdateOne {
-	buo.mutation.ResetUnblockReports()
-	buo.mutation.SetUnblockReports(i)
-	return buo
+func (_u *BlocksUpdateOne) SetUnblockReports(v int) *BlocksUpdateOne {
+	_u.mutation.ResetUnblockReports()
+	_u.mutation.SetUnblockReports(v)
+	return _u
 }
 
 // SetNillableUnblockReports sets the "unblock_reports" field if the given value is not nil.
-func (buo *BlocksUpdateOne) SetNillableUnblockReports(i *int) *BlocksUpdateOne {
-	if i != nil {
-		buo.SetUnblockReports(*i)
+func (_u *BlocksUpdateOne) SetNillableUnblockReports(v *int) *BlocksUpdateOne {
+	if v != nil {
+		_u.SetUnblockReports(*v)
 	}
-	return buo
+	return _u
 }
 
-// AddUnblockReports adds i to the "unblock_reports" field.
-func (buo *BlocksUpdateOne) AddUnblockReports(i int) *BlocksUpdateOne {
-	buo.mutation.AddUnblockReports(i)
-	return buo
+// AddUnblockReports adds value to the "unblock_reports" field.
+func (_u *BlocksUpdateOne) AddUnblockReports(v int) *BlocksUpdateOne {
+	_u.mutation.AddUnblockReports(v)
+	return _u
 }
 
 // SetLastReportedAt sets the "last_reported_at" field.
-func (buo *BlocksUpdateOne) SetLastReportedAt(t time.Time) *BlocksUpdateOne {
-	buo.mutation.SetLastReportedAt(t)
-	return buo
+func (_u *BlocksUpdateOne) SetLastReportedAt(v time.Time) *BlocksUpdateOne {
+	_u.mutation.SetLastReportedAt(v)
+	return _u
 }
 
 // SetNillableLastReportedAt sets the "last_reported_at" field if the given value is not nil.
-func (buo *BlocksUpdateOne) SetNillableLastReportedAt(t *time.Time) *BlocksUpdateOne {
-	if t != nil {
-		buo.SetLastReportedAt(*t)
+func (_u *BlocksUpdateOne) SetNillableLastReportedAt(v *time.Time) *BlocksUpdateOne {
+	if v != nil {
+		_u.SetLastReportedAt(*v)
 	}
-	return buo
+	return _u
 }
 
 // SetSite sets the "site" edge to the Sites entity.
-func (buo *BlocksUpdateOne) SetSite(s *Sites) *BlocksUpdateOne {
-	return buo.SetSiteID(s.ID)
+func (_u *BlocksUpdateOne) SetSite(v *Sites) *BlocksUpdateOne {
+	return _u.SetSiteID(v.ID)
 }
 
 // SetIsp sets the "isp" edge to the Isps entity.
-func (buo *BlocksUpdateOne) SetIsp(i *Isps) *BlocksUpdateOne {
-	return buo.SetIspID(i.ID)
+func (_u *BlocksUpdateOne) SetIsp(v *Isps) *BlocksUpdateOne {
+	return _u.SetIspID(v.ID)
 }
 
 // Mutation returns the BlocksMutation object of the builder.
-func (buo *BlocksUpdateOne) Mutation() *BlocksMutation {
-	return buo.mutation
+func (_u *BlocksUpdateOne) Mutation() *BlocksMutation {
+	return _u.mutation
 }
 
 // ClearSite clears the "site" edge to the Sites entity.
-func (buo *BlocksUpdateOne) ClearSite() *BlocksUpdateOne {
-	buo.mutation.ClearSite()
-	return buo
+func (_u *BlocksUpdateOne) ClearSite() *BlocksUpdateOne {
+	_u.mutation.ClearSite()
+	return _u
 }
 
 // ClearIsp clears the "isp" edge to the Isps entity.
-func (buo *BlocksUpdateOne) ClearIsp() *BlocksUpdateOne {
-	buo.mutation.ClearIsp()
-	return buo
+func (_u *BlocksUpdateOne) ClearIsp() *BlocksUpdateOne {
+	_u.mutation.ClearIsp()
+	return _u
 }
 
 // Where appends a list predicates to the BlocksUpdate builder.
-func (buo *BlocksUpdateOne) Where(ps ...predicate.Blocks) *BlocksUpdateOne {
-	buo.mutation.Where(ps...)
-	return buo
+func (_u *BlocksUpdateOne) Where(ps ...predicate.Blocks) *BlocksUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (buo *BlocksUpdateOne) Select(field string, fields ...string) *BlocksUpdateOne {
-	buo.fields = append([]string{field}, fields...)
-	return buo
+func (_u *BlocksUpdateOne) Select(field string, fields ...string) *BlocksUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated Blocks entity.
-func (buo *BlocksUpdateOne) Save(ctx context.Context) (*Blocks, error) {
-	buo.defaults()
-	return withHooks(ctx, buo.sqlSave, buo.mutation, buo.hooks)
+func (_u *BlocksUpdateOne) Save(ctx context.Context) (*Blocks, error) {
+	_u.defaults()
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (buo *BlocksUpdateOne) SaveX(ctx context.Context) *Blocks {
-	node, err := buo.Save(ctx)
+func (_u *BlocksUpdateOne) SaveX(ctx context.Context) *Blocks {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -448,48 +448,48 @@ func (buo *BlocksUpdateOne) SaveX(ctx context.Context) *Blocks {
 }
 
 // Exec executes the query on the entity.
-func (buo *BlocksUpdateOne) Exec(ctx context.Context) error {
-	_, err := buo.Save(ctx)
+func (_u *BlocksUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (buo *BlocksUpdateOne) ExecX(ctx context.Context) {
-	if err := buo.Exec(ctx); err != nil {
+func (_u *BlocksUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (buo *BlocksUpdateOne) defaults() {
-	if _, ok := buo.mutation.UpdatedAt(); !ok {
+func (_u *BlocksUpdateOne) defaults() {
+	if _, ok := _u.mutation.UpdatedAt(); !ok {
 		v := blocks.UpdateDefaultUpdatedAt()
-		buo.mutation.SetUpdatedAt(v)
+		_u.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (buo *BlocksUpdateOne) check() error {
-	if _, ok := buo.mutation.SiteID(); buo.mutation.SiteCleared() && !ok {
+func (_u *BlocksUpdateOne) check() error {
+	if _u.mutation.SiteCleared() && len(_u.mutation.SiteIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Blocks.site"`)
 	}
-	if _, ok := buo.mutation.IspID(); buo.mutation.IspCleared() && !ok {
+	if _u.mutation.IspCleared() && len(_u.mutation.IspIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "Blocks.isp"`)
 	}
 	return nil
 }
 
-func (buo *BlocksUpdateOne) sqlSave(ctx context.Context) (_node *Blocks, err error) {
-	if err := buo.check(); err != nil {
+func (_u *BlocksUpdateOne) sqlSave(ctx context.Context) (_node *Blocks, err error) {
+	if err := _u.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(blocks.Table, blocks.Columns, sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt))
-	id, ok := buo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "Blocks.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := buo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, blocks.FieldID)
 		for _, f := range fields {
@@ -501,32 +501,32 @@ func (buo *BlocksUpdateOne) sqlSave(ctx context.Context) (_node *Blocks, err err
 			}
 		}
 	}
-	if ps := buo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if value, ok := buo.mutation.UpdatedAt(); ok {
+	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(blocks.FieldUpdatedAt, field.TypeTime, value)
 	}
-	if value, ok := buo.mutation.BlockReports(); ok {
+	if value, ok := _u.mutation.BlockReports(); ok {
 		_spec.SetField(blocks.FieldBlockReports, field.TypeInt, value)
 	}
-	if value, ok := buo.mutation.AddedBlockReports(); ok {
+	if value, ok := _u.mutation.AddedBlockReports(); ok {
 		_spec.AddField(blocks.FieldBlockReports, field.TypeInt, value)
 	}
-	if value, ok := buo.mutation.UnblockReports(); ok {
+	if value, ok := _u.mutation.UnblockReports(); ok {
 		_spec.SetField(blocks.FieldUnblockReports, field.TypeInt, value)
 	}
-	if value, ok := buo.mutation.AddedUnblockReports(); ok {
+	if value, ok := _u.mutation.AddedUnblockReports(); ok {
 		_spec.AddField(blocks.FieldUnblockReports, field.TypeInt, value)
 	}
-	if value, ok := buo.mutation.LastReportedAt(); ok {
+	if value, ok := _u.mutation.LastReportedAt(); ok {
 		_spec.SetField(blocks.FieldLastReportedAt, field.TypeTime, value)
 	}
-	if buo.mutation.SiteCleared() {
+	if _u.mutation.SiteCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -539,7 +539,7 @@ func (buo *BlocksUpdateOne) sqlSave(ctx context.Context) (_node *Blocks, err err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := buo.mutation.SiteIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.SiteIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -555,7 +555,7 @@ func (buo *BlocksUpdateOne) sqlSave(ctx context.Context) (_node *Blocks, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if buo.mutation.IspCleared() {
+	if _u.mutation.IspCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -568,7 +568,7 @@ func (buo *BlocksUpdateOne) sqlSave(ctx context.Context) (_node *Blocks, err err
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := buo.mutation.IspIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.IspIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: true,
@@ -584,10 +584,10 @@ func (buo *BlocksUpdateOne) sqlSave(ctx context.Context) (_node *Blocks, err err
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &Blocks{config: buo.config}
+	_node = &Blocks{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, buo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{blocks.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -595,6 +595,6 @@ func (buo *BlocksUpdateOne) sqlSave(ctx context.Context) (_node *Blocks, err err
 		}
 		return nil, err
 	}
-	buo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

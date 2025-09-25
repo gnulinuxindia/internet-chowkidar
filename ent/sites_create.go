@@ -24,98 +24,98 @@ type SitesCreate struct {
 }
 
 // SetCreatedAt sets the "created_at" field.
-func (sc *SitesCreate) SetCreatedAt(t time.Time) *SitesCreate {
-	sc.mutation.SetCreatedAt(t)
-	return sc
+func (_c *SitesCreate) SetCreatedAt(v time.Time) *SitesCreate {
+	_c.mutation.SetCreatedAt(v)
+	return _c
 }
 
 // SetNillableCreatedAt sets the "created_at" field if the given value is not nil.
-func (sc *SitesCreate) SetNillableCreatedAt(t *time.Time) *SitesCreate {
-	if t != nil {
-		sc.SetCreatedAt(*t)
+func (_c *SitesCreate) SetNillableCreatedAt(v *time.Time) *SitesCreate {
+	if v != nil {
+		_c.SetCreatedAt(*v)
 	}
-	return sc
+	return _c
 }
 
 // SetUpdatedAt sets the "updated_at" field.
-func (sc *SitesCreate) SetUpdatedAt(t time.Time) *SitesCreate {
-	sc.mutation.SetUpdatedAt(t)
-	return sc
+func (_c *SitesCreate) SetUpdatedAt(v time.Time) *SitesCreate {
+	_c.mutation.SetUpdatedAt(v)
+	return _c
 }
 
 // SetNillableUpdatedAt sets the "updated_at" field if the given value is not nil.
-func (sc *SitesCreate) SetNillableUpdatedAt(t *time.Time) *SitesCreate {
-	if t != nil {
-		sc.SetUpdatedAt(*t)
+func (_c *SitesCreate) SetNillableUpdatedAt(v *time.Time) *SitesCreate {
+	if v != nil {
+		_c.SetUpdatedAt(*v)
 	}
-	return sc
+	return _c
 }
 
 // SetDomain sets the "domain" field.
-func (sc *SitesCreate) SetDomain(s string) *SitesCreate {
-	sc.mutation.SetDomain(s)
-	return sc
+func (_c *SitesCreate) SetDomain(v string) *SitesCreate {
+	_c.mutation.SetDomain(v)
+	return _c
 }
 
 // AddBlockIDs adds the "blocks" edge to the Blocks entity by IDs.
-func (sc *SitesCreate) AddBlockIDs(ids ...int) *SitesCreate {
-	sc.mutation.AddBlockIDs(ids...)
-	return sc
+func (_c *SitesCreate) AddBlockIDs(ids ...int) *SitesCreate {
+	_c.mutation.AddBlockIDs(ids...)
+	return _c
 }
 
 // AddBlocks adds the "blocks" edges to the Blocks entity.
-func (sc *SitesCreate) AddBlocks(b ...*Blocks) *SitesCreate {
-	ids := make([]int, len(b))
-	for i := range b {
-		ids[i] = b[i].ID
+func (_c *SitesCreate) AddBlocks(v ...*Blocks) *SitesCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return sc.AddBlockIDs(ids...)
+	return _c.AddBlockIDs(ids...)
 }
 
 // AddCategoryIDs adds the "categories" edge to the Categories entity by IDs.
-func (sc *SitesCreate) AddCategoryIDs(ids ...int) *SitesCreate {
-	sc.mutation.AddCategoryIDs(ids...)
-	return sc
+func (_c *SitesCreate) AddCategoryIDs(ids ...int) *SitesCreate {
+	_c.mutation.AddCategoryIDs(ids...)
+	return _c
 }
 
 // AddCategories adds the "categories" edges to the Categories entity.
-func (sc *SitesCreate) AddCategories(c ...*Categories) *SitesCreate {
-	ids := make([]int, len(c))
-	for i := range c {
-		ids[i] = c[i].ID
+func (_c *SitesCreate) AddCategories(v ...*Categories) *SitesCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return sc.AddCategoryIDs(ids...)
+	return _c.AddCategoryIDs(ids...)
 }
 
 // AddSitesCategoryIDs adds the "sites_categories" edge to the SitesCategories entity by IDs.
-func (sc *SitesCreate) AddSitesCategoryIDs(ids ...int) *SitesCreate {
-	sc.mutation.AddSitesCategoryIDs(ids...)
-	return sc
+func (_c *SitesCreate) AddSitesCategoryIDs(ids ...int) *SitesCreate {
+	_c.mutation.AddSitesCategoryIDs(ids...)
+	return _c
 }
 
 // AddSitesCategories adds the "sites_categories" edges to the SitesCategories entity.
-func (sc *SitesCreate) AddSitesCategories(s ...*SitesCategories) *SitesCreate {
-	ids := make([]int, len(s))
-	for i := range s {
-		ids[i] = s[i].ID
+func (_c *SitesCreate) AddSitesCategories(v ...*SitesCategories) *SitesCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
 	}
-	return sc.AddSitesCategoryIDs(ids...)
+	return _c.AddSitesCategoryIDs(ids...)
 }
 
 // Mutation returns the SitesMutation object of the builder.
-func (sc *SitesCreate) Mutation() *SitesMutation {
-	return sc.mutation
+func (_c *SitesCreate) Mutation() *SitesMutation {
+	return _c.mutation
 }
 
 // Save creates the Sites in the database.
-func (sc *SitesCreate) Save(ctx context.Context) (*Sites, error) {
-	sc.defaults()
-	return withHooks(ctx, sc.sqlSave, sc.mutation, sc.hooks)
+func (_c *SitesCreate) Save(ctx context.Context) (*Sites, error) {
+	_c.defaults()
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (sc *SitesCreate) SaveX(ctx context.Context) *Sites {
-	v, err := sc.Save(ctx)
+func (_c *SitesCreate) SaveX(ctx context.Context) *Sites {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -123,50 +123,50 @@ func (sc *SitesCreate) SaveX(ctx context.Context) *Sites {
 }
 
 // Exec executes the query.
-func (sc *SitesCreate) Exec(ctx context.Context) error {
-	_, err := sc.Save(ctx)
+func (_c *SitesCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (sc *SitesCreate) ExecX(ctx context.Context) {
-	if err := sc.Exec(ctx); err != nil {
+func (_c *SitesCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (sc *SitesCreate) defaults() {
-	if _, ok := sc.mutation.CreatedAt(); !ok {
+func (_c *SitesCreate) defaults() {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		v := sites.DefaultCreatedAt()
-		sc.mutation.SetCreatedAt(v)
+		_c.mutation.SetCreatedAt(v)
 	}
-	if _, ok := sc.mutation.UpdatedAt(); !ok {
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		v := sites.DefaultUpdatedAt()
-		sc.mutation.SetUpdatedAt(v)
+		_c.mutation.SetUpdatedAt(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (sc *SitesCreate) check() error {
-	if _, ok := sc.mutation.CreatedAt(); !ok {
+func (_c *SitesCreate) check() error {
+	if _, ok := _c.mutation.CreatedAt(); !ok {
 		return &ValidationError{Name: "created_at", err: errors.New(`ent: missing required field "Sites.created_at"`)}
 	}
-	if _, ok := sc.mutation.UpdatedAt(); !ok {
+	if _, ok := _c.mutation.UpdatedAt(); !ok {
 		return &ValidationError{Name: "updated_at", err: errors.New(`ent: missing required field "Sites.updated_at"`)}
 	}
-	if _, ok := sc.mutation.Domain(); !ok {
+	if _, ok := _c.mutation.Domain(); !ok {
 		return &ValidationError{Name: "domain", err: errors.New(`ent: missing required field "Sites.domain"`)}
 	}
 	return nil
 }
 
-func (sc *SitesCreate) sqlSave(ctx context.Context) (*Sites, error) {
-	if err := sc.check(); err != nil {
+func (_c *SitesCreate) sqlSave(ctx context.Context) (*Sites, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := sc.createSpec()
-	if err := sqlgraph.CreateNode(ctx, sc.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -174,29 +174,29 @@ func (sc *SitesCreate) sqlSave(ctx context.Context) (*Sites, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = int(id)
-	sc.mutation.id = &_node.ID
-	sc.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (sc *SitesCreate) createSpec() (*Sites, *sqlgraph.CreateSpec) {
+func (_c *SitesCreate) createSpec() (*Sites, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Sites{config: sc.config}
+		_node = &Sites{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(sites.Table, sqlgraph.NewFieldSpec(sites.FieldID, field.TypeInt))
 	)
-	if value, ok := sc.mutation.CreatedAt(); ok {
+	if value, ok := _c.mutation.CreatedAt(); ok {
 		_spec.SetField(sites.FieldCreatedAt, field.TypeTime, value)
 		_node.CreatedAt = value
 	}
-	if value, ok := sc.mutation.UpdatedAt(); ok {
+	if value, ok := _c.mutation.UpdatedAt(); ok {
 		_spec.SetField(sites.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
 	}
-	if value, ok := sc.mutation.Domain(); ok {
+	if value, ok := _c.mutation.Domain(); ok {
 		_spec.SetField(sites.FieldDomain, field.TypeString, value)
 		_node.Domain = value
 	}
-	if nodes := sc.mutation.BlocksIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.BlocksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: false,
@@ -212,7 +212,7 @@ func (sc *SitesCreate) createSpec() (*Sites, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := sc.mutation.CategoriesIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.CategoriesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2M,
 			Inverse: false,
@@ -228,7 +228,7 @@ func (sc *SitesCreate) createSpec() (*Sites, *sqlgraph.CreateSpec) {
 		}
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := sc.mutation.SitesCategoriesIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.SitesCategoriesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.O2M,
 			Inverse: true,
@@ -255,16 +255,16 @@ type SitesCreateBulk struct {
 }
 
 // Save creates the Sites entities in the database.
-func (scb *SitesCreateBulk) Save(ctx context.Context) ([]*Sites, error) {
-	if scb.err != nil {
-		return nil, scb.err
+func (_c *SitesCreateBulk) Save(ctx context.Context) ([]*Sites, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(scb.builders))
-	nodes := make([]*Sites, len(scb.builders))
-	mutators := make([]Mutator, len(scb.builders))
-	for i := range scb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*Sites, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := scb.builders[i]
+			builder := _c.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*SitesMutation)
@@ -278,11 +278,11 @@ func (scb *SitesCreateBulk) Save(ctx context.Context) ([]*Sites, error) {
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, scb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, scb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -306,7 +306,7 @@ func (scb *SitesCreateBulk) Save(ctx context.Context) ([]*Sites, error) {
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, scb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -314,8 +314,8 @@ func (scb *SitesCreateBulk) Save(ctx context.Context) ([]*Sites, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (scb *SitesCreateBulk) SaveX(ctx context.Context) []*Sites {
-	v, err := scb.Save(ctx)
+func (_c *SitesCreateBulk) SaveX(ctx context.Context) []*Sites {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -323,14 +323,14 @@ func (scb *SitesCreateBulk) SaveX(ctx context.Context) []*Sites {
 }
 
 // Exec executes the query.
-func (scb *SitesCreateBulk) Exec(ctx context.Context) error {
-	_, err := scb.Save(ctx)
+func (_c *SitesCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (scb *SitesCreateBulk) ExecX(ctx context.Context) {
-	if err := scb.Exec(ctx); err != nil {
+func (_c *SitesCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

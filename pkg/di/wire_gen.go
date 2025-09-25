@@ -52,6 +52,7 @@ func InjectHandlers() (*api.Handlers, error) {
 	ispService := service.ProvideIspService(ispRepository, txHandler)
 	ispHandler := handler.ProvideIspHandler(ispService)
 	reportsHandler := handler.ProvideReportsHandler()
+	securityHandler := handler.ProvideSecurityHandler()
 	sitesHandler := handler.ProvideSitesHandler(sitesService)
 	handlers := &api.Handlers{
 		BlocksHandler:   blocksHandler,
@@ -59,6 +60,7 @@ func InjectHandlers() (*api.Handlers, error) {
 		HealthHandler:   healthHandler,
 		IspHandler:      ispHandler,
 		ReportsHandler:  reportsHandler,
+		SecurityHandler: securityHandler,
 		SitesHandler:    sitesHandler,
 	}
 	return handlers, nil
@@ -100,6 +102,7 @@ func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
 	ispService := service.ProvideIspService(ispRepository, txHandler)
 	ispHandler := handler.ProvideIspHandler(ispService)
 	reportsHandler := handler.ProvideReportsHandler()
+	securityHandler := handler.ProvideSecurityHandler()
 	sitesHandler := handler.ProvideSitesHandler(sitesService)
 	handlers := &api.Handlers{
 		BlocksHandler:   blocksHandler,
@@ -107,6 +110,7 @@ func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
 		HealthHandler:   healthHandler,
 		IspHandler:      ispHandler,
 		ReportsHandler:  reportsHandler,
+		SecurityHandler: securityHandler,
 		SitesHandler:    sitesHandler,
 	}
 	return handlers, nil

@@ -24,74 +24,74 @@ type SitesCategoriesUpdate struct {
 }
 
 // Where appends a list predicates to the SitesCategoriesUpdate builder.
-func (scu *SitesCategoriesUpdate) Where(ps ...predicate.SitesCategories) *SitesCategoriesUpdate {
-	scu.mutation.Where(ps...)
-	return scu
+func (_u *SitesCategoriesUpdate) Where(ps ...predicate.SitesCategories) *SitesCategoriesUpdate {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // SetSitesID sets the "sites_id" field.
-func (scu *SitesCategoriesUpdate) SetSitesID(i int) *SitesCategoriesUpdate {
-	scu.mutation.SetSitesID(i)
-	return scu
+func (_u *SitesCategoriesUpdate) SetSitesID(v int) *SitesCategoriesUpdate {
+	_u.mutation.SetSitesID(v)
+	return _u
 }
 
 // SetNillableSitesID sets the "sites_id" field if the given value is not nil.
-func (scu *SitesCategoriesUpdate) SetNillableSitesID(i *int) *SitesCategoriesUpdate {
-	if i != nil {
-		scu.SetSitesID(*i)
+func (_u *SitesCategoriesUpdate) SetNillableSitesID(v *int) *SitesCategoriesUpdate {
+	if v != nil {
+		_u.SetSitesID(*v)
 	}
-	return scu
+	return _u
 }
 
 // SetCategoriesID sets the "categories_id" field.
-func (scu *SitesCategoriesUpdate) SetCategoriesID(i int) *SitesCategoriesUpdate {
-	scu.mutation.SetCategoriesID(i)
-	return scu
+func (_u *SitesCategoriesUpdate) SetCategoriesID(v int) *SitesCategoriesUpdate {
+	_u.mutation.SetCategoriesID(v)
+	return _u
 }
 
 // SetNillableCategoriesID sets the "categories_id" field if the given value is not nil.
-func (scu *SitesCategoriesUpdate) SetNillableCategoriesID(i *int) *SitesCategoriesUpdate {
-	if i != nil {
-		scu.SetCategoriesID(*i)
+func (_u *SitesCategoriesUpdate) SetNillableCategoriesID(v *int) *SitesCategoriesUpdate {
+	if v != nil {
+		_u.SetCategoriesID(*v)
 	}
-	return scu
+	return _u
 }
 
 // SetSites sets the "sites" edge to the Sites entity.
-func (scu *SitesCategoriesUpdate) SetSites(s *Sites) *SitesCategoriesUpdate {
-	return scu.SetSitesID(s.ID)
+func (_u *SitesCategoriesUpdate) SetSites(v *Sites) *SitesCategoriesUpdate {
+	return _u.SetSitesID(v.ID)
 }
 
 // SetCategories sets the "categories" edge to the Categories entity.
-func (scu *SitesCategoriesUpdate) SetCategories(c *Categories) *SitesCategoriesUpdate {
-	return scu.SetCategoriesID(c.ID)
+func (_u *SitesCategoriesUpdate) SetCategories(v *Categories) *SitesCategoriesUpdate {
+	return _u.SetCategoriesID(v.ID)
 }
 
 // Mutation returns the SitesCategoriesMutation object of the builder.
-func (scu *SitesCategoriesUpdate) Mutation() *SitesCategoriesMutation {
-	return scu.mutation
+func (_u *SitesCategoriesUpdate) Mutation() *SitesCategoriesMutation {
+	return _u.mutation
 }
 
 // ClearSites clears the "sites" edge to the Sites entity.
-func (scu *SitesCategoriesUpdate) ClearSites() *SitesCategoriesUpdate {
-	scu.mutation.ClearSites()
-	return scu
+func (_u *SitesCategoriesUpdate) ClearSites() *SitesCategoriesUpdate {
+	_u.mutation.ClearSites()
+	return _u
 }
 
 // ClearCategories clears the "categories" edge to the Categories entity.
-func (scu *SitesCategoriesUpdate) ClearCategories() *SitesCategoriesUpdate {
-	scu.mutation.ClearCategories()
-	return scu
+func (_u *SitesCategoriesUpdate) ClearCategories() *SitesCategoriesUpdate {
+	_u.mutation.ClearCategories()
+	return _u
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
-func (scu *SitesCategoriesUpdate) Save(ctx context.Context) (int, error) {
-	return withHooks(ctx, scu.sqlSave, scu.mutation, scu.hooks)
+func (_u *SitesCategoriesUpdate) Save(ctx context.Context) (int, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (scu *SitesCategoriesUpdate) SaveX(ctx context.Context) int {
-	affected, err := scu.Save(ctx)
+func (_u *SitesCategoriesUpdate) SaveX(ctx context.Context) int {
+	affected, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -99,42 +99,42 @@ func (scu *SitesCategoriesUpdate) SaveX(ctx context.Context) int {
 }
 
 // Exec executes the query.
-func (scu *SitesCategoriesUpdate) Exec(ctx context.Context) error {
-	_, err := scu.Save(ctx)
+func (_u *SitesCategoriesUpdate) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (scu *SitesCategoriesUpdate) ExecX(ctx context.Context) {
-	if err := scu.Exec(ctx); err != nil {
+func (_u *SitesCategoriesUpdate) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (scu *SitesCategoriesUpdate) check() error {
-	if _, ok := scu.mutation.SitesID(); scu.mutation.SitesCleared() && !ok {
+func (_u *SitesCategoriesUpdate) check() error {
+	if _u.mutation.SitesCleared() && len(_u.mutation.SitesIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SitesCategories.sites"`)
 	}
-	if _, ok := scu.mutation.CategoriesID(); scu.mutation.CategoriesCleared() && !ok {
+	if _u.mutation.CategoriesCleared() && len(_u.mutation.CategoriesIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SitesCategories.categories"`)
 	}
 	return nil
 }
 
-func (scu *SitesCategoriesUpdate) sqlSave(ctx context.Context) (n int, err error) {
-	if err := scu.check(); err != nil {
-		return n, err
+func (_u *SitesCategoriesUpdate) sqlSave(ctx context.Context) (_node int, err error) {
+	if err := _u.check(); err != nil {
+		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(sitescategories.Table, sitescategories.Columns, sqlgraph.NewFieldSpec(sitescategories.FieldID, field.TypeInt))
-	if ps := scu.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if scu.mutation.SitesCleared() {
+	if _u.mutation.SitesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
@@ -147,7 +147,7 @@ func (scu *SitesCategoriesUpdate) sqlSave(ctx context.Context) (n int, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := scu.mutation.SitesIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.SitesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
@@ -163,7 +163,7 @@ func (scu *SitesCategoriesUpdate) sqlSave(ctx context.Context) (n int, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if scu.mutation.CategoriesCleared() {
+	if _u.mutation.CategoriesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
@@ -176,7 +176,7 @@ func (scu *SitesCategoriesUpdate) sqlSave(ctx context.Context) (n int, err error
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := scu.mutation.CategoriesIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.CategoriesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
@@ -192,7 +192,7 @@ func (scu *SitesCategoriesUpdate) sqlSave(ctx context.Context) (n int, err error
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if n, err = sqlgraph.UpdateNodes(ctx, scu.driver, _spec); err != nil {
+	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{sitescategories.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -200,8 +200,8 @@ func (scu *SitesCategoriesUpdate) sqlSave(ctx context.Context) (n int, err error
 		}
 		return 0, err
 	}
-	scu.mutation.done = true
-	return n, nil
+	_u.mutation.done = true
+	return _node, nil
 }
 
 // SitesCategoriesUpdateOne is the builder for updating a single SitesCategories entity.
@@ -213,81 +213,81 @@ type SitesCategoriesUpdateOne struct {
 }
 
 // SetSitesID sets the "sites_id" field.
-func (scuo *SitesCategoriesUpdateOne) SetSitesID(i int) *SitesCategoriesUpdateOne {
-	scuo.mutation.SetSitesID(i)
-	return scuo
+func (_u *SitesCategoriesUpdateOne) SetSitesID(v int) *SitesCategoriesUpdateOne {
+	_u.mutation.SetSitesID(v)
+	return _u
 }
 
 // SetNillableSitesID sets the "sites_id" field if the given value is not nil.
-func (scuo *SitesCategoriesUpdateOne) SetNillableSitesID(i *int) *SitesCategoriesUpdateOne {
-	if i != nil {
-		scuo.SetSitesID(*i)
+func (_u *SitesCategoriesUpdateOne) SetNillableSitesID(v *int) *SitesCategoriesUpdateOne {
+	if v != nil {
+		_u.SetSitesID(*v)
 	}
-	return scuo
+	return _u
 }
 
 // SetCategoriesID sets the "categories_id" field.
-func (scuo *SitesCategoriesUpdateOne) SetCategoriesID(i int) *SitesCategoriesUpdateOne {
-	scuo.mutation.SetCategoriesID(i)
-	return scuo
+func (_u *SitesCategoriesUpdateOne) SetCategoriesID(v int) *SitesCategoriesUpdateOne {
+	_u.mutation.SetCategoriesID(v)
+	return _u
 }
 
 // SetNillableCategoriesID sets the "categories_id" field if the given value is not nil.
-func (scuo *SitesCategoriesUpdateOne) SetNillableCategoriesID(i *int) *SitesCategoriesUpdateOne {
-	if i != nil {
-		scuo.SetCategoriesID(*i)
+func (_u *SitesCategoriesUpdateOne) SetNillableCategoriesID(v *int) *SitesCategoriesUpdateOne {
+	if v != nil {
+		_u.SetCategoriesID(*v)
 	}
-	return scuo
+	return _u
 }
 
 // SetSites sets the "sites" edge to the Sites entity.
-func (scuo *SitesCategoriesUpdateOne) SetSites(s *Sites) *SitesCategoriesUpdateOne {
-	return scuo.SetSitesID(s.ID)
+func (_u *SitesCategoriesUpdateOne) SetSites(v *Sites) *SitesCategoriesUpdateOne {
+	return _u.SetSitesID(v.ID)
 }
 
 // SetCategories sets the "categories" edge to the Categories entity.
-func (scuo *SitesCategoriesUpdateOne) SetCategories(c *Categories) *SitesCategoriesUpdateOne {
-	return scuo.SetCategoriesID(c.ID)
+func (_u *SitesCategoriesUpdateOne) SetCategories(v *Categories) *SitesCategoriesUpdateOne {
+	return _u.SetCategoriesID(v.ID)
 }
 
 // Mutation returns the SitesCategoriesMutation object of the builder.
-func (scuo *SitesCategoriesUpdateOne) Mutation() *SitesCategoriesMutation {
-	return scuo.mutation
+func (_u *SitesCategoriesUpdateOne) Mutation() *SitesCategoriesMutation {
+	return _u.mutation
 }
 
 // ClearSites clears the "sites" edge to the Sites entity.
-func (scuo *SitesCategoriesUpdateOne) ClearSites() *SitesCategoriesUpdateOne {
-	scuo.mutation.ClearSites()
-	return scuo
+func (_u *SitesCategoriesUpdateOne) ClearSites() *SitesCategoriesUpdateOne {
+	_u.mutation.ClearSites()
+	return _u
 }
 
 // ClearCategories clears the "categories" edge to the Categories entity.
-func (scuo *SitesCategoriesUpdateOne) ClearCategories() *SitesCategoriesUpdateOne {
-	scuo.mutation.ClearCategories()
-	return scuo
+func (_u *SitesCategoriesUpdateOne) ClearCategories() *SitesCategoriesUpdateOne {
+	_u.mutation.ClearCategories()
+	return _u
 }
 
 // Where appends a list predicates to the SitesCategoriesUpdate builder.
-func (scuo *SitesCategoriesUpdateOne) Where(ps ...predicate.SitesCategories) *SitesCategoriesUpdateOne {
-	scuo.mutation.Where(ps...)
-	return scuo
+func (_u *SitesCategoriesUpdateOne) Where(ps ...predicate.SitesCategories) *SitesCategoriesUpdateOne {
+	_u.mutation.Where(ps...)
+	return _u
 }
 
 // Select allows selecting one or more fields (columns) of the returned entity.
 // The default is selecting all fields defined in the entity schema.
-func (scuo *SitesCategoriesUpdateOne) Select(field string, fields ...string) *SitesCategoriesUpdateOne {
-	scuo.fields = append([]string{field}, fields...)
-	return scuo
+func (_u *SitesCategoriesUpdateOne) Select(field string, fields ...string) *SitesCategoriesUpdateOne {
+	_u.fields = append([]string{field}, fields...)
+	return _u
 }
 
 // Save executes the query and returns the updated SitesCategories entity.
-func (scuo *SitesCategoriesUpdateOne) Save(ctx context.Context) (*SitesCategories, error) {
-	return withHooks(ctx, scuo.sqlSave, scuo.mutation, scuo.hooks)
+func (_u *SitesCategoriesUpdateOne) Save(ctx context.Context) (*SitesCategories, error) {
+	return withHooks(ctx, _u.sqlSave, _u.mutation, _u.hooks)
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (scuo *SitesCategoriesUpdateOne) SaveX(ctx context.Context) *SitesCategories {
-	node, err := scuo.Save(ctx)
+func (_u *SitesCategoriesUpdateOne) SaveX(ctx context.Context) *SitesCategories {
+	node, err := _u.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -295,40 +295,40 @@ func (scuo *SitesCategoriesUpdateOne) SaveX(ctx context.Context) *SitesCategorie
 }
 
 // Exec executes the query on the entity.
-func (scuo *SitesCategoriesUpdateOne) Exec(ctx context.Context) error {
-	_, err := scuo.Save(ctx)
+func (_u *SitesCategoriesUpdateOne) Exec(ctx context.Context) error {
+	_, err := _u.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (scuo *SitesCategoriesUpdateOne) ExecX(ctx context.Context) {
-	if err := scuo.Exec(ctx); err != nil {
+func (_u *SitesCategoriesUpdateOne) ExecX(ctx context.Context) {
+	if err := _u.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (scuo *SitesCategoriesUpdateOne) check() error {
-	if _, ok := scuo.mutation.SitesID(); scuo.mutation.SitesCleared() && !ok {
+func (_u *SitesCategoriesUpdateOne) check() error {
+	if _u.mutation.SitesCleared() && len(_u.mutation.SitesIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SitesCategories.sites"`)
 	}
-	if _, ok := scuo.mutation.CategoriesID(); scuo.mutation.CategoriesCleared() && !ok {
+	if _u.mutation.CategoriesCleared() && len(_u.mutation.CategoriesIDs()) > 0 {
 		return errors.New(`ent: clearing a required unique edge "SitesCategories.categories"`)
 	}
 	return nil
 }
 
-func (scuo *SitesCategoriesUpdateOne) sqlSave(ctx context.Context) (_node *SitesCategories, err error) {
-	if err := scuo.check(); err != nil {
+func (_u *SitesCategoriesUpdateOne) sqlSave(ctx context.Context) (_node *SitesCategories, err error) {
+	if err := _u.check(); err != nil {
 		return _node, err
 	}
 	_spec := sqlgraph.NewUpdateSpec(sitescategories.Table, sitescategories.Columns, sqlgraph.NewFieldSpec(sitescategories.FieldID, field.TypeInt))
-	id, ok := scuo.mutation.ID()
+	id, ok := _u.mutation.ID()
 	if !ok {
 		return nil, &ValidationError{Name: "id", err: errors.New(`ent: missing "SitesCategories.id" for update`)}
 	}
 	_spec.Node.ID.Value = id
-	if fields := scuo.fields; len(fields) > 0 {
+	if fields := _u.fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, sitescategories.FieldID)
 		for _, f := range fields {
@@ -340,14 +340,14 @@ func (scuo *SitesCategoriesUpdateOne) sqlSave(ctx context.Context) (_node *Sites
 			}
 		}
 	}
-	if ps := scuo.mutation.predicates; len(ps) > 0 {
+	if ps := _u.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if scuo.mutation.SitesCleared() {
+	if _u.mutation.SitesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
@@ -360,7 +360,7 @@ func (scuo *SitesCategoriesUpdateOne) sqlSave(ctx context.Context) (_node *Sites
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := scuo.mutation.SitesIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.SitesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
@@ -376,7 +376,7 @@ func (scuo *SitesCategoriesUpdateOne) sqlSave(ctx context.Context) (_node *Sites
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	if scuo.mutation.CategoriesCleared() {
+	if _u.mutation.CategoriesCleared() {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
@@ -389,7 +389,7 @@ func (scuo *SitesCategoriesUpdateOne) sqlSave(ctx context.Context) (_node *Sites
 		}
 		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
 	}
-	if nodes := scuo.mutation.CategoriesIDs(); len(nodes) > 0 {
+	if nodes := _u.mutation.CategoriesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
@@ -405,10 +405,10 @@ func (scuo *SitesCategoriesUpdateOne) sqlSave(ctx context.Context) (_node *Sites
 		}
 		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
-	_node = &SitesCategories{config: scuo.config}
+	_node = &SitesCategories{config: _u.config}
 	_spec.Assign = _node.assignValues
 	_spec.ScanValues = _node.scanValues
-	if err = sqlgraph.UpdateNode(ctx, scuo.driver, _spec); err != nil {
+	if err = sqlgraph.UpdateNode(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
 			err = &NotFoundError{sitescategories.Label}
 		} else if sqlgraph.IsConstraintError(err) {
@@ -416,6 +416,6 @@ func (scuo *SitesCategoriesUpdateOne) sqlSave(ctx context.Context) (_node *Sites
 		}
 		return nil, err
 	}
-	scuo.mutation.done = true
+	_u.mutation.done = true
 	return _node, nil
 }

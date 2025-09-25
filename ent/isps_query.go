@@ -8,6 +8,7 @@ import (
 	"fmt"
 	"math"
 
+	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
@@ -30,44 +31,44 @@ type IspsQuery struct {
 }
 
 // Where adds a new predicate for the IspsQuery builder.
-func (iq *IspsQuery) Where(ps ...predicate.Isps) *IspsQuery {
-	iq.predicates = append(iq.predicates, ps...)
-	return iq
+func (_q *IspsQuery) Where(ps ...predicate.Isps) *IspsQuery {
+	_q.predicates = append(_q.predicates, ps...)
+	return _q
 }
 
 // Limit the number of records to be returned by this query.
-func (iq *IspsQuery) Limit(limit int) *IspsQuery {
-	iq.ctx.Limit = &limit
-	return iq
+func (_q *IspsQuery) Limit(limit int) *IspsQuery {
+	_q.ctx.Limit = &limit
+	return _q
 }
 
 // Offset to start from.
-func (iq *IspsQuery) Offset(offset int) *IspsQuery {
-	iq.ctx.Offset = &offset
-	return iq
+func (_q *IspsQuery) Offset(offset int) *IspsQuery {
+	_q.ctx.Offset = &offset
+	return _q
 }
 
 // Unique configures the query builder to filter duplicate records on query.
 // By default, unique is set to true, and can be disabled using this method.
-func (iq *IspsQuery) Unique(unique bool) *IspsQuery {
-	iq.ctx.Unique = &unique
-	return iq
+func (_q *IspsQuery) Unique(unique bool) *IspsQuery {
+	_q.ctx.Unique = &unique
+	return _q
 }
 
 // Order specifies how the records should be ordered.
-func (iq *IspsQuery) Order(o ...isps.OrderOption) *IspsQuery {
-	iq.order = append(iq.order, o...)
-	return iq
+func (_q *IspsQuery) Order(o ...isps.OrderOption) *IspsQuery {
+	_q.order = append(_q.order, o...)
+	return _q
 }
 
 // QueryIspBlocks chains the current query on the "isp_blocks" edge.
-func (iq *IspsQuery) QueryIspBlocks() *BlocksQuery {
-	query := (&BlocksClient{config: iq.config}).Query()
+func (_q *IspsQuery) QueryIspBlocks() *BlocksQuery {
+	query := (&BlocksClient{config: _q.config}).Query()
 	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
-		if err := iq.prepareQuery(ctx); err != nil {
+		if err := _q.prepareQuery(ctx); err != nil {
 			return nil, err
 		}
-		selector := iq.sqlQuery(ctx)
+		selector := _q.sqlQuery(ctx)
 		if err := selector.Err(); err != nil {
 			return nil, err
 		}
@@ -76,7 +77,7 @@ func (iq *IspsQuery) QueryIspBlocks() *BlocksQuery {
 			sqlgraph.To(blocks.Table, blocks.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, isps.IspBlocksTable, isps.IspBlocksColumn),
 		)
-		fromU = sqlgraph.SetNeighbors(iq.driver.Dialect(), step)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
 	}
 	return query
@@ -84,8 +85,8 @@ func (iq *IspsQuery) QueryIspBlocks() *BlocksQuery {
 
 // First returns the first Isps entity from the query.
 // Returns a *NotFoundError when no Isps was found.
-func (iq *IspsQuery) First(ctx context.Context) (*Isps, error) {
-	nodes, err := iq.Limit(1).All(setContextOp(ctx, iq.ctx, "First"))
+func (_q *IspsQuery) First(ctx context.Context) (*Isps, error) {
+	nodes, err := _q.Limit(1).All(setContextOp(ctx, _q.ctx, ent.OpQueryFirst))
 	if err != nil {
 		return nil, err
 	}
@@ -96,8 +97,8 @@ func (iq *IspsQuery) First(ctx context.Context) (*Isps, error) {
 }
 
 // FirstX is like First, but panics if an error occurs.
-func (iq *IspsQuery) FirstX(ctx context.Context) *Isps {
-	node, err := iq.First(ctx)
+func (_q *IspsQuery) FirstX(ctx context.Context) *Isps {
+	node, err := _q.First(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
@@ -106,9 +107,9 @@ func (iq *IspsQuery) FirstX(ctx context.Context) *Isps {
 
 // FirstID returns the first Isps ID from the query.
 // Returns a *NotFoundError when no Isps ID was found.
-func (iq *IspsQuery) FirstID(ctx context.Context) (id int, err error) {
+func (_q *IspsQuery) FirstID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = iq.Limit(1).IDs(setContextOp(ctx, iq.ctx, "FirstID")); err != nil {
+	if ids, err = _q.Limit(1).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryFirstID)); err != nil {
 		return
 	}
 	if len(ids) == 0 {
@@ -119,8 +120,8 @@ func (iq *IspsQuery) FirstID(ctx context.Context) (id int, err error) {
 }
 
 // FirstIDX is like FirstID, but panics if an error occurs.
-func (iq *IspsQuery) FirstIDX(ctx context.Context) int {
-	id, err := iq.FirstID(ctx)
+func (_q *IspsQuery) FirstIDX(ctx context.Context) int {
+	id, err := _q.FirstID(ctx)
 	if err != nil && !IsNotFound(err) {
 		panic(err)
 	}
@@ -130,8 +131,8 @@ func (iq *IspsQuery) FirstIDX(ctx context.Context) int {
 // Only returns a single Isps entity found by the query, ensuring it only returns one.
 // Returns a *NotSingularError when more than one Isps entity is found.
 // Returns a *NotFoundError when no Isps entities are found.
-func (iq *IspsQuery) Only(ctx context.Context) (*Isps, error) {
-	nodes, err := iq.Limit(2).All(setContextOp(ctx, iq.ctx, "Only"))
+func (_q *IspsQuery) Only(ctx context.Context) (*Isps, error) {
+	nodes, err := _q.Limit(2).All(setContextOp(ctx, _q.ctx, ent.OpQueryOnly))
 	if err != nil {
 		return nil, err
 	}
@@ -146,8 +147,8 @@ func (iq *IspsQuery) Only(ctx context.Context) (*Isps, error) {
 }
 
 // OnlyX is like Only, but panics if an error occurs.
-func (iq *IspsQuery) OnlyX(ctx context.Context) *Isps {
-	node, err := iq.Only(ctx)
+func (_q *IspsQuery) OnlyX(ctx context.Context) *Isps {
+	node, err := _q.Only(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -157,9 +158,9 @@ func (iq *IspsQuery) OnlyX(ctx context.Context) *Isps {
 // OnlyID is like Only, but returns the only Isps ID in the query.
 // Returns a *NotSingularError when more than one Isps ID is found.
 // Returns a *NotFoundError when no entities are found.
-func (iq *IspsQuery) OnlyID(ctx context.Context) (id int, err error) {
+func (_q *IspsQuery) OnlyID(ctx context.Context) (id int, err error) {
 	var ids []int
-	if ids, err = iq.Limit(2).IDs(setContextOp(ctx, iq.ctx, "OnlyID")); err != nil {
+	if ids, err = _q.Limit(2).IDs(setContextOp(ctx, _q.ctx, ent.OpQueryOnlyID)); err != nil {
 		return
 	}
 	switch len(ids) {
@@ -174,8 +175,8 @@ func (iq *IspsQuery) OnlyID(ctx context.Context) (id int, err error) {
 }
 
 // OnlyIDX is like OnlyID, but panics if an error occurs.
-func (iq *IspsQuery) OnlyIDX(ctx context.Context) int {
-	id, err := iq.OnlyID(ctx)
+func (_q *IspsQuery) OnlyIDX(ctx context.Context) int {
+	id, err := _q.OnlyID(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -183,18 +184,18 @@ func (iq *IspsQuery) OnlyIDX(ctx context.Context) int {
 }
 
 // All executes the query and returns a list of IspsSlice.
-func (iq *IspsQuery) All(ctx context.Context) ([]*Isps, error) {
-	ctx = setContextOp(ctx, iq.ctx, "All")
-	if err := iq.prepareQuery(ctx); err != nil {
+func (_q *IspsQuery) All(ctx context.Context) ([]*Isps, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryAll)
+	if err := _q.prepareQuery(ctx); err != nil {
 		return nil, err
 	}
 	qr := querierAll[[]*Isps, *IspsQuery]()
-	return withInterceptors[[]*Isps](ctx, iq, qr, iq.inters)
+	return withInterceptors[[]*Isps](ctx, _q, qr, _q.inters)
 }
 
 // AllX is like All, but panics if an error occurs.
-func (iq *IspsQuery) AllX(ctx context.Context) []*Isps {
-	nodes, err := iq.All(ctx)
+func (_q *IspsQuery) AllX(ctx context.Context) []*Isps {
+	nodes, err := _q.All(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -202,20 +203,20 @@ func (iq *IspsQuery) AllX(ctx context.Context) []*Isps {
 }
 
 // IDs executes the query and returns a list of Isps IDs.
-func (iq *IspsQuery) IDs(ctx context.Context) (ids []int, err error) {
-	if iq.ctx.Unique == nil && iq.path != nil {
-		iq.Unique(true)
+func (_q *IspsQuery) IDs(ctx context.Context) (ids []int, err error) {
+	if _q.ctx.Unique == nil && _q.path != nil {
+		_q.Unique(true)
 	}
-	ctx = setContextOp(ctx, iq.ctx, "IDs")
-	if err = iq.Select(isps.FieldID).Scan(ctx, &ids); err != nil {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryIDs)
+	if err = _q.Select(isps.FieldID).Scan(ctx, &ids); err != nil {
 		return nil, err
 	}
 	return ids, nil
 }
 
 // IDsX is like IDs, but panics if an error occurs.
-func (iq *IspsQuery) IDsX(ctx context.Context) []int {
-	ids, err := iq.IDs(ctx)
+func (_q *IspsQuery) IDsX(ctx context.Context) []int {
+	ids, err := _q.IDs(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -223,17 +224,17 @@ func (iq *IspsQuery) IDsX(ctx context.Context) []int {
 }
 
 // Count returns the count of the given query.
-func (iq *IspsQuery) Count(ctx context.Context) (int, error) {
-	ctx = setContextOp(ctx, iq.ctx, "Count")
-	if err := iq.prepareQuery(ctx); err != nil {
+func (_q *IspsQuery) Count(ctx context.Context) (int, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryCount)
+	if err := _q.prepareQuery(ctx); err != nil {
 		return 0, err
 	}
-	return withInterceptors[int](ctx, iq, querierCount[*IspsQuery](), iq.inters)
+	return withInterceptors[int](ctx, _q, querierCount[*IspsQuery](), _q.inters)
 }
 
 // CountX is like Count, but panics if an error occurs.
-func (iq *IspsQuery) CountX(ctx context.Context) int {
-	count, err := iq.Count(ctx)
+func (_q *IspsQuery) CountX(ctx context.Context) int {
+	count, err := _q.Count(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -241,9 +242,9 @@ func (iq *IspsQuery) CountX(ctx context.Context) int {
 }
 
 // Exist returns true if the query has elements in the graph.
-func (iq *IspsQuery) Exist(ctx context.Context) (bool, error) {
-	ctx = setContextOp(ctx, iq.ctx, "Exist")
-	switch _, err := iq.FirstID(ctx); {
+func (_q *IspsQuery) Exist(ctx context.Context) (bool, error) {
+	ctx = setContextOp(ctx, _q.ctx, ent.OpQueryExist)
+	switch _, err := _q.FirstID(ctx); {
 	case IsNotFound(err):
 		return false, nil
 	case err != nil:
@@ -254,8 +255,8 @@ func (iq *IspsQuery) Exist(ctx context.Context) (bool, error) {
 }
 
 // ExistX is like Exist, but panics if an error occurs.
-func (iq *IspsQuery) ExistX(ctx context.Context) bool {
-	exist, err := iq.Exist(ctx)
+func (_q *IspsQuery) ExistX(ctx context.Context) bool {
+	exist, err := _q.Exist(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -264,32 +265,32 @@ func (iq *IspsQuery) ExistX(ctx context.Context) bool {
 
 // Clone returns a duplicate of the IspsQuery builder, including all associated steps. It can be
 // used to prepare common query builders and use them differently after the clone is made.
-func (iq *IspsQuery) Clone() *IspsQuery {
-	if iq == nil {
+func (_q *IspsQuery) Clone() *IspsQuery {
+	if _q == nil {
 		return nil
 	}
 	return &IspsQuery{
-		config:        iq.config,
-		ctx:           iq.ctx.Clone(),
-		order:         append([]isps.OrderOption{}, iq.order...),
-		inters:        append([]Interceptor{}, iq.inters...),
-		predicates:    append([]predicate.Isps{}, iq.predicates...),
-		withIspBlocks: iq.withIspBlocks.Clone(),
+		config:        _q.config,
+		ctx:           _q.ctx.Clone(),
+		order:         append([]isps.OrderOption{}, _q.order...),
+		inters:        append([]Interceptor{}, _q.inters...),
+		predicates:    append([]predicate.Isps{}, _q.predicates...),
+		withIspBlocks: _q.withIspBlocks.Clone(),
 		// clone intermediate query.
-		sql:  iq.sql.Clone(),
-		path: iq.path,
+		sql:  _q.sql.Clone(),
+		path: _q.path,
 	}
 }
 
 // WithIspBlocks tells the query-builder to eager-load the nodes that are connected to
 // the "isp_blocks" edge. The optional arguments are used to configure the query builder of the edge.
-func (iq *IspsQuery) WithIspBlocks(opts ...func(*BlocksQuery)) *IspsQuery {
-	query := (&BlocksClient{config: iq.config}).Query()
+func (_q *IspsQuery) WithIspBlocks(opts ...func(*BlocksQuery)) *IspsQuery {
+	query := (&BlocksClient{config: _q.config}).Query()
 	for _, opt := range opts {
 		opt(query)
 	}
-	iq.withIspBlocks = query
-	return iq
+	_q.withIspBlocks = query
+	return _q
 }
 
 // GroupBy is used to group vertices by one or more fields/columns.
@@ -306,10 +307,10 @@ func (iq *IspsQuery) WithIspBlocks(opts ...func(*BlocksQuery)) *IspsQuery {
 //		GroupBy(isps.FieldCreatedAt).
 //		Aggregate(ent.Count()).
 //		Scan(ctx, &v)
-func (iq *IspsQuery) GroupBy(field string, fields ...string) *IspsGroupBy {
-	iq.ctx.Fields = append([]string{field}, fields...)
-	grbuild := &IspsGroupBy{build: iq}
-	grbuild.flds = &iq.ctx.Fields
+func (_q *IspsQuery) GroupBy(field string, fields ...string) *IspsGroupBy {
+	_q.ctx.Fields = append([]string{field}, fields...)
+	grbuild := &IspsGroupBy{build: _q}
+	grbuild.flds = &_q.ctx.Fields
 	grbuild.label = isps.Label
 	grbuild.scan = grbuild.Scan
 	return grbuild
@@ -327,58 +328,58 @@ func (iq *IspsQuery) GroupBy(field string, fields ...string) *IspsGroupBy {
 //	client.Isps.Query().
 //		Select(isps.FieldCreatedAt).
 //		Scan(ctx, &v)
-func (iq *IspsQuery) Select(fields ...string) *IspsSelect {
-	iq.ctx.Fields = append(iq.ctx.Fields, fields...)
-	sbuild := &IspsSelect{IspsQuery: iq}
+func (_q *IspsQuery) Select(fields ...string) *IspsSelect {
+	_q.ctx.Fields = append(_q.ctx.Fields, fields...)
+	sbuild := &IspsSelect{IspsQuery: _q}
 	sbuild.label = isps.Label
-	sbuild.flds, sbuild.scan = &iq.ctx.Fields, sbuild.Scan
+	sbuild.flds, sbuild.scan = &_q.ctx.Fields, sbuild.Scan
 	return sbuild
 }
 
 // Aggregate returns a IspsSelect configured with the given aggregations.
-func (iq *IspsQuery) Aggregate(fns ...AggregateFunc) *IspsSelect {
-	return iq.Select().Aggregate(fns...)
+func (_q *IspsQuery) Aggregate(fns ...AggregateFunc) *IspsSelect {
+	return _q.Select().Aggregate(fns...)
 }
 
-func (iq *IspsQuery) prepareQuery(ctx context.Context) error {
-	for _, inter := range iq.inters {
+func (_q *IspsQuery) prepareQuery(ctx context.Context) error {
+	for _, inter := range _q.inters {
 		if inter == nil {
 			return fmt.Errorf("ent: uninitialized interceptor (forgotten import ent/runtime?)")
 		}
 		if trv, ok := inter.(Traverser); ok {
-			if err := trv.Traverse(ctx, iq); err != nil {
+			if err := trv.Traverse(ctx, _q); err != nil {
 				return err
 			}
 		}
 	}
-	for _, f := range iq.ctx.Fields {
+	for _, f := range _q.ctx.Fields {
 		if !isps.ValidColumn(f) {
 			return &ValidationError{Name: f, err: fmt.Errorf("ent: invalid field %q for query", f)}
 		}
 	}
-	if iq.path != nil {
-		prev, err := iq.path(ctx)
+	if _q.path != nil {
+		prev, err := _q.path(ctx)
 		if err != nil {
 			return err
 		}
-		iq.sql = prev
+		_q.sql = prev
 	}
 	return nil
 }
 
-func (iq *IspsQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Isps, error) {
+func (_q *IspsQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Isps, error) {
 	var (
 		nodes       = []*Isps{}
-		_spec       = iq.querySpec()
+		_spec       = _q.querySpec()
 		loadedTypes = [1]bool{
-			iq.withIspBlocks != nil,
+			_q.withIspBlocks != nil,
 		}
 	)
 	_spec.ScanValues = func(columns []string) ([]any, error) {
 		return (*Isps).scanValues(nil, columns)
 	}
 	_spec.Assign = func(columns []string, values []any) error {
-		node := &Isps{config: iq.config}
+		node := &Isps{config: _q.config}
 		nodes = append(nodes, node)
 		node.Edges.loadedTypes = loadedTypes
 		return node.assignValues(columns, values)
@@ -386,14 +387,14 @@ func (iq *IspsQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Isps, e
 	for i := range hooks {
 		hooks[i](ctx, _spec)
 	}
-	if err := sqlgraph.QueryNodes(ctx, iq.driver, _spec); err != nil {
+	if err := sqlgraph.QueryNodes(ctx, _q.driver, _spec); err != nil {
 		return nil, err
 	}
 	if len(nodes) == 0 {
 		return nodes, nil
 	}
-	if query := iq.withIspBlocks; query != nil {
-		if err := iq.loadIspBlocks(ctx, query, nodes,
+	if query := _q.withIspBlocks; query != nil {
+		if err := _q.loadIspBlocks(ctx, query, nodes,
 			func(n *Isps) { n.Edges.IspBlocks = []*Blocks{} },
 			func(n *Isps, e *Blocks) { n.Edges.IspBlocks = append(n.Edges.IspBlocks, e) }); err != nil {
 			return nil, err
@@ -402,7 +403,7 @@ func (iq *IspsQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Isps, e
 	return nodes, nil
 }
 
-func (iq *IspsQuery) loadIspBlocks(ctx context.Context, query *BlocksQuery, nodes []*Isps, init func(*Isps), assign func(*Isps, *Blocks)) error {
+func (_q *IspsQuery) loadIspBlocks(ctx context.Context, query *BlocksQuery, nodes []*Isps, init func(*Isps), assign func(*Isps, *Blocks)) error {
 	fks := make([]driver.Value, 0, len(nodes))
 	nodeids := make(map[int]*Isps)
 	for i := range nodes {
@@ -433,24 +434,24 @@ func (iq *IspsQuery) loadIspBlocks(ctx context.Context, query *BlocksQuery, node
 	return nil
 }
 
-func (iq *IspsQuery) sqlCount(ctx context.Context) (int, error) {
-	_spec := iq.querySpec()
-	_spec.Node.Columns = iq.ctx.Fields
-	if len(iq.ctx.Fields) > 0 {
-		_spec.Unique = iq.ctx.Unique != nil && *iq.ctx.Unique
+func (_q *IspsQuery) sqlCount(ctx context.Context) (int, error) {
+	_spec := _q.querySpec()
+	_spec.Node.Columns = _q.ctx.Fields
+	if len(_q.ctx.Fields) > 0 {
+		_spec.Unique = _q.ctx.Unique != nil && *_q.ctx.Unique
 	}
-	return sqlgraph.CountNodes(ctx, iq.driver, _spec)
+	return sqlgraph.CountNodes(ctx, _q.driver, _spec)
 }
 
-func (iq *IspsQuery) querySpec() *sqlgraph.QuerySpec {
+func (_q *IspsQuery) querySpec() *sqlgraph.QuerySpec {
 	_spec := sqlgraph.NewQuerySpec(isps.Table, isps.Columns, sqlgraph.NewFieldSpec(isps.FieldID, field.TypeInt))
-	_spec.From = iq.sql
-	if unique := iq.ctx.Unique; unique != nil {
+	_spec.From = _q.sql
+	if unique := _q.ctx.Unique; unique != nil {
 		_spec.Unique = *unique
-	} else if iq.path != nil {
+	} else if _q.path != nil {
 		_spec.Unique = true
 	}
-	if fields := iq.ctx.Fields; len(fields) > 0 {
+	if fields := _q.ctx.Fields; len(fields) > 0 {
 		_spec.Node.Columns = make([]string, 0, len(fields))
 		_spec.Node.Columns = append(_spec.Node.Columns, isps.FieldID)
 		for i := range fields {
@@ -459,20 +460,20 @@ func (iq *IspsQuery) querySpec() *sqlgraph.QuerySpec {
 			}
 		}
 	}
-	if ps := iq.predicates; len(ps) > 0 {
+	if ps := _q.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	if limit := iq.ctx.Limit; limit != nil {
+	if limit := _q.ctx.Limit; limit != nil {
 		_spec.Limit = *limit
 	}
-	if offset := iq.ctx.Offset; offset != nil {
+	if offset := _q.ctx.Offset; offset != nil {
 		_spec.Offset = *offset
 	}
-	if ps := iq.order; len(ps) > 0 {
+	if ps := _q.order; len(ps) > 0 {
 		_spec.Order = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
@@ -482,33 +483,33 @@ func (iq *IspsQuery) querySpec() *sqlgraph.QuerySpec {
 	return _spec
 }
 
-func (iq *IspsQuery) sqlQuery(ctx context.Context) *sql.Selector {
-	builder := sql.Dialect(iq.driver.Dialect())
+func (_q *IspsQuery) sqlQuery(ctx context.Context) *sql.Selector {
+	builder := sql.Dialect(_q.driver.Dialect())
 	t1 := builder.Table(isps.Table)
-	columns := iq.ctx.Fields
+	columns := _q.ctx.Fields
 	if len(columns) == 0 {
 		columns = isps.Columns
 	}
 	selector := builder.Select(t1.Columns(columns...)...).From(t1)
-	if iq.sql != nil {
-		selector = iq.sql
+	if _q.sql != nil {
+		selector = _q.sql
 		selector.Select(selector.Columns(columns...)...)
 	}
-	if iq.ctx.Unique != nil && *iq.ctx.Unique {
+	if _q.ctx.Unique != nil && *_q.ctx.Unique {
 		selector.Distinct()
 	}
-	for _, p := range iq.predicates {
+	for _, p := range _q.predicates {
 		p(selector)
 	}
-	for _, p := range iq.order {
+	for _, p := range _q.order {
 		p(selector)
 	}
-	if offset := iq.ctx.Offset; offset != nil {
+	if offset := _q.ctx.Offset; offset != nil {
 		// limit is mandatory for offset clause. We start
 		// with default value, and override it below if needed.
 		selector.Offset(*offset).Limit(math.MaxInt32)
 	}
-	if limit := iq.ctx.Limit; limit != nil {
+	if limit := _q.ctx.Limit; limit != nil {
 		selector.Limit(*limit)
 	}
 	return selector
@@ -521,41 +522,41 @@ type IspsGroupBy struct {
 }
 
 // Aggregate adds the given aggregation functions to the group-by query.
-func (igb *IspsGroupBy) Aggregate(fns ...AggregateFunc) *IspsGroupBy {
-	igb.fns = append(igb.fns, fns...)
-	return igb
+func (_g *IspsGroupBy) Aggregate(fns ...AggregateFunc) *IspsGroupBy {
+	_g.fns = append(_g.fns, fns...)
+	return _g
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (igb *IspsGroupBy) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, igb.build.ctx, "GroupBy")
-	if err := igb.build.prepareQuery(ctx); err != nil {
+func (_g *IspsGroupBy) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, _g.build.ctx, ent.OpQueryGroupBy)
+	if err := _g.build.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*IspsQuery, *IspsGroupBy](ctx, igb.build, igb, igb.build.inters, v)
+	return scanWithInterceptors[*IspsQuery, *IspsGroupBy](ctx, _g.build, _g, _g.build.inters, v)
 }
 
-func (igb *IspsGroupBy) sqlScan(ctx context.Context, root *IspsQuery, v any) error {
+func (_g *IspsGroupBy) sqlScan(ctx context.Context, root *IspsQuery, v any) error {
 	selector := root.sqlQuery(ctx).Select()
-	aggregation := make([]string, 0, len(igb.fns))
-	for _, fn := range igb.fns {
+	aggregation := make([]string, 0, len(_g.fns))
+	for _, fn := range _g.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
 	if len(selector.SelectedColumns()) == 0 {
-		columns := make([]string, 0, len(*igb.flds)+len(igb.fns))
-		for _, f := range *igb.flds {
+		columns := make([]string, 0, len(*_g.flds)+len(_g.fns))
+		for _, f := range *_g.flds {
 			columns = append(columns, selector.C(f))
 		}
 		columns = append(columns, aggregation...)
 		selector.Select(columns...)
 	}
-	selector.GroupBy(selector.Columns(*igb.flds...)...)
+	selector.GroupBy(selector.Columns(*_g.flds...)...)
 	if err := selector.Err(); err != nil {
 		return err
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := igb.build.driver.Query(ctx, query, args, rows); err != nil {
+	if err := _g.build.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()
@@ -569,27 +570,27 @@ type IspsSelect struct {
 }
 
 // Aggregate adds the given aggregation functions to the selector query.
-func (is *IspsSelect) Aggregate(fns ...AggregateFunc) *IspsSelect {
-	is.fns = append(is.fns, fns...)
-	return is
+func (_s *IspsSelect) Aggregate(fns ...AggregateFunc) *IspsSelect {
+	_s.fns = append(_s.fns, fns...)
+	return _s
 }
 
 // Scan applies the selector query and scans the result into the given value.
-func (is *IspsSelect) Scan(ctx context.Context, v any) error {
-	ctx = setContextOp(ctx, is.ctx, "Select")
-	if err := is.prepareQuery(ctx); err != nil {
+func (_s *IspsSelect) Scan(ctx context.Context, v any) error {
+	ctx = setContextOp(ctx, _s.ctx, ent.OpQuerySelect)
+	if err := _s.prepareQuery(ctx); err != nil {
 		return err
 	}
-	return scanWithInterceptors[*IspsQuery, *IspsSelect](ctx, is.IspsQuery, is, is.inters, v)
+	return scanWithInterceptors[*IspsQuery, *IspsSelect](ctx, _s.IspsQuery, _s, _s.inters, v)
 }
 
-func (is *IspsSelect) sqlScan(ctx context.Context, root *IspsQuery, v any) error {
+func (_s *IspsSelect) sqlScan(ctx context.Context, root *IspsQuery, v any) error {
 	selector := root.sqlQuery(ctx)
-	aggregation := make([]string, 0, len(is.fns))
-	for _, fn := range is.fns {
+	aggregation := make([]string, 0, len(_s.fns))
+	for _, fn := range _s.fns {
 		aggregation = append(aggregation, fn(selector))
 	}
-	switch n := len(*is.selector.flds); {
+	switch n := len(*_s.selector.flds); {
 	case n == 0 && len(aggregation) > 0:
 		selector.Select(aggregation...)
 	case n != 0 && len(aggregation) > 0:
@@ -597,7 +598,7 @@ func (is *IspsSelect) sqlScan(ctx context.Context, root *IspsQuery, v any) error
 	}
 	rows := &sql.Rows{}
 	query, args := selector.Query()
-	if err := is.driver.Query(ctx, query, args, rows); err != nil {
+	if err := _s.driver.Query(ctx, query, args, rows); err != nil {
 		return err
 	}
 	defer rows.Close()

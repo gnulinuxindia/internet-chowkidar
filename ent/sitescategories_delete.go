@@ -20,56 +20,56 @@ type SitesCategoriesDelete struct {
 }
 
 // Where appends a list predicates to the SitesCategoriesDelete builder.
-func (scd *SitesCategoriesDelete) Where(ps ...predicate.SitesCategories) *SitesCategoriesDelete {
-	scd.mutation.Where(ps...)
-	return scd
+func (_d *SitesCategoriesDelete) Where(ps ...predicate.SitesCategories) *SitesCategoriesDelete {
+	_d.mutation.Where(ps...)
+	return _d
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (scd *SitesCategoriesDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks(ctx, scd.sqlExec, scd.mutation, scd.hooks)
+func (_d *SitesCategoriesDelete) Exec(ctx context.Context) (int, error) {
+	return withHooks(ctx, _d.sqlExec, _d.mutation, _d.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (scd *SitesCategoriesDelete) ExecX(ctx context.Context) int {
-	n, err := scd.Exec(ctx)
+func (_d *SitesCategoriesDelete) ExecX(ctx context.Context) int {
+	n, err := _d.Exec(ctx)
 	if err != nil {
 		panic(err)
 	}
 	return n
 }
 
-func (scd *SitesCategoriesDelete) sqlExec(ctx context.Context) (int, error) {
+func (_d *SitesCategoriesDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := sqlgraph.NewDeleteSpec(sitescategories.Table, sqlgraph.NewFieldSpec(sitescategories.FieldID, field.TypeInt))
-	if ps := scd.mutation.predicates; len(ps) > 0 {
+	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	affected, err := sqlgraph.DeleteNodes(ctx, scd.driver, _spec)
+	affected, err := sqlgraph.DeleteNodes(ctx, _d.driver, _spec)
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
-	scd.mutation.done = true
+	_d.mutation.done = true
 	return affected, err
 }
 
 // SitesCategoriesDeleteOne is the builder for deleting a single SitesCategories entity.
 type SitesCategoriesDeleteOne struct {
-	scd *SitesCategoriesDelete
+	_d *SitesCategoriesDelete
 }
 
 // Where appends a list predicates to the SitesCategoriesDelete builder.
-func (scdo *SitesCategoriesDeleteOne) Where(ps ...predicate.SitesCategories) *SitesCategoriesDeleteOne {
-	scdo.scd.mutation.Where(ps...)
-	return scdo
+func (_d *SitesCategoriesDeleteOne) Where(ps ...predicate.SitesCategories) *SitesCategoriesDeleteOne {
+	_d._d.mutation.Where(ps...)
+	return _d
 }
 
 // Exec executes the deletion query.
-func (scdo *SitesCategoriesDeleteOne) Exec(ctx context.Context) error {
-	n, err := scdo.scd.Exec(ctx)
+func (_d *SitesCategoriesDeleteOne) Exec(ctx context.Context) error {
+	n, err := _d._d.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
@@ -81,8 +81,8 @@ func (scdo *SitesCategoriesDeleteOne) Exec(ctx context.Context) error {
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (scdo *SitesCategoriesDeleteOne) ExecX(ctx context.Context) {
-	if err := scdo.Exec(ctx); err != nil {
+func (_d *SitesCategoriesDeleteOne) ExecX(ctx context.Context) {
+	if err := _d.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

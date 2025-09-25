@@ -300,8 +300,8 @@ func (c *BlocksClient) Update() *BlocksUpdate {
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *BlocksClient) UpdateOne(b *Blocks) *BlocksUpdateOne {
-	mutation := newBlocksMutation(c.config, OpUpdateOne, withBlocks(b))
+func (c *BlocksClient) UpdateOne(_m *Blocks) *BlocksUpdateOne {
+	mutation := newBlocksMutation(c.config, OpUpdateOne, withBlocks(_m))
 	return &BlocksUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
@@ -318,8 +318,8 @@ func (c *BlocksClient) Delete() *BlocksDelete {
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *BlocksClient) DeleteOne(b *Blocks) *BlocksDeleteOne {
-	return c.DeleteOneID(b.ID)
+func (c *BlocksClient) DeleteOne(_m *Blocks) *BlocksDeleteOne {
+	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
@@ -354,32 +354,32 @@ func (c *BlocksClient) GetX(ctx context.Context, id int) *Blocks {
 }
 
 // QuerySite queries the site edge of a Blocks.
-func (c *BlocksClient) QuerySite(b *Blocks) *SitesQuery {
+func (c *BlocksClient) QuerySite(_m *Blocks) *SitesQuery {
 	query := (&SitesClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := b.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(blocks.Table, blocks.FieldID, id),
 			sqlgraph.To(sites.Table, sites.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, blocks.SiteTable, blocks.SiteColumn),
 		)
-		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
 // QueryIsp queries the isp edge of a Blocks.
-func (c *BlocksClient) QueryIsp(b *Blocks) *IspsQuery {
+func (c *BlocksClient) QueryIsp(_m *Blocks) *IspsQuery {
 	query := (&IspsClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := b.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(blocks.Table, blocks.FieldID, id),
 			sqlgraph.To(isps.Table, isps.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, true, blocks.IspTable, blocks.IspColumn),
 		)
-		fromV = sqlgraph.Neighbors(b.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
@@ -465,8 +465,8 @@ func (c *CategoriesClient) Update() *CategoriesUpdate {
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *CategoriesClient) UpdateOne(ca *Categories) *CategoriesUpdateOne {
-	mutation := newCategoriesMutation(c.config, OpUpdateOne, withCategories(ca))
+func (c *CategoriesClient) UpdateOne(_m *Categories) *CategoriesUpdateOne {
+	mutation := newCategoriesMutation(c.config, OpUpdateOne, withCategories(_m))
 	return &CategoriesUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
@@ -483,8 +483,8 @@ func (c *CategoriesClient) Delete() *CategoriesDelete {
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *CategoriesClient) DeleteOne(ca *Categories) *CategoriesDeleteOne {
-	return c.DeleteOneID(ca.ID)
+func (c *CategoriesClient) DeleteOne(_m *Categories) *CategoriesDeleteOne {
+	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
@@ -519,32 +519,32 @@ func (c *CategoriesClient) GetX(ctx context.Context, id int) *Categories {
 }
 
 // QuerySites queries the sites edge of a Categories.
-func (c *CategoriesClient) QuerySites(ca *Categories) *SitesQuery {
+func (c *CategoriesClient) QuerySites(_m *Categories) *SitesQuery {
 	query := (&SitesClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := ca.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(categories.Table, categories.FieldID, id),
 			sqlgraph.To(sites.Table, sites.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, true, categories.SitesTable, categories.SitesPrimaryKey...),
 		)
-		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
 // QuerySitesCategories queries the sites_categories edge of a Categories.
-func (c *CategoriesClient) QuerySitesCategories(ca *Categories) *SitesCategoriesQuery {
+func (c *CategoriesClient) QuerySitesCategories(_m *Categories) *SitesCategoriesQuery {
 	query := (&SitesCategoriesClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := ca.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(categories.Table, categories.FieldID, id),
 			sqlgraph.To(sitescategories.Table, sitescategories.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, true, categories.SitesCategoriesTable, categories.SitesCategoriesColumn),
 		)
-		fromV = sqlgraph.Neighbors(ca.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
@@ -630,8 +630,8 @@ func (c *CounterClient) Update() *CounterUpdate {
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *CounterClient) UpdateOne(co *Counter) *CounterUpdateOne {
-	mutation := newCounterMutation(c.config, OpUpdateOne, withCounter(co))
+func (c *CounterClient) UpdateOne(_m *Counter) *CounterUpdateOne {
+	mutation := newCounterMutation(c.config, OpUpdateOne, withCounter(_m))
 	return &CounterUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
@@ -648,8 +648,8 @@ func (c *CounterClient) Delete() *CounterDelete {
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *CounterClient) DeleteOne(co *Counter) *CounterDeleteOne {
-	return c.DeleteOneID(co.ID)
+func (c *CounterClient) DeleteOne(_m *Counter) *CounterDeleteOne {
+	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
@@ -763,8 +763,8 @@ func (c *IspsClient) Update() *IspsUpdate {
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *IspsClient) UpdateOne(i *Isps) *IspsUpdateOne {
-	mutation := newIspsMutation(c.config, OpUpdateOne, withIsps(i))
+func (c *IspsClient) UpdateOne(_m *Isps) *IspsUpdateOne {
+	mutation := newIspsMutation(c.config, OpUpdateOne, withIsps(_m))
 	return &IspsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
@@ -781,8 +781,8 @@ func (c *IspsClient) Delete() *IspsDelete {
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *IspsClient) DeleteOne(i *Isps) *IspsDeleteOne {
-	return c.DeleteOneID(i.ID)
+func (c *IspsClient) DeleteOne(_m *Isps) *IspsDeleteOne {
+	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
@@ -817,16 +817,16 @@ func (c *IspsClient) GetX(ctx context.Context, id int) *Isps {
 }
 
 // QueryIspBlocks queries the isp_blocks edge of a Isps.
-func (c *IspsClient) QueryIspBlocks(i *Isps) *BlocksQuery {
+func (c *IspsClient) QueryIspBlocks(_m *Isps) *BlocksQuery {
 	query := (&BlocksClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := i.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(isps.Table, isps.FieldID, id),
 			sqlgraph.To(blocks.Table, blocks.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, isps.IspBlocksTable, isps.IspBlocksColumn),
 		)
-		fromV = sqlgraph.Neighbors(i.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
@@ -912,8 +912,8 @@ func (c *SitesClient) Update() *SitesUpdate {
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *SitesClient) UpdateOne(s *Sites) *SitesUpdateOne {
-	mutation := newSitesMutation(c.config, OpUpdateOne, withSites(s))
+func (c *SitesClient) UpdateOne(_m *Sites) *SitesUpdateOne {
+	mutation := newSitesMutation(c.config, OpUpdateOne, withSites(_m))
 	return &SitesUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
@@ -930,8 +930,8 @@ func (c *SitesClient) Delete() *SitesDelete {
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *SitesClient) DeleteOne(s *Sites) *SitesDeleteOne {
-	return c.DeleteOneID(s.ID)
+func (c *SitesClient) DeleteOne(_m *Sites) *SitesDeleteOne {
+	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
@@ -966,48 +966,48 @@ func (c *SitesClient) GetX(ctx context.Context, id int) *Sites {
 }
 
 // QueryBlocks queries the blocks edge of a Sites.
-func (c *SitesClient) QueryBlocks(s *Sites) *BlocksQuery {
+func (c *SitesClient) QueryBlocks(_m *Sites) *BlocksQuery {
 	query := (&BlocksClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := s.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(sites.Table, sites.FieldID, id),
 			sqlgraph.To(blocks.Table, blocks.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, sites.BlocksTable, sites.BlocksColumn),
 		)
-		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
 // QueryCategories queries the categories edge of a Sites.
-func (c *SitesClient) QueryCategories(s *Sites) *CategoriesQuery {
+func (c *SitesClient) QueryCategories(_m *Sites) *CategoriesQuery {
 	query := (&CategoriesClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := s.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(sites.Table, sites.FieldID, id),
 			sqlgraph.To(categories.Table, categories.FieldID),
 			sqlgraph.Edge(sqlgraph.M2M, false, sites.CategoriesTable, sites.CategoriesPrimaryKey...),
 		)
-		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
 // QuerySitesCategories queries the sites_categories edge of a Sites.
-func (c *SitesClient) QuerySitesCategories(s *Sites) *SitesCategoriesQuery {
+func (c *SitesClient) QuerySitesCategories(_m *Sites) *SitesCategoriesQuery {
 	query := (&SitesCategoriesClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := s.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(sites.Table, sites.FieldID, id),
 			sqlgraph.To(sitescategories.Table, sitescategories.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, true, sites.SitesCategoriesTable, sites.SitesCategoriesColumn),
 		)
-		fromV = sqlgraph.Neighbors(s.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
@@ -1093,8 +1093,8 @@ func (c *SitesCategoriesClient) Update() *SitesCategoriesUpdate {
 }
 
 // UpdateOne returns an update builder for the given entity.
-func (c *SitesCategoriesClient) UpdateOne(sc *SitesCategories) *SitesCategoriesUpdateOne {
-	mutation := newSitesCategoriesMutation(c.config, OpUpdateOne, withSitesCategories(sc))
+func (c *SitesCategoriesClient) UpdateOne(_m *SitesCategories) *SitesCategoriesUpdateOne {
+	mutation := newSitesCategoriesMutation(c.config, OpUpdateOne, withSitesCategories(_m))
 	return &SitesCategoriesUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
 }
 
@@ -1111,8 +1111,8 @@ func (c *SitesCategoriesClient) Delete() *SitesCategoriesDelete {
 }
 
 // DeleteOne returns a builder for deleting the given entity.
-func (c *SitesCategoriesClient) DeleteOne(sc *SitesCategories) *SitesCategoriesDeleteOne {
-	return c.DeleteOneID(sc.ID)
+func (c *SitesCategoriesClient) DeleteOne(_m *SitesCategories) *SitesCategoriesDeleteOne {
+	return c.DeleteOneID(_m.ID)
 }
 
 // DeleteOneID returns a builder for deleting the given entity by its id.
@@ -1147,32 +1147,32 @@ func (c *SitesCategoriesClient) GetX(ctx context.Context, id int) *SitesCategori
 }
 
 // QuerySites queries the sites edge of a SitesCategories.
-func (c *SitesCategoriesClient) QuerySites(sc *SitesCategories) *SitesQuery {
+func (c *SitesCategoriesClient) QuerySites(_m *SitesCategories) *SitesQuery {
 	query := (&SitesClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := sc.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(sitescategories.Table, sitescategories.FieldID, id),
 			sqlgraph.To(sites.Table, sites.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, sitescategories.SitesTable, sitescategories.SitesColumn),
 		)
-		fromV = sqlgraph.Neighbors(sc.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query
 }
 
 // QueryCategories queries the categories edge of a SitesCategories.
-func (c *SitesCategoriesClient) QueryCategories(sc *SitesCategories) *CategoriesQuery {
+func (c *SitesCategoriesClient) QueryCategories(_m *SitesCategories) *CategoriesQuery {
 	query := (&CategoriesClient{config: c.config}).Query()
 	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
-		id := sc.ID
+		id := _m.ID
 		step := sqlgraph.NewStep(
 			sqlgraph.From(sitescategories.Table, sitescategories.FieldID, id),
 			sqlgraph.To(categories.Table, categories.FieldID),
 			sqlgraph.Edge(sqlgraph.M2O, false, sitescategories.CategoriesTable, sitescategories.CategoriesColumn),
 		)
-		fromV = sqlgraph.Neighbors(sc.driver.Dialect(), step)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
 	}
 	return query

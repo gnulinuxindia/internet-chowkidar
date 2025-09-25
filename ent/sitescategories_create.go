@@ -22,40 +22,40 @@ type SitesCategoriesCreate struct {
 }
 
 // SetSitesID sets the "sites_id" field.
-func (scc *SitesCategoriesCreate) SetSitesID(i int) *SitesCategoriesCreate {
-	scc.mutation.SetSitesID(i)
-	return scc
+func (_c *SitesCategoriesCreate) SetSitesID(v int) *SitesCategoriesCreate {
+	_c.mutation.SetSitesID(v)
+	return _c
 }
 
 // SetCategoriesID sets the "categories_id" field.
-func (scc *SitesCategoriesCreate) SetCategoriesID(i int) *SitesCategoriesCreate {
-	scc.mutation.SetCategoriesID(i)
-	return scc
+func (_c *SitesCategoriesCreate) SetCategoriesID(v int) *SitesCategoriesCreate {
+	_c.mutation.SetCategoriesID(v)
+	return _c
 }
 
 // SetSites sets the "sites" edge to the Sites entity.
-func (scc *SitesCategoriesCreate) SetSites(s *Sites) *SitesCategoriesCreate {
-	return scc.SetSitesID(s.ID)
+func (_c *SitesCategoriesCreate) SetSites(v *Sites) *SitesCategoriesCreate {
+	return _c.SetSitesID(v.ID)
 }
 
 // SetCategories sets the "categories" edge to the Categories entity.
-func (scc *SitesCategoriesCreate) SetCategories(c *Categories) *SitesCategoriesCreate {
-	return scc.SetCategoriesID(c.ID)
+func (_c *SitesCategoriesCreate) SetCategories(v *Categories) *SitesCategoriesCreate {
+	return _c.SetCategoriesID(v.ID)
 }
 
 // Mutation returns the SitesCategoriesMutation object of the builder.
-func (scc *SitesCategoriesCreate) Mutation() *SitesCategoriesMutation {
-	return scc.mutation
+func (_c *SitesCategoriesCreate) Mutation() *SitesCategoriesMutation {
+	return _c.mutation
 }
 
 // Save creates the SitesCategories in the database.
-func (scc *SitesCategoriesCreate) Save(ctx context.Context) (*SitesCategories, error) {
-	return withHooks(ctx, scc.sqlSave, scc.mutation, scc.hooks)
+func (_c *SitesCategoriesCreate) Save(ctx context.Context) (*SitesCategories, error) {
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (scc *SitesCategoriesCreate) SaveX(ctx context.Context) *SitesCategories {
-	v, err := scc.Save(ctx)
+func (_c *SitesCategoriesCreate) SaveX(ctx context.Context) *SitesCategories {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -63,41 +63,41 @@ func (scc *SitesCategoriesCreate) SaveX(ctx context.Context) *SitesCategories {
 }
 
 // Exec executes the query.
-func (scc *SitesCategoriesCreate) Exec(ctx context.Context) error {
-	_, err := scc.Save(ctx)
+func (_c *SitesCategoriesCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (scc *SitesCategoriesCreate) ExecX(ctx context.Context) {
-	if err := scc.Exec(ctx); err != nil {
+func (_c *SitesCategoriesCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (scc *SitesCategoriesCreate) check() error {
-	if _, ok := scc.mutation.SitesID(); !ok {
+func (_c *SitesCategoriesCreate) check() error {
+	if _, ok := _c.mutation.SitesID(); !ok {
 		return &ValidationError{Name: "sites_id", err: errors.New(`ent: missing required field "SitesCategories.sites_id"`)}
 	}
-	if _, ok := scc.mutation.CategoriesID(); !ok {
+	if _, ok := _c.mutation.CategoriesID(); !ok {
 		return &ValidationError{Name: "categories_id", err: errors.New(`ent: missing required field "SitesCategories.categories_id"`)}
 	}
-	if _, ok := scc.mutation.SitesID(); !ok {
+	if len(_c.mutation.SitesIDs()) == 0 {
 		return &ValidationError{Name: "sites", err: errors.New(`ent: missing required edge "SitesCategories.sites"`)}
 	}
-	if _, ok := scc.mutation.CategoriesID(); !ok {
+	if len(_c.mutation.CategoriesIDs()) == 0 {
 		return &ValidationError{Name: "categories", err: errors.New(`ent: missing required edge "SitesCategories.categories"`)}
 	}
 	return nil
 }
 
-func (scc *SitesCategoriesCreate) sqlSave(ctx context.Context) (*SitesCategories, error) {
-	if err := scc.check(); err != nil {
+func (_c *SitesCategoriesCreate) sqlSave(ctx context.Context) (*SitesCategories, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := scc.createSpec()
-	if err := sqlgraph.CreateNode(ctx, scc.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -105,17 +105,17 @@ func (scc *SitesCategoriesCreate) sqlSave(ctx context.Context) (*SitesCategories
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = int(id)
-	scc.mutation.id = &_node.ID
-	scc.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (scc *SitesCategoriesCreate) createSpec() (*SitesCategories, *sqlgraph.CreateSpec) {
+func (_c *SitesCategoriesCreate) createSpec() (*SitesCategories, *sqlgraph.CreateSpec) {
 	var (
-		_node = &SitesCategories{config: scc.config}
+		_node = &SitesCategories{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(sitescategories.Table, sqlgraph.NewFieldSpec(sitescategories.FieldID, field.TypeInt))
 	)
-	if nodes := scc.mutation.SitesIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.SitesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
@@ -132,7 +132,7 @@ func (scc *SitesCategoriesCreate) createSpec() (*SitesCategories, *sqlgraph.Crea
 		_node.SitesID = nodes[0]
 		_spec.Edges = append(_spec.Edges, edge)
 	}
-	if nodes := scc.mutation.CategoriesIDs(); len(nodes) > 0 {
+	if nodes := _c.mutation.CategoriesIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{
 			Rel:     sqlgraph.M2O,
 			Inverse: false,
@@ -160,16 +160,16 @@ type SitesCategoriesCreateBulk struct {
 }
 
 // Save creates the SitesCategories entities in the database.
-func (sccb *SitesCategoriesCreateBulk) Save(ctx context.Context) ([]*SitesCategories, error) {
-	if sccb.err != nil {
-		return nil, sccb.err
+func (_c *SitesCategoriesCreateBulk) Save(ctx context.Context) ([]*SitesCategories, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(sccb.builders))
-	nodes := make([]*SitesCategories, len(sccb.builders))
-	mutators := make([]Mutator, len(sccb.builders))
-	for i := range sccb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*SitesCategories, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := sccb.builders[i]
+			builder := _c.builders[i]
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*SitesCategoriesMutation)
 				if !ok {
@@ -182,11 +182,11 @@ func (sccb *SitesCategoriesCreateBulk) Save(ctx context.Context) ([]*SitesCatego
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, sccb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, sccb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -210,7 +210,7 @@ func (sccb *SitesCategoriesCreateBulk) Save(ctx context.Context) ([]*SitesCatego
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, sccb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -218,8 +218,8 @@ func (sccb *SitesCategoriesCreateBulk) Save(ctx context.Context) ([]*SitesCatego
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (sccb *SitesCategoriesCreateBulk) SaveX(ctx context.Context) []*SitesCategories {
-	v, err := sccb.Save(ctx)
+func (_c *SitesCategoriesCreateBulk) SaveX(ctx context.Context) []*SitesCategories {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -227,14 +227,14 @@ func (sccb *SitesCategoriesCreateBulk) SaveX(ctx context.Context) []*SitesCatego
 }
 
 // Exec executes the query.
-func (sccb *SitesCategoriesCreateBulk) Exec(ctx context.Context) error {
-	_, err := sccb.Save(ctx)
+func (_c *SitesCategoriesCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (sccb *SitesCategoriesCreateBulk) ExecX(ctx context.Context) {
-	if err := sccb.Exec(ctx); err != nil {
+func (_c *SitesCategoriesCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

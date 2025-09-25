@@ -20,33 +20,33 @@ type CounterCreate struct {
 }
 
 // SetCount sets the "count" field.
-func (cc *CounterCreate) SetCount(i int) *CounterCreate {
-	cc.mutation.SetCount(i)
-	return cc
+func (_c *CounterCreate) SetCount(v int) *CounterCreate {
+	_c.mutation.SetCount(v)
+	return _c
 }
 
 // SetNillableCount sets the "count" field if the given value is not nil.
-func (cc *CounterCreate) SetNillableCount(i *int) *CounterCreate {
-	if i != nil {
-		cc.SetCount(*i)
+func (_c *CounterCreate) SetNillableCount(v *int) *CounterCreate {
+	if v != nil {
+		_c.SetCount(*v)
 	}
-	return cc
+	return _c
 }
 
 // Mutation returns the CounterMutation object of the builder.
-func (cc *CounterCreate) Mutation() *CounterMutation {
-	return cc.mutation
+func (_c *CounterCreate) Mutation() *CounterMutation {
+	return _c.mutation
 }
 
 // Save creates the Counter in the database.
-func (cc *CounterCreate) Save(ctx context.Context) (*Counter, error) {
-	cc.defaults()
-	return withHooks(ctx, cc.sqlSave, cc.mutation, cc.hooks)
+func (_c *CounterCreate) Save(ctx context.Context) (*Counter, error) {
+	_c.defaults()
+	return withHooks(ctx, _c.sqlSave, _c.mutation, _c.hooks)
 }
 
 // SaveX calls Save and panics if Save returns an error.
-func (cc *CounterCreate) SaveX(ctx context.Context) *Counter {
-	v, err := cc.Save(ctx)
+func (_c *CounterCreate) SaveX(ctx context.Context) *Counter {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -54,40 +54,40 @@ func (cc *CounterCreate) SaveX(ctx context.Context) *Counter {
 }
 
 // Exec executes the query.
-func (cc *CounterCreate) Exec(ctx context.Context) error {
-	_, err := cc.Save(ctx)
+func (_c *CounterCreate) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (cc *CounterCreate) ExecX(ctx context.Context) {
-	if err := cc.Exec(ctx); err != nil {
+func (_c *CounterCreate) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
 
 // defaults sets the default values of the builder before save.
-func (cc *CounterCreate) defaults() {
-	if _, ok := cc.mutation.Count(); !ok {
+func (_c *CounterCreate) defaults() {
+	if _, ok := _c.mutation.Count(); !ok {
 		v := counter.DefaultCount
-		cc.mutation.SetCount(v)
+		_c.mutation.SetCount(v)
 	}
 }
 
 // check runs all checks and user-defined validators on the builder.
-func (cc *CounterCreate) check() error {
-	if _, ok := cc.mutation.Count(); !ok {
+func (_c *CounterCreate) check() error {
+	if _, ok := _c.mutation.Count(); !ok {
 		return &ValidationError{Name: "count", err: errors.New(`ent: missing required field "Counter.count"`)}
 	}
 	return nil
 }
 
-func (cc *CounterCreate) sqlSave(ctx context.Context) (*Counter, error) {
-	if err := cc.check(); err != nil {
+func (_c *CounterCreate) sqlSave(ctx context.Context) (*Counter, error) {
+	if err := _c.check(); err != nil {
 		return nil, err
 	}
-	_node, _spec := cc.createSpec()
-	if err := sqlgraph.CreateNode(ctx, cc.driver, _spec); err != nil {
+	_node, _spec := _c.createSpec()
+	if err := sqlgraph.CreateNode(ctx, _c.driver, _spec); err != nil {
 		if sqlgraph.IsConstraintError(err) {
 			err = &ConstraintError{msg: err.Error(), wrap: err}
 		}
@@ -95,17 +95,17 @@ func (cc *CounterCreate) sqlSave(ctx context.Context) (*Counter, error) {
 	}
 	id := _spec.ID.Value.(int64)
 	_node.ID = int(id)
-	cc.mutation.id = &_node.ID
-	cc.mutation.done = true
+	_c.mutation.id = &_node.ID
+	_c.mutation.done = true
 	return _node, nil
 }
 
-func (cc *CounterCreate) createSpec() (*Counter, *sqlgraph.CreateSpec) {
+func (_c *CounterCreate) createSpec() (*Counter, *sqlgraph.CreateSpec) {
 	var (
-		_node = &Counter{config: cc.config}
+		_node = &Counter{config: _c.config}
 		_spec = sqlgraph.NewCreateSpec(counter.Table, sqlgraph.NewFieldSpec(counter.FieldID, field.TypeInt))
 	)
-	if value, ok := cc.mutation.Count(); ok {
+	if value, ok := _c.mutation.Count(); ok {
 		_spec.SetField(counter.FieldCount, field.TypeInt, value)
 		_node.Count = value
 	}
@@ -120,16 +120,16 @@ type CounterCreateBulk struct {
 }
 
 // Save creates the Counter entities in the database.
-func (ccb *CounterCreateBulk) Save(ctx context.Context) ([]*Counter, error) {
-	if ccb.err != nil {
-		return nil, ccb.err
+func (_c *CounterCreateBulk) Save(ctx context.Context) ([]*Counter, error) {
+	if _c.err != nil {
+		return nil, _c.err
 	}
-	specs := make([]*sqlgraph.CreateSpec, len(ccb.builders))
-	nodes := make([]*Counter, len(ccb.builders))
-	mutators := make([]Mutator, len(ccb.builders))
-	for i := range ccb.builders {
+	specs := make([]*sqlgraph.CreateSpec, len(_c.builders))
+	nodes := make([]*Counter, len(_c.builders))
+	mutators := make([]Mutator, len(_c.builders))
+	for i := range _c.builders {
 		func(i int, root context.Context) {
-			builder := ccb.builders[i]
+			builder := _c.builders[i]
 			builder.defaults()
 			var mut Mutator = MutateFunc(func(ctx context.Context, m Mutation) (Value, error) {
 				mutation, ok := m.(*CounterMutation)
@@ -143,11 +143,11 @@ func (ccb *CounterCreateBulk) Save(ctx context.Context) ([]*Counter, error) {
 				var err error
 				nodes[i], specs[i] = builder.createSpec()
 				if i < len(mutators)-1 {
-					_, err = mutators[i+1].Mutate(root, ccb.builders[i+1].mutation)
+					_, err = mutators[i+1].Mutate(root, _c.builders[i+1].mutation)
 				} else {
 					spec := &sqlgraph.BatchCreateSpec{Nodes: specs}
 					// Invoke the actual operation on the latest mutation in the chain.
-					if err = sqlgraph.BatchCreate(ctx, ccb.driver, spec); err != nil {
+					if err = sqlgraph.BatchCreate(ctx, _c.driver, spec); err != nil {
 						if sqlgraph.IsConstraintError(err) {
 							err = &ConstraintError{msg: err.Error(), wrap: err}
 						}
@@ -171,7 +171,7 @@ func (ccb *CounterCreateBulk) Save(ctx context.Context) ([]*Counter, error) {
 		}(i, ctx)
 	}
 	if len(mutators) > 0 {
-		if _, err := mutators[0].Mutate(ctx, ccb.builders[0].mutation); err != nil {
+		if _, err := mutators[0].Mutate(ctx, _c.builders[0].mutation); err != nil {
 			return nil, err
 		}
 	}
@@ -179,8 +179,8 @@ func (ccb *CounterCreateBulk) Save(ctx context.Context) ([]*Counter, error) {
 }
 
 // SaveX is like Save, but panics if an error occurs.
-func (ccb *CounterCreateBulk) SaveX(ctx context.Context) []*Counter {
-	v, err := ccb.Save(ctx)
+func (_c *CounterCreateBulk) SaveX(ctx context.Context) []*Counter {
+	v, err := _c.Save(ctx)
 	if err != nil {
 		panic(err)
 	}
@@ -188,14 +188,14 @@ func (ccb *CounterCreateBulk) SaveX(ctx context.Context) []*Counter {
 }
 
 // Exec executes the query.
-func (ccb *CounterCreateBulk) Exec(ctx context.Context) error {
-	_, err := ccb.Save(ctx)
+func (_c *CounterCreateBulk) Exec(ctx context.Context) error {
+	_, err := _c.Save(ctx)
 	return err
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (ccb *CounterCreateBulk) ExecX(ctx context.Context) {
-	if err := ccb.Exec(ctx); err != nil {
+func (_c *CounterCreateBulk) ExecX(ctx context.Context) {
+	if err := _c.Exec(ctx); err != nil {
 		panic(err)
 	}
 }

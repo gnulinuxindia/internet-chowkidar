@@ -20,56 +20,56 @@ type SitesDelete struct {
 }
 
 // Where appends a list predicates to the SitesDelete builder.
-func (sd *SitesDelete) Where(ps ...predicate.Sites) *SitesDelete {
-	sd.mutation.Where(ps...)
-	return sd
+func (_d *SitesDelete) Where(ps ...predicate.Sites) *SitesDelete {
+	_d.mutation.Where(ps...)
+	return _d
 }
 
 // Exec executes the deletion query and returns how many vertices were deleted.
-func (sd *SitesDelete) Exec(ctx context.Context) (int, error) {
-	return withHooks(ctx, sd.sqlExec, sd.mutation, sd.hooks)
+func (_d *SitesDelete) Exec(ctx context.Context) (int, error) {
+	return withHooks(ctx, _d.sqlExec, _d.mutation, _d.hooks)
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (sd *SitesDelete) ExecX(ctx context.Context) int {
-	n, err := sd.Exec(ctx)
+func (_d *SitesDelete) ExecX(ctx context.Context) int {
+	n, err := _d.Exec(ctx)
 	if err != nil {
 		panic(err)
 	}
 	return n
 }
 
-func (sd *SitesDelete) sqlExec(ctx context.Context) (int, error) {
+func (_d *SitesDelete) sqlExec(ctx context.Context) (int, error) {
 	_spec := sqlgraph.NewDeleteSpec(sites.Table, sqlgraph.NewFieldSpec(sites.FieldID, field.TypeInt))
-	if ps := sd.mutation.predicates; len(ps) > 0 {
+	if ps := _d.mutation.predicates; len(ps) > 0 {
 		_spec.Predicate = func(selector *sql.Selector) {
 			for i := range ps {
 				ps[i](selector)
 			}
 		}
 	}
-	affected, err := sqlgraph.DeleteNodes(ctx, sd.driver, _spec)
+	affected, err := sqlgraph.DeleteNodes(ctx, _d.driver, _spec)
 	if err != nil && sqlgraph.IsConstraintError(err) {
 		err = &ConstraintError{msg: err.Error(), wrap: err}
 	}
-	sd.mutation.done = true
+	_d.mutation.done = true
 	return affected, err
 }
 
 // SitesDeleteOne is the builder for deleting a single Sites entity.
 type SitesDeleteOne struct {
-	sd *SitesDelete
+	_d *SitesDelete
 }
 
 // Where appends a list predicates to the SitesDelete builder.
-func (sdo *SitesDeleteOne) Where(ps ...predicate.Sites) *SitesDeleteOne {
-	sdo.sd.mutation.Where(ps...)
-	return sdo
+func (_d *SitesDeleteOne) Where(ps ...predicate.Sites) *SitesDeleteOne {
+	_d._d.mutation.Where(ps...)
+	return _d
 }
 
 // Exec executes the deletion query.
-func (sdo *SitesDeleteOne) Exec(ctx context.Context) error {
-	n, err := sdo.sd.Exec(ctx)
+func (_d *SitesDeleteOne) Exec(ctx context.Context) error {
+	n, err := _d._d.Exec(ctx)
 	switch {
 	case err != nil:
 		return err
@@ -81,8 +81,8 @@ func (sdo *SitesDeleteOne) Exec(ctx context.Context) error {
 }
 
 // ExecX is like Exec, but panics if an error occurs.
-func (sdo *SitesDeleteOne) ExecX(ctx context.Context) {
-	if err := sdo.Exec(ctx); err != nil {
+func (_d *SitesDeleteOne) ExecX(ctx context.Context) {
+	if err := _d.Exec(ctx); err != nil {
 		panic(err)
 	}
 }
