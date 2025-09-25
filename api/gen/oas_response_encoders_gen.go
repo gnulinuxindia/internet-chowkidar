@@ -3,6 +3,7 @@
 package genapi
 
 import (
+	"io"
 	"net/http"
 
 	"github.com/go-faster/errors"
@@ -10,6 +11,19 @@ import (
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
 )
+
+func encodeApiDocsResponse(response ApiDocsOK, w http.ResponseWriter, span trace.Span) error {
+	w.Header().Set("Content-Type", "text/html; charset=utf-8")
+	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
+
+	writer := w
+	if _, err := io.Copy(writer, response); err != nil {
+		return errors.Wrap(err, "write")
+	}
+
+	return nil
+}
 
 func encodeCreateAbuseReportResponse(response *AbuseReport, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")

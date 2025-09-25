@@ -9,6 +9,7 @@ import (
 type Handlers struct {
 	handler.BlocksHandler
 	handler.CategoryHandler
+	handler.ApiDocsHandler
 	handler.HealthHandler
 	handler.IspHandler
 	handler.ReportsHandler
@@ -22,6 +23,7 @@ type MockHandlers struct {
 var HandlerSet = wire.NewSet(
 	handler.ProvideBlocksHandler,
 	handler.ProvideCategoryHandler,
+	handler.ProvideApiDocsHandler,
 	handler.ProvideHealthHandler,
 	handler.ProvideIspHandler,
 	handler.ProvideReportsHandler,
@@ -35,6 +37,7 @@ var MockHandlersInstance MockHandlers = MockHandlers{}
 var MockHandlerSet = wire.NewSet(
 	handler.ProvideBlocksHandler,
 	handler.ProvideCategoryHandler,
+	handler.ProvideApiDocsHandler,
 	handler.ProvideHealthHandler,
 	handler.ProvideIspHandler,
 	handler.ProvideReportsHandler,

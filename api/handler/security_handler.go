@@ -12,19 +12,17 @@ type SecurityHandler interface {
 	HandleApiKeyAuth(ctx context.Context, operationName string, t genapi.ApiKeyAuth) (context.Context, error)
 }
 
-type securityHandler struct {
+type securityHandlerImpl struct {
 	conf *config.Config
 }
 
-type securityHandlerImpl struct {}
-
 func NewSecurityHandler(conf *config.Config) SecurityHandler {
-	return &securityHandler{
+	return &securityHandlerImpl{
 		conf: conf,
 	}
 }
 
-func (s *securityHandler) HandleApiKeyAuth(ctx context.Context, operationName string, t genapi.ApiKeyAuth) (context.Context, error) {
+func (s *securityHandlerImpl) HandleApiKeyAuth(ctx context.Context, operationName string, t genapi.ApiKeyAuth) (context.Context, error) {
 	if t.APIKey == s.conf.ApiKey {
 		return ctx, nil
 	}

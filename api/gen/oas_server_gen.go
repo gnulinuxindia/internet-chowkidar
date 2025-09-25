@@ -8,6 +8,12 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
+	// ApiDocs implements apiDocs operation.
+	//
+	// API Docs.
+	//
+	// GET /
+	ApiDocs(ctx context.Context) (ApiDocsOK, error)
 	// CreateAbuseReport implements createAbuseReport operation.
 	//
 	// Create a new abuse report.

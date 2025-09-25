@@ -3,6 +3,7 @@
 package genapi
 
 import (
+	"io"
 	"time"
 
 	"github.com/go-faster/errors"
@@ -154,6 +155,20 @@ func (s *AbuseReportStatus) UnmarshalText(data []byte) error {
 	default:
 		return errors.Errorf("invalid value: %q", data)
 	}
+}
+
+type ApiDocsOK struct {
+	Data io.Reader
+}
+
+// Read reads data from the Data reader.
+//
+// Kept to satisfy the io.Reader interface.
+func (s ApiDocsOK) Read(p []byte) (n int, err error) {
+	if s.Data == nil {
+		return 0, io.EOF
+	}
+	return s.Data.Read(p)
 }
 
 type ApiKeyAuth struct {

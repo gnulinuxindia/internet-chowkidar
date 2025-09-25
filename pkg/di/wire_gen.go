@@ -47,16 +47,18 @@ func InjectHandlers() (*api.Handlers, error) {
 	categoriesRepository := repository.ProvideCategoriesRepository(client)
 	categoriesService := service.ProvideCategoriesService(categoriesRepository)
 	categoryHandler := handler.ProvideCategoryHandler(categoriesService)
+	apiDocsHandler := handler.ProvideApiDocsHandler()
 	healthHandler := handler.ProvideHealthHandler()
 	ispRepository := repository.ProvideIspRepository(client)
 	ispService := service.ProvideIspService(ispRepository, txHandler)
 	ispHandler := handler.ProvideIspHandler(ispService)
 	reportsHandler := handler.ProvideReportsHandler()
-	securityHandler := handler.ProvideSecurityHandler()
+	securityHandler := handler.ProvideSecurityHandler(configConfig)
 	sitesHandler := handler.ProvideSitesHandler(sitesService)
 	handlers := &api.Handlers{
 		BlocksHandler:   blocksHandler,
 		CategoryHandler: categoryHandler,
+		ApiDocsHandler:  apiDocsHandler,
 		HealthHandler:   healthHandler,
 		IspHandler:      ispHandler,
 		ReportsHandler:  reportsHandler,
@@ -97,16 +99,18 @@ func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
 	categoriesRepository := repository.ProvideCategoriesRepository(client)
 	categoriesService := service.ProvideCategoriesService(categoriesRepository)
 	categoryHandler := handler.ProvideCategoryHandler(categoriesService)
+	apiDocsHandler := handler.ProvideApiDocsHandler()
 	healthHandler := handler.ProvideHealthHandler()
 	ispRepository := repository.ProvideIspRepository(client)
 	ispService := service.ProvideIspService(ispRepository, txHandler)
 	ispHandler := handler.ProvideIspHandler(ispService)
 	reportsHandler := handler.ProvideReportsHandler()
-	securityHandler := handler.ProvideSecurityHandler()
+	securityHandler := handler.ProvideSecurityHandler(configConfig)
 	sitesHandler := handler.ProvideSitesHandler(sitesService)
 	handlers := &api.Handlers{
 		BlocksHandler:   blocksHandler,
 		CategoryHandler: categoryHandler,
+		ApiDocsHandler:  apiDocsHandler,
 		HealthHandler:   healthHandler,
 		IspHandler:      ispHandler,
 		ReportsHandler:  reportsHandler,

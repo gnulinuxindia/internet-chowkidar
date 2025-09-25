@@ -36,6 +36,13 @@ just # yes, that's it, nothing else
 just run
 ```
 
+## Development
+### Directories with non-autogen data:
+- spec (openapi config file for API Routes)
+- internal/config (server config files)
+- api/handler (how to handle each route)
+- migrations (add/edit new tables)
+
 ## Codegen
 Necessary for generating APIs, DB schemas, dependency injection, etc. A detailed explanation of the codegen process can be found [here](docs/en/codegen.md).
 

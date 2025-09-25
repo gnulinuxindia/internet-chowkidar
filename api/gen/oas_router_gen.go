@@ -58,7 +58,14 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			}
 
 			if len(elem) == 0 {
-				break
+				switch r.Method {
+				case "GET":
+					s.handleApiDocsRequest([0]string{}, elemIsEscaped, w, r)
+				default:
+					s.notAllowed(w, r, "GET")
+				}
+
+				return
 			}
 			switch elem[0] {
 			case 'a': // Prefix: "abuse-reports"
@@ -375,7 +382,18 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 			}
 
 			if len(elem) == 0 {
-				break
+				switch method {
+				case "GET":
+					r.name = ApiDocsOperation
+					r.summary = "API Docs"
+					r.operationID = "apiDocs"
+					r.pathPattern = "/"
+					r.args = args
+					r.count = 0
+					return r, true
+				default:
+					return
+				}
 			}
 			switch elem[0] {
 			case 'a': // Prefix: "abuse-reports"

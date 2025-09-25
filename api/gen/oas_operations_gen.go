@@ -6,6 +6,7 @@ package genapi
 type OperationName = string
 
 const (
+	ApiDocsOperation              OperationName = "ApiDocs"
 	CreateAbuseReportOperation    OperationName = "CreateAbuseReport"
 	CreateBlockOperation          OperationName = "CreateBlock"
 	CreateCategoryOperation       OperationName = "CreateCategory"

@@ -13,6 +13,15 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
+// ApiDocs implements apiDocs operation.
+//
+// API Docs.
+//
+// GET /
+func (UnimplementedHandler) ApiDocs(ctx context.Context) (r ApiDocsOK, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // CreateAbuseReport implements createAbuseReport operation.
 //
 // Create a new abuse report.
