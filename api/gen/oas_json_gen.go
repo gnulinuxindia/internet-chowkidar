@@ -354,6 +354,12 @@ func (s *Block) encodeFields(e *jx.Encoder) {
 		}
 	}
 	{
+		if s.ClientID.Set {
+			e.FieldStart("client_id")
+			s.ClientID.Encode(e)
+		}
+	}
+	{
 		if s.IspID.Set {
 			e.FieldStart("isp_id")
 			s.IspID.Encode(e)
@@ -391,15 +397,16 @@ func (s *Block) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfBlock = [8]string{
+var jsonFieldsNameOfBlock = [9]string{
 	0: "id",
 	1: "site_id",
-	2: "isp_id",
-	3: "last_reported_at",
-	4: "block_reports",
-	5: "unblock_reports",
-	6: "created_at",
-	7: "updated_at",
+	2: "client_id",
+	3: "isp_id",
+	4: "last_reported_at",
+	5: "block_reports",
+	6: "unblock_reports",
+	7: "created_at",
+	8: "updated_at",
 }
 
 // Decode decodes Block from json.
@@ -429,6 +436,16 @@ func (s *Block) Decode(d *jx.Decoder) error {
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"site_id\"")
+			}
+		case "client_id":
+			if err := func() error {
+				s.ClientID.Reset()
+				if err := s.ClientID.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"client_id\"")
 			}
 		case "isp_id":
 			if err := func() error {
@@ -528,6 +545,10 @@ func (s *BlockInput) encodeFields(e *jx.Encoder) {
 		e.Int(s.SiteID)
 	}
 	{
+		e.FieldStart("client_id")
+		e.Int(s.ClientID)
+	}
+	{
 		e.FieldStart("isp_id")
 		e.Int(s.IspID)
 	}
@@ -537,10 +558,11 @@ func (s *BlockInput) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfBlockInput = [3]string{
+var jsonFieldsNameOfBlockInput = [4]string{
 	0: "site_id",
-	1: "isp_id",
-	2: "is_blocked",
+	1: "client_id",
+	2: "isp_id",
+	3: "is_blocked",
 }
 
 // Decode decodes BlockInput from json.
@@ -564,8 +586,20 @@ func (s *BlockInput) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"site_id\"")
 			}
-		case "isp_id":
+		case "client_id":
 			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := d.Int()
+				s.ClientID = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"client_id\"")
+			}
+		case "isp_id":
+			requiredBitSet[0] |= 1 << 2
 			if err := func() error {
 				v, err := d.Int()
 				s.IspID = int(v)
@@ -577,7 +611,7 @@ func (s *BlockInput) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"isp_id\"")
 			}
 		case "is_blocked":
-			requiredBitSet[0] |= 1 << 2
+			requiredBitSet[0] |= 1 << 3
 			if err := func() error {
 				v, err := d.Bool()
 				s.IsBlocked = bool(v)
@@ -598,7 +632,7 @@ func (s *BlockInput) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000111,
+		0b00001111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

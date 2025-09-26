@@ -75,6 +75,11 @@ func IspID(v int) predicate.Blocks {
 	return predicate.Blocks(sql.FieldEQ(FieldIspID, v))
 }
 
+// ClientID applies equality check predicate on the "client_id" field. It's identical to ClientIDEQ.
+func ClientID(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldEQ(FieldClientID, v))
+}
+
 // BlockReports applies equality check predicate on the "block_reports" field. It's identical to BlockReportsEQ.
 func BlockReports(v int) predicate.Blocks {
 	return predicate.Blocks(sql.FieldEQ(FieldBlockReports, v))
@@ -208,6 +213,46 @@ func IspIDIn(vs ...int) predicate.Blocks {
 // IspIDNotIn applies the NotIn predicate on the "isp_id" field.
 func IspIDNotIn(vs ...int) predicate.Blocks {
 	return predicate.Blocks(sql.FieldNotIn(FieldIspID, vs...))
+}
+
+// ClientIDEQ applies the EQ predicate on the "client_id" field.
+func ClientIDEQ(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldEQ(FieldClientID, v))
+}
+
+// ClientIDNEQ applies the NEQ predicate on the "client_id" field.
+func ClientIDNEQ(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldNEQ(FieldClientID, v))
+}
+
+// ClientIDIn applies the In predicate on the "client_id" field.
+func ClientIDIn(vs ...int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldIn(FieldClientID, vs...))
+}
+
+// ClientIDNotIn applies the NotIn predicate on the "client_id" field.
+func ClientIDNotIn(vs ...int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldNotIn(FieldClientID, vs...))
+}
+
+// ClientIDGT applies the GT predicate on the "client_id" field.
+func ClientIDGT(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldGT(FieldClientID, v))
+}
+
+// ClientIDGTE applies the GTE predicate on the "client_id" field.
+func ClientIDGTE(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldGTE(FieldClientID, v))
+}
+
+// ClientIDLT applies the LT predicate on the "client_id" field.
+func ClientIDLT(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldLT(FieldClientID, v))
+}
+
+// ClientIDLTE applies the LTE predicate on the "client_id" field.
+func ClientIDLTE(v int) predicate.Blocks {
+	return predicate.Blocks(sql.FieldLTE(FieldClientID, v))
 }
 
 // BlockReportsEQ applies the EQ predicate on the "block_reports" field.

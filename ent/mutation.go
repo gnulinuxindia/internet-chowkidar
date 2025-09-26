@@ -45,6 +45,8 @@ type BlocksMutation struct {
 	id                 *int
 	created_at         *time.Time
 	updated_at         *time.Time
+	client_id          *int
+	addclient_id       *int
 	block_reports      *int
 	addblock_reports   *int
 	unblock_reports    *int
@@ -302,6 +304,62 @@ func (m *BlocksMutation) ResetIspID() {
 	m.isp = nil
 }
 
+// SetClientID sets the "client_id" field.
+func (m *BlocksMutation) SetClientID(i int) {
+	m.client_id = &i
+	m.addclient_id = nil
+}
+
+// ClientID returns the value of the "client_id" field in the mutation.
+func (m *BlocksMutation) ClientID() (r int, exists bool) {
+	v := m.client_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldClientID returns the old "client_id" field's value of the Blocks entity.
+// If the Blocks object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *BlocksMutation) OldClientID(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldClientID is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldClientID requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldClientID: %w", err)
+	}
+	return oldValue.ClientID, nil
+}
+
+// AddClientID adds i to the "client_id" field.
+func (m *BlocksMutation) AddClientID(i int) {
+	if m.addclient_id != nil {
+		*m.addclient_id += i
+	} else {
+		m.addclient_id = &i
+	}
+}
+
+// AddedClientID returns the value that was added to the "client_id" field in this mutation.
+func (m *BlocksMutation) AddedClientID() (r int, exists bool) {
+	v := m.addclient_id
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// ResetClientID resets all changes to the "client_id" field.
+func (m *BlocksMutation) ResetClientID() {
+	m.client_id = nil
+	m.addclient_id = nil
+}
+
 // SetBlockReports sets the "block_reports" field.
 func (m *BlocksMutation) SetBlockReports(i int) {
 	m.block_reports = &i
@@ -538,7 +596,7 @@ func (m *BlocksMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *BlocksMutation) Fields() []string {
-	fields := make([]string, 0, 7)
+	fields := make([]string, 0, 8)
 	if m.created_at != nil {
 		fields = append(fields, blocks.FieldCreatedAt)
 	}
@@ -550,6 +608,9 @@ func (m *BlocksMutation) Fields() []string {
 	}
 	if m.isp != nil {
 		fields = append(fields, blocks.FieldIspID)
+	}
+	if m.client_id != nil {
+		fields = append(fields, blocks.FieldClientID)
 	}
 	if m.block_reports != nil {
 		fields = append(fields, blocks.FieldBlockReports)
@@ -576,6 +637,8 @@ func (m *BlocksMutation) Field(name string) (ent.Value, bool) {
 		return m.SiteID()
 	case blocks.FieldIspID:
 		return m.IspID()
+	case blocks.FieldClientID:
+		return m.ClientID()
 	case blocks.FieldBlockReports:
 		return m.BlockReports()
 	case blocks.FieldUnblockReports:
@@ -599,6 +662,8 @@ func (m *BlocksMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldSiteID(ctx)
 	case blocks.FieldIspID:
 		return m.OldIspID(ctx)
+	case blocks.FieldClientID:
+		return m.OldClientID(ctx)
 	case blocks.FieldBlockReports:
 		return m.OldBlockReports(ctx)
 	case blocks.FieldUnblockReports:
@@ -642,6 +707,13 @@ func (m *BlocksMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetIspID(v)
 		return nil
+	case blocks.FieldClientID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetClientID(v)
+		return nil
 	case blocks.FieldBlockReports:
 		v, ok := value.(int)
 		if !ok {
@@ -671,6 +743,9 @@ func (m *BlocksMutation) SetField(name string, value ent.Value) error {
 // this mutation.
 func (m *BlocksMutation) AddedFields() []string {
 	var fields []string
+	if m.addclient_id != nil {
+		fields = append(fields, blocks.FieldClientID)
+	}
 	if m.addblock_reports != nil {
 		fields = append(fields, blocks.FieldBlockReports)
 	}
@@ -685,6 +760,8 @@ func (m *BlocksMutation) AddedFields() []string {
 // was not set, or was not defined in the schema.
 func (m *BlocksMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
+	case blocks.FieldClientID:
+		return m.AddedClientID()
 	case blocks.FieldBlockReports:
 		return m.AddedBlockReports()
 	case blocks.FieldUnblockReports:
@@ -698,6 +775,13 @@ func (m *BlocksMutation) AddedField(name string) (ent.Value, bool) {
 // type.
 func (m *BlocksMutation) AddField(name string, value ent.Value) error {
 	switch name {
+	case blocks.FieldClientID:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.AddClientID(v)
+		return nil
 	case blocks.FieldBlockReports:
 		v, ok := value.(int)
 		if !ok {
@@ -750,6 +834,9 @@ func (m *BlocksMutation) ResetField(name string) error {
 		return nil
 	case blocks.FieldIspID:
 		m.ResetIspID()
+		return nil
+	case blocks.FieldClientID:
+		m.ResetClientID()
 		return nil
 	case blocks.FieldBlockReports:
 		m.ResetBlockReports()

@@ -6,6 +6,10 @@ import (
 	"github.com/gnulinuxindia/internet-chowkidar/pkg/domain/service"
 )
 
+func ProvideApiDocsHandler() ApiDocsHandler {
+	return &apiDocsHandlerImpl{}
+}
+
 func ProvideBlocksHandler(
 	blocksService service.BlocksService,
 	sitesService service.SitesService,
@@ -23,10 +27,6 @@ func ProvideCategoryHandler(
 	return &categoryHandlerImpl{
 		categoriesService: categoriesService,
 	}
-}
-
-func ProvideApiDocsHandler() ApiDocsHandler {
-	return &apiDocsHandlerImpl{}
 }
 
 func ProvideHealthHandler() HealthHandler {

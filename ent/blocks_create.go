@@ -62,6 +62,12 @@ func (_c *BlocksCreate) SetIspID(v int) *BlocksCreate {
 	return _c
 }
 
+// SetClientID sets the "client_id" field.
+func (_c *BlocksCreate) SetClientID(v int) *BlocksCreate {
+	_c.mutation.SetClientID(v)
+	return _c
+}
+
 // SetBlockReports sets the "block_reports" field.
 func (_c *BlocksCreate) SetBlockReports(v int) *BlocksCreate {
 	_c.mutation.SetBlockReports(v)
@@ -173,6 +179,9 @@ func (_c *BlocksCreate) check() error {
 	if _, ok := _c.mutation.IspID(); !ok {
 		return &ValidationError{Name: "isp_id", err: errors.New(`ent: missing required field "Blocks.isp_id"`)}
 	}
+	if _, ok := _c.mutation.ClientID(); !ok {
+		return &ValidationError{Name: "client_id", err: errors.New(`ent: missing required field "Blocks.client_id"`)}
+	}
 	if _, ok := _c.mutation.BlockReports(); !ok {
 		return &ValidationError{Name: "block_reports", err: errors.New(`ent: missing required field "Blocks.block_reports"`)}
 	}
@@ -221,6 +230,10 @@ func (_c *BlocksCreate) createSpec() (*Blocks, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.UpdatedAt(); ok {
 		_spec.SetField(blocks.FieldUpdatedAt, field.TypeTime, value)
 		_node.UpdatedAt = value
+	}
+	if value, ok := _c.mutation.ClientID(); ok {
+		_spec.SetField(blocks.FieldClientID, field.TypeInt, value)
+		_node.ClientID = value
 	}
 	if value, ok := _c.mutation.BlockReports(); ok {
 		_spec.SetField(blocks.FieldBlockReports, field.TypeInt, value)

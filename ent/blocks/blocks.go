@@ -22,6 +22,8 @@ const (
 	FieldSiteID = "site_id"
 	// FieldIspID holds the string denoting the isp_id field in the database.
 	FieldIspID = "isp_id"
+	// FieldClientID holds the string denoting the client_id field in the database.
+	FieldClientID = "client_id"
 	// FieldBlockReports holds the string denoting the block_reports field in the database.
 	FieldBlockReports = "block_reports"
 	// FieldUnblockReports holds the string denoting the unblock_reports field in the database.
@@ -57,6 +59,7 @@ var Columns = []string{
 	FieldUpdatedAt,
 	FieldSiteID,
 	FieldIspID,
+	FieldClientID,
 	FieldBlockReports,
 	FieldUnblockReports,
 	FieldLastReportedAt,
@@ -111,6 +114,11 @@ func BySiteID(opts ...sql.OrderTermOption) OrderOption {
 // ByIspID orders the results by the isp_id field.
 func ByIspID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldIspID, opts...).ToFunc()
+}
+
+// ByClientID orders the results by the client_id field.
+func ByClientID(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldClientID, opts...).ToFunc()
 }
 
 // ByBlockReports orders the results by the block_reports field.

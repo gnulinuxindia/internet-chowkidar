@@ -26,6 +26,7 @@ import (
 
 // handlers
 func InjectHandlers() (*api.Handlers, error) {
+	apiDocsHandler := handler.ProvideApiDocsHandler()
 	configConfig, err := config.ProvideConfig()
 	if err != nil {
 		return nil, err
@@ -47,7 +48,6 @@ func InjectHandlers() (*api.Handlers, error) {
 	categoriesRepository := repository.ProvideCategoriesRepository(client)
 	categoriesService := service.ProvideCategoriesService(categoriesRepository)
 	categoryHandler := handler.ProvideCategoryHandler(categoriesService)
-	apiDocsHandler := handler.ProvideApiDocsHandler()
 	healthHandler := handler.ProvideHealthHandler()
 	ispRepository := repository.ProvideIspRepository(client)
 	ispService := service.ProvideIspService(ispRepository, txHandler)
@@ -56,9 +56,9 @@ func InjectHandlers() (*api.Handlers, error) {
 	securityHandler := handler.ProvideSecurityHandler(configConfig)
 	sitesHandler := handler.ProvideSitesHandler(sitesService)
 	handlers := &api.Handlers{
+		ApiDocsHandler:  apiDocsHandler,
 		BlocksHandler:   blocksHandler,
 		CategoryHandler: categoryHandler,
-		ApiDocsHandler:  apiDocsHandler,
 		HealthHandler:   healthHandler,
 		IspHandler:      ispHandler,
 		ReportsHandler:  reportsHandler,
@@ -78,6 +78,7 @@ func InjectSecurityHandler() (handler.SecurityHandler, error) {
 }
 
 func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
+	apiDocsHandler := handler.ProvideApiDocsHandler()
 	configConfig, err := config.ProvideConfig()
 	if err != nil {
 		return nil, err
@@ -99,7 +100,6 @@ func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
 	categoriesRepository := repository.ProvideCategoriesRepository(client)
 	categoriesService := service.ProvideCategoriesService(categoriesRepository)
 	categoryHandler := handler.ProvideCategoryHandler(categoriesService)
-	apiDocsHandler := handler.ProvideApiDocsHandler()
 	healthHandler := handler.ProvideHealthHandler()
 	ispRepository := repository.ProvideIspRepository(client)
 	ispService := service.ProvideIspService(ispRepository, txHandler)
@@ -108,9 +108,9 @@ func InjectMockHandlers(ctrl *gomock.Controller) (*api.Handlers, error) {
 	securityHandler := handler.ProvideSecurityHandler(configConfig)
 	sitesHandler := handler.ProvideSitesHandler(sitesService)
 	handlers := &api.Handlers{
+		ApiDocsHandler:  apiDocsHandler,
 		BlocksHandler:   blocksHandler,
 		CategoryHandler: categoryHandler,
-		ApiDocsHandler:  apiDocsHandler,
 		HealthHandler:   healthHandler,
 		IspHandler:      ispHandler,
 		ReportsHandler:  reportsHandler,

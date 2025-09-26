@@ -64,6 +64,27 @@ func (_u *BlocksUpdate) SetNillableIspID(v *int) *BlocksUpdate {
 	return _u
 }
 
+// SetClientID sets the "client_id" field.
+func (_u *BlocksUpdate) SetClientID(v int) *BlocksUpdate {
+	_u.mutation.ResetClientID()
+	_u.mutation.SetClientID(v)
+	return _u
+}
+
+// SetNillableClientID sets the "client_id" field if the given value is not nil.
+func (_u *BlocksUpdate) SetNillableClientID(v *int) *BlocksUpdate {
+	if v != nil {
+		_u.SetClientID(*v)
+	}
+	return _u
+}
+
+// AddClientID adds value to the "client_id" field.
+func (_u *BlocksUpdate) AddClientID(v int) *BlocksUpdate {
+	_u.mutation.AddClientID(v)
+	return _u
+}
+
 // SetBlockReports sets the "block_reports" field.
 func (_u *BlocksUpdate) SetBlockReports(v int) *BlocksUpdate {
 	_u.mutation.ResetBlockReports()
@@ -209,6 +230,12 @@ func (_u *BlocksUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(blocks.FieldUpdatedAt, field.TypeTime, value)
 	}
+	if value, ok := _u.mutation.ClientID(); ok {
+		_spec.SetField(blocks.FieldClientID, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedClientID(); ok {
+		_spec.AddField(blocks.FieldClientID, field.TypeInt, value)
+	}
 	if value, ok := _u.mutation.BlockReports(); ok {
 		_spec.SetField(blocks.FieldBlockReports, field.TypeInt, value)
 	}
@@ -333,6 +360,27 @@ func (_u *BlocksUpdateOne) SetNillableIspID(v *int) *BlocksUpdateOne {
 	if v != nil {
 		_u.SetIspID(*v)
 	}
+	return _u
+}
+
+// SetClientID sets the "client_id" field.
+func (_u *BlocksUpdateOne) SetClientID(v int) *BlocksUpdateOne {
+	_u.mutation.ResetClientID()
+	_u.mutation.SetClientID(v)
+	return _u
+}
+
+// SetNillableClientID sets the "client_id" field if the given value is not nil.
+func (_u *BlocksUpdateOne) SetNillableClientID(v *int) *BlocksUpdateOne {
+	if v != nil {
+		_u.SetClientID(*v)
+	}
+	return _u
+}
+
+// AddClientID adds value to the "client_id" field.
+func (_u *BlocksUpdateOne) AddClientID(v int) *BlocksUpdateOne {
+	_u.mutation.AddClientID(v)
 	return _u
 }
 
@@ -510,6 +558,12 @@ func (_u *BlocksUpdateOne) sqlSave(ctx context.Context) (_node *Blocks, err erro
 	}
 	if value, ok := _u.mutation.UpdatedAt(); ok {
 		_spec.SetField(blocks.FieldUpdatedAt, field.TypeTime, value)
+	}
+	if value, ok := _u.mutation.ClientID(); ok {
+		_spec.SetField(blocks.FieldClientID, field.TypeInt, value)
+	}
+	if value, ok := _u.mutation.AddedClientID(); ok {
+		_spec.AddField(blocks.FieldClientID, field.TypeInt, value)
 	}
 	if value, ok := _u.mutation.BlockReports(); ok {
 		_spec.SetField(blocks.FieldBlockReports, field.TypeInt, value)

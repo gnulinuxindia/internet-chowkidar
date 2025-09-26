@@ -189,6 +189,7 @@ func (s *ApiKeyAuth) SetAPIKey(val string) {
 type Block struct {
 	ID             OptInt      `json:"id"`
 	SiteID         OptInt      `json:"site_id"`
+	ClientID       OptInt      `json:"client_id"`
 	IspID          OptInt      `json:"isp_id"`
 	LastReportedAt OptDateTime `json:"last_reported_at"`
 	BlockReports   OptInt      `json:"block_reports"`
@@ -205,6 +206,11 @@ func (s *Block) GetID() OptInt {
 // GetSiteID returns the value of SiteID.
 func (s *Block) GetSiteID() OptInt {
 	return s.SiteID
+}
+
+// GetClientID returns the value of ClientID.
+func (s *Block) GetClientID() OptInt {
+	return s.ClientID
 }
 
 // GetIspID returns the value of IspID.
@@ -247,6 +253,11 @@ func (s *Block) SetSiteID(val OptInt) {
 	s.SiteID = val
 }
 
+// SetClientID sets the value of ClientID.
+func (s *Block) SetClientID(val OptInt) {
+	s.ClientID = val
+}
+
 // SetIspID sets the value of IspID.
 func (s *Block) SetIspID(val OptInt) {
 	s.IspID = val
@@ -280,6 +291,7 @@ func (s *Block) SetUpdatedAt(val OptDateTime) {
 // Ref: #/components/schemas/BlockInput
 type BlockInput struct {
 	SiteID    int  `json:"site_id"`
+	ClientID  int  `json:"client_id"`
 	IspID     int  `json:"isp_id"`
 	IsBlocked bool `json:"is_blocked"`
 }
@@ -287,6 +299,11 @@ type BlockInput struct {
 // GetSiteID returns the value of SiteID.
 func (s *BlockInput) GetSiteID() int {
 	return s.SiteID
+}
+
+// GetClientID returns the value of ClientID.
+func (s *BlockInput) GetClientID() int {
+	return s.ClientID
 }
 
 // GetIspID returns the value of IspID.
@@ -302,6 +319,11 @@ func (s *BlockInput) GetIsBlocked() bool {
 // SetSiteID sets the value of SiteID.
 func (s *BlockInput) SetSiteID(val int) {
 	s.SiteID = val
+}
+
+// SetClientID sets the value of ClientID.
+func (s *BlockInput) SetClientID(val int) {
+	s.ClientID = val
 }
 
 // SetIspID sets the value of IspID.

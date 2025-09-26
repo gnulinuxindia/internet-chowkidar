@@ -27,6 +27,8 @@ type Blocks struct {
 	SiteID int `json:"site_id,omitempty"`
 	// IspID holds the value of the "isp_id" field.
 	IspID int `json:"isp_id,omitempty"`
+	// ClientID holds the value of the "client_id" field.
+	ClientID int `json:"client_id,omitempty"`
 	// BlockReports holds the value of the "block_reports" field.
 	BlockReports int `json:"block_reports,omitempty"`
 	// UnblockReports holds the value of the "unblock_reports" field.
@@ -77,7 +79,7 @@ func (*Blocks) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case blocks.FieldID, blocks.FieldSiteID, blocks.FieldIspID, blocks.FieldBlockReports, blocks.FieldUnblockReports:
+		case blocks.FieldID, blocks.FieldSiteID, blocks.FieldIspID, blocks.FieldClientID, blocks.FieldBlockReports, blocks.FieldUnblockReports:
 			values[i] = new(sql.NullInt64)
 		case blocks.FieldCreatedAt, blocks.FieldUpdatedAt, blocks.FieldLastReportedAt:
 			values[i] = new(sql.NullTime)
@@ -125,6 +127,12 @@ func (_m *Blocks) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field isp_id", values[i])
 			} else if value.Valid {
 				_m.IspID = int(value.Int64)
+			}
+		case blocks.FieldClientID:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field client_id", values[i])
+			} else if value.Valid {
+				_m.ClientID = int(value.Int64)
 			}
 		case blocks.FieldBlockReports:
 			if value, ok := values[i].(*sql.NullInt64); !ok {
@@ -201,6 +209,9 @@ func (_m *Blocks) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("isp_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.IspID))
+	builder.WriteString(", ")
+	builder.WriteString("client_id=")
+	builder.WriteString(fmt.Sprintf("%v", _m.ClientID))
 	builder.WriteString(", ")
 	builder.WriteString("block_reports=")
 	builder.WriteString(fmt.Sprintf("%v", _m.BlockReports))
