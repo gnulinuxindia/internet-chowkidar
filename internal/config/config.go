@@ -41,13 +41,13 @@ var Conf *Config
 var k = koanf.New(".")
 
 var allowedDBTypes = []string{
-	"sqlite3",
+	// No more sqlite3, does not work properly
 	"postgres",
 }
 
 var defaultConfigProvider = confmap.Provider(map[string]any{
-	"DATABASE_URL":     "file:sqlite.db",
-	"DATABASE_DRIVER":  "sqlite3",
+	"DATABASE_URL":     "postgres://postgres:postgres@localhost:5432/inetc",
+	"DATABASE_DRIVER":  "postgres",
 	"SERVICE_NAME":     "internet-chowkidar",
 	"SERVICE_VERSION":  "0.1.0",
 	"TRACING_EXPORTER": "http",
@@ -56,6 +56,7 @@ var defaultConfigProvider = confmap.Provider(map[string]any{
 	"LISTEN":           "0.0.0.0",
 	"TRACING_HOST":     "localhost",
 	"TRACING_PORT":     "4318",
+	"API_KEY":			"1234",
 }, "")
 
 func ProvideConfig() (*Config, error) {
