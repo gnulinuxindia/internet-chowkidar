@@ -1,3 +1,5 @@
+// Makes sure every table has created_at and updated_at parameters
+
 package schema
 
 import (

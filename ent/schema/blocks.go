@@ -16,6 +16,7 @@ func (Blocks) Fields() []ent.Field {
 	return []ent.Field{
 		field.Int("site_id"),
 		field.Int("isp_id"),
+		field.Int("client_id"),
 		field.Int("block_reports").Default(0),
 		field.Int("unblock_reports").Default(0),
 		field.Time("last_reported_at"),

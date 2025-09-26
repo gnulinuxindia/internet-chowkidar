@@ -506,6 +506,8 @@ components:
           type: integer
         site_id:
           type: integer
+        client_id:
+          type: integer
         isp_id:
           type: integer
         last_reported_at:
@@ -558,10 +560,13 @@ components:
       type: object
       required:
         - site_id
+        - client_id 
         - isp_id
         - is_blocked
       properties:
         site_id:
+          type: integer
+        client_id:
           type: integer
         isp_id:
           type: integer

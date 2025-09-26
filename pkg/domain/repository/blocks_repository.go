@@ -62,6 +62,7 @@ func (b *blocksRepositoryImpl) CreateBlock(ctx context.Context, req *dto.BlockDt
 		iQuery := tx.Blocks.Create().
 			SetIspID(req.IspID).
 			SetSiteID(req.SiteID).
+			SetClientID(req.ClientID).
 			SetLastReportedAt(req.LastReportedAt)
 
 		if req.IsBlocked {

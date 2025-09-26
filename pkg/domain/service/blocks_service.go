@@ -27,6 +27,7 @@ func (b *blocksServiceImpl) CreateBlock(ctx context.Context, req *genapi.BlockIn
 	blockDto := &dto.BlockDto{
 		IspID:          req.IspID,
 		SiteID:         req.SiteID,
+		ClientID:       req.ClientID,
 		IsBlocked:      req.IsBlocked,
 		LastReportedAt: time.Now(),
 	}
@@ -40,6 +41,7 @@ func (b *blocksServiceImpl) CreateBlock(ctx context.Context, req *genapi.BlockIn
 		ID:             genapi.NewOptInt(eb.ID),
 		IspID:          genapi.NewOptInt(eb.IspID),
 		SiteID:         genapi.NewOptInt(eb.SiteID),
+		ClientID:       genapi.NewOptInt(eb.ClientID),
 		LastReportedAt: genapi.NewOptDateTime(eb.LastReportedAt),
 		BlockReports:   genapi.NewOptInt(eb.BlockReports),
 		UnblockReports: genapi.NewOptInt(eb.UnblockReports),
