@@ -14,8 +14,8 @@ func upChangeblocks(ctx context.Context, tx *sql.Tx) error {
 	// This code is executed when the migration is applied.
 	_, err := tx.Exec(`
 		ALTER TABLE blocks ADD blocked boolean;
-		ALTER TABLE blocks DELETE COLUMN block_reports;
-		ALTER TABLE blocks DELETE COLUMN unblock_reports;
+		ALTER TABLE blocks DROP COLUMN block_reports;
+		ALTER TABLE blocks DROP COLUMN unblock_reports;
 	`)
 	return err
 }
@@ -25,7 +25,7 @@ func downChangeblocks(ctx context.Context, tx *sql.Tx) error {
 	_, err := tx.Exec(`
 		ALTER TABLE blocks ADD block_reports INT NOT NULL DEFAULT 0,;
 		ALTER TABLE blocks ADD unblock_reports INT NOT NULL DEFAULT 0,;
-		ALTER TABLE blocks DELETE COLUMN blocked;
+		ALTER TABLE blocks DROP COLUMN blocked;
 	`)
 	return err
 }
