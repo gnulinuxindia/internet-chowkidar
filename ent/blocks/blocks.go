@@ -24,10 +24,8 @@ const (
 	FieldIspID = "isp_id"
 	// FieldClientID holds the string denoting the client_id field in the database.
 	FieldClientID = "client_id"
-	// FieldBlockReports holds the string denoting the block_reports field in the database.
-	FieldBlockReports = "block_reports"
-	// FieldUnblockReports holds the string denoting the unblock_reports field in the database.
-	FieldUnblockReports = "unblock_reports"
+	// FieldBlocked holds the string denoting the blocked field in the database.
+	FieldBlocked = "blocked"
 	// FieldLastReportedAt holds the string denoting the last_reported_at field in the database.
 	FieldLastReportedAt = "last_reported_at"
 	// EdgeSite holds the string denoting the site edge name in mutations.
@@ -60,8 +58,7 @@ var Columns = []string{
 	FieldSiteID,
 	FieldIspID,
 	FieldClientID,
-	FieldBlockReports,
-	FieldUnblockReports,
+	FieldBlocked,
 	FieldLastReportedAt,
 }
 
@@ -82,10 +79,6 @@ var (
 	DefaultUpdatedAt func() time.Time
 	// UpdateDefaultUpdatedAt holds the default value on update for the "updated_at" field.
 	UpdateDefaultUpdatedAt func() time.Time
-	// DefaultBlockReports holds the default value on creation for the "block_reports" field.
-	DefaultBlockReports int
-	// DefaultUnblockReports holds the default value on creation for the "unblock_reports" field.
-	DefaultUnblockReports int
 )
 
 // OrderOption defines the ordering options for the Blocks queries.
@@ -121,14 +114,9 @@ func ByClientID(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldClientID, opts...).ToFunc()
 }
 
-// ByBlockReports orders the results by the block_reports field.
-func ByBlockReports(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldBlockReports, opts...).ToFunc()
-}
-
-// ByUnblockReports orders the results by the unblock_reports field.
-func ByUnblockReports(opts ...sql.OrderTermOption) OrderOption {
-	return sql.OrderByField(FieldUnblockReports, opts...).ToFunc()
+// ByBlocked orders the results by the blocked field.
+func ByBlocked(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldBlocked, opts...).ToFunc()
 }
 
 // ByLastReportedAt orders the results by the last_reported_at field.

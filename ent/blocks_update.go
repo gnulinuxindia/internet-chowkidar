@@ -85,45 +85,17 @@ func (_u *BlocksUpdate) AddClientID(v int) *BlocksUpdate {
 	return _u
 }
 
-// SetBlockReports sets the "block_reports" field.
-func (_u *BlocksUpdate) SetBlockReports(v int) *BlocksUpdate {
-	_u.mutation.ResetBlockReports()
-	_u.mutation.SetBlockReports(v)
+// SetBlocked sets the "blocked" field.
+func (_u *BlocksUpdate) SetBlocked(v bool) *BlocksUpdate {
+	_u.mutation.SetBlocked(v)
 	return _u
 }
 
-// SetNillableBlockReports sets the "block_reports" field if the given value is not nil.
-func (_u *BlocksUpdate) SetNillableBlockReports(v *int) *BlocksUpdate {
+// SetNillableBlocked sets the "blocked" field if the given value is not nil.
+func (_u *BlocksUpdate) SetNillableBlocked(v *bool) *BlocksUpdate {
 	if v != nil {
-		_u.SetBlockReports(*v)
+		_u.SetBlocked(*v)
 	}
-	return _u
-}
-
-// AddBlockReports adds value to the "block_reports" field.
-func (_u *BlocksUpdate) AddBlockReports(v int) *BlocksUpdate {
-	_u.mutation.AddBlockReports(v)
-	return _u
-}
-
-// SetUnblockReports sets the "unblock_reports" field.
-func (_u *BlocksUpdate) SetUnblockReports(v int) *BlocksUpdate {
-	_u.mutation.ResetUnblockReports()
-	_u.mutation.SetUnblockReports(v)
-	return _u
-}
-
-// SetNillableUnblockReports sets the "unblock_reports" field if the given value is not nil.
-func (_u *BlocksUpdate) SetNillableUnblockReports(v *int) *BlocksUpdate {
-	if v != nil {
-		_u.SetUnblockReports(*v)
-	}
-	return _u
-}
-
-// AddUnblockReports adds value to the "unblock_reports" field.
-func (_u *BlocksUpdate) AddUnblockReports(v int) *BlocksUpdate {
-	_u.mutation.AddUnblockReports(v)
 	return _u
 }
 
@@ -236,17 +208,8 @@ func (_u *BlocksUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	if value, ok := _u.mutation.AddedClientID(); ok {
 		_spec.AddField(blocks.FieldClientID, field.TypeInt, value)
 	}
-	if value, ok := _u.mutation.BlockReports(); ok {
-		_spec.SetField(blocks.FieldBlockReports, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedBlockReports(); ok {
-		_spec.AddField(blocks.FieldBlockReports, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.UnblockReports(); ok {
-		_spec.SetField(blocks.FieldUnblockReports, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedUnblockReports(); ok {
-		_spec.AddField(blocks.FieldUnblockReports, field.TypeInt, value)
+	if value, ok := _u.mutation.Blocked(); ok {
+		_spec.SetField(blocks.FieldBlocked, field.TypeBool, value)
 	}
 	if value, ok := _u.mutation.LastReportedAt(); ok {
 		_spec.SetField(blocks.FieldLastReportedAt, field.TypeTime, value)
@@ -384,45 +347,17 @@ func (_u *BlocksUpdateOne) AddClientID(v int) *BlocksUpdateOne {
 	return _u
 }
 
-// SetBlockReports sets the "block_reports" field.
-func (_u *BlocksUpdateOne) SetBlockReports(v int) *BlocksUpdateOne {
-	_u.mutation.ResetBlockReports()
-	_u.mutation.SetBlockReports(v)
+// SetBlocked sets the "blocked" field.
+func (_u *BlocksUpdateOne) SetBlocked(v bool) *BlocksUpdateOne {
+	_u.mutation.SetBlocked(v)
 	return _u
 }
 
-// SetNillableBlockReports sets the "block_reports" field if the given value is not nil.
-func (_u *BlocksUpdateOne) SetNillableBlockReports(v *int) *BlocksUpdateOne {
+// SetNillableBlocked sets the "blocked" field if the given value is not nil.
+func (_u *BlocksUpdateOne) SetNillableBlocked(v *bool) *BlocksUpdateOne {
 	if v != nil {
-		_u.SetBlockReports(*v)
+		_u.SetBlocked(*v)
 	}
-	return _u
-}
-
-// AddBlockReports adds value to the "block_reports" field.
-func (_u *BlocksUpdateOne) AddBlockReports(v int) *BlocksUpdateOne {
-	_u.mutation.AddBlockReports(v)
-	return _u
-}
-
-// SetUnblockReports sets the "unblock_reports" field.
-func (_u *BlocksUpdateOne) SetUnblockReports(v int) *BlocksUpdateOne {
-	_u.mutation.ResetUnblockReports()
-	_u.mutation.SetUnblockReports(v)
-	return _u
-}
-
-// SetNillableUnblockReports sets the "unblock_reports" field if the given value is not nil.
-func (_u *BlocksUpdateOne) SetNillableUnblockReports(v *int) *BlocksUpdateOne {
-	if v != nil {
-		_u.SetUnblockReports(*v)
-	}
-	return _u
-}
-
-// AddUnblockReports adds value to the "unblock_reports" field.
-func (_u *BlocksUpdateOne) AddUnblockReports(v int) *BlocksUpdateOne {
-	_u.mutation.AddUnblockReports(v)
 	return _u
 }
 
@@ -565,17 +500,8 @@ func (_u *BlocksUpdateOne) sqlSave(ctx context.Context) (_node *Blocks, err erro
 	if value, ok := _u.mutation.AddedClientID(); ok {
 		_spec.AddField(blocks.FieldClientID, field.TypeInt, value)
 	}
-	if value, ok := _u.mutation.BlockReports(); ok {
-		_spec.SetField(blocks.FieldBlockReports, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedBlockReports(); ok {
-		_spec.AddField(blocks.FieldBlockReports, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.UnblockReports(); ok {
-		_spec.SetField(blocks.FieldUnblockReports, field.TypeInt, value)
-	}
-	if value, ok := _u.mutation.AddedUnblockReports(); ok {
-		_spec.AddField(blocks.FieldUnblockReports, field.TypeInt, value)
+	if value, ok := _u.mutation.Blocked(); ok {
+		_spec.SetField(blocks.FieldBlocked, field.TypeBool, value)
 	}
 	if value, ok := _u.mutation.LastReportedAt(); ok {
 		_spec.SetField(blocks.FieldLastReportedAt, field.TypeTime, value)

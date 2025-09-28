@@ -68,31 +68,9 @@ func (_c *BlocksCreate) SetClientID(v int) *BlocksCreate {
 	return _c
 }
 
-// SetBlockReports sets the "block_reports" field.
-func (_c *BlocksCreate) SetBlockReports(v int) *BlocksCreate {
-	_c.mutation.SetBlockReports(v)
-	return _c
-}
-
-// SetNillableBlockReports sets the "block_reports" field if the given value is not nil.
-func (_c *BlocksCreate) SetNillableBlockReports(v *int) *BlocksCreate {
-	if v != nil {
-		_c.SetBlockReports(*v)
-	}
-	return _c
-}
-
-// SetUnblockReports sets the "unblock_reports" field.
-func (_c *BlocksCreate) SetUnblockReports(v int) *BlocksCreate {
-	_c.mutation.SetUnblockReports(v)
-	return _c
-}
-
-// SetNillableUnblockReports sets the "unblock_reports" field if the given value is not nil.
-func (_c *BlocksCreate) SetNillableUnblockReports(v *int) *BlocksCreate {
-	if v != nil {
-		_c.SetUnblockReports(*v)
-	}
+// SetBlocked sets the "blocked" field.
+func (_c *BlocksCreate) SetBlocked(v bool) *BlocksCreate {
+	_c.mutation.SetBlocked(v)
 	return _c
 }
 
@@ -155,14 +133,6 @@ func (_c *BlocksCreate) defaults() {
 		v := blocks.DefaultUpdatedAt()
 		_c.mutation.SetUpdatedAt(v)
 	}
-	if _, ok := _c.mutation.BlockReports(); !ok {
-		v := blocks.DefaultBlockReports
-		_c.mutation.SetBlockReports(v)
-	}
-	if _, ok := _c.mutation.UnblockReports(); !ok {
-		v := blocks.DefaultUnblockReports
-		_c.mutation.SetUnblockReports(v)
-	}
 }
 
 // check runs all checks and user-defined validators on the builder.
@@ -182,11 +152,8 @@ func (_c *BlocksCreate) check() error {
 	if _, ok := _c.mutation.ClientID(); !ok {
 		return &ValidationError{Name: "client_id", err: errors.New(`ent: missing required field "Blocks.client_id"`)}
 	}
-	if _, ok := _c.mutation.BlockReports(); !ok {
-		return &ValidationError{Name: "block_reports", err: errors.New(`ent: missing required field "Blocks.block_reports"`)}
-	}
-	if _, ok := _c.mutation.UnblockReports(); !ok {
-		return &ValidationError{Name: "unblock_reports", err: errors.New(`ent: missing required field "Blocks.unblock_reports"`)}
+	if _, ok := _c.mutation.Blocked(); !ok {
+		return &ValidationError{Name: "blocked", err: errors.New(`ent: missing required field "Blocks.blocked"`)}
 	}
 	if _, ok := _c.mutation.LastReportedAt(); !ok {
 		return &ValidationError{Name: "last_reported_at", err: errors.New(`ent: missing required field "Blocks.last_reported_at"`)}
@@ -235,13 +202,9 @@ func (_c *BlocksCreate) createSpec() (*Blocks, *sqlgraph.CreateSpec) {
 		_spec.SetField(blocks.FieldClientID, field.TypeInt, value)
 		_node.ClientID = value
 	}
-	if value, ok := _c.mutation.BlockReports(); ok {
-		_spec.SetField(blocks.FieldBlockReports, field.TypeInt, value)
-		_node.BlockReports = value
-	}
-	if value, ok := _c.mutation.UnblockReports(); ok {
-		_spec.SetField(blocks.FieldUnblockReports, field.TypeInt, value)
-		_node.UnblockReports = value
+	if value, ok := _c.mutation.Blocked(); ok {
+		_spec.SetField(blocks.FieldBlocked, field.TypeBool, value)
+		_node.Blocked = value
 	}
 	if value, ok := _c.mutation.LastReportedAt(); ok {
 		_spec.SetField(blocks.FieldLastReportedAt, field.TypeTime, value)

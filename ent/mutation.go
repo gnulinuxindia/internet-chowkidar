@@ -40,26 +40,23 @@ const (
 // BlocksMutation represents an operation that mutates the Blocks nodes in the graph.
 type BlocksMutation struct {
 	config
-	op                 Op
-	typ                string
-	id                 *int
-	created_at         *time.Time
-	updated_at         *time.Time
-	client_id          *int
-	addclient_id       *int
-	block_reports      *int
-	addblock_reports   *int
-	unblock_reports    *int
-	addunblock_reports *int
-	last_reported_at   *time.Time
-	clearedFields      map[string]struct{}
-	site               *int
-	clearedsite        bool
-	isp                *int
-	clearedisp         bool
-	done               bool
-	oldValue           func(context.Context) (*Blocks, error)
-	predicates         []predicate.Blocks
+	op               Op
+	typ              string
+	id               *int
+	created_at       *time.Time
+	updated_at       *time.Time
+	client_id        *int
+	addclient_id     *int
+	blocked          *bool
+	last_reported_at *time.Time
+	clearedFields    map[string]struct{}
+	site             *int
+	clearedsite      bool
+	isp              *int
+	clearedisp       bool
+	done             bool
+	oldValue         func(context.Context) (*Blocks, error)
+	predicates       []predicate.Blocks
 }
 
 var _ ent.Mutation = (*BlocksMutation)(nil)
@@ -360,116 +357,40 @@ func (m *BlocksMutation) ResetClientID() {
 	m.addclient_id = nil
 }
 
-// SetBlockReports sets the "block_reports" field.
-func (m *BlocksMutation) SetBlockReports(i int) {
-	m.block_reports = &i
-	m.addblock_reports = nil
+// SetBlocked sets the "blocked" field.
+func (m *BlocksMutation) SetBlocked(b bool) {
+	m.blocked = &b
 }
 
-// BlockReports returns the value of the "block_reports" field in the mutation.
-func (m *BlocksMutation) BlockReports() (r int, exists bool) {
-	v := m.block_reports
+// Blocked returns the value of the "blocked" field in the mutation.
+func (m *BlocksMutation) Blocked() (r bool, exists bool) {
+	v := m.blocked
 	if v == nil {
 		return
 	}
 	return *v, true
 }
 
-// OldBlockReports returns the old "block_reports" field's value of the Blocks entity.
+// OldBlocked returns the old "blocked" field's value of the Blocks entity.
 // If the Blocks object wasn't provided to the builder, the object is fetched from the database.
 // An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BlocksMutation) OldBlockReports(ctx context.Context) (v int, err error) {
+func (m *BlocksMutation) OldBlocked(ctx context.Context) (v bool, err error) {
 	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldBlockReports is only allowed on UpdateOne operations")
+		return v, errors.New("OldBlocked is only allowed on UpdateOne operations")
 	}
 	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldBlockReports requires an ID field in the mutation")
+		return v, errors.New("OldBlocked requires an ID field in the mutation")
 	}
 	oldValue, err := m.oldValue(ctx)
 	if err != nil {
-		return v, fmt.Errorf("querying old value for OldBlockReports: %w", err)
+		return v, fmt.Errorf("querying old value for OldBlocked: %w", err)
 	}
-	return oldValue.BlockReports, nil
+	return oldValue.Blocked, nil
 }
 
-// AddBlockReports adds i to the "block_reports" field.
-func (m *BlocksMutation) AddBlockReports(i int) {
-	if m.addblock_reports != nil {
-		*m.addblock_reports += i
-	} else {
-		m.addblock_reports = &i
-	}
-}
-
-// AddedBlockReports returns the value that was added to the "block_reports" field in this mutation.
-func (m *BlocksMutation) AddedBlockReports() (r int, exists bool) {
-	v := m.addblock_reports
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetBlockReports resets all changes to the "block_reports" field.
-func (m *BlocksMutation) ResetBlockReports() {
-	m.block_reports = nil
-	m.addblock_reports = nil
-}
-
-// SetUnblockReports sets the "unblock_reports" field.
-func (m *BlocksMutation) SetUnblockReports(i int) {
-	m.unblock_reports = &i
-	m.addunblock_reports = nil
-}
-
-// UnblockReports returns the value of the "unblock_reports" field in the mutation.
-func (m *BlocksMutation) UnblockReports() (r int, exists bool) {
-	v := m.unblock_reports
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// OldUnblockReports returns the old "unblock_reports" field's value of the Blocks entity.
-// If the Blocks object wasn't provided to the builder, the object is fetched from the database.
-// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
-func (m *BlocksMutation) OldUnblockReports(ctx context.Context) (v int, err error) {
-	if !m.op.Is(OpUpdateOne) {
-		return v, errors.New("OldUnblockReports is only allowed on UpdateOne operations")
-	}
-	if m.id == nil || m.oldValue == nil {
-		return v, errors.New("OldUnblockReports requires an ID field in the mutation")
-	}
-	oldValue, err := m.oldValue(ctx)
-	if err != nil {
-		return v, fmt.Errorf("querying old value for OldUnblockReports: %w", err)
-	}
-	return oldValue.UnblockReports, nil
-}
-
-// AddUnblockReports adds i to the "unblock_reports" field.
-func (m *BlocksMutation) AddUnblockReports(i int) {
-	if m.addunblock_reports != nil {
-		*m.addunblock_reports += i
-	} else {
-		m.addunblock_reports = &i
-	}
-}
-
-// AddedUnblockReports returns the value that was added to the "unblock_reports" field in this mutation.
-func (m *BlocksMutation) AddedUnblockReports() (r int, exists bool) {
-	v := m.addunblock_reports
-	if v == nil {
-		return
-	}
-	return *v, true
-}
-
-// ResetUnblockReports resets all changes to the "unblock_reports" field.
-func (m *BlocksMutation) ResetUnblockReports() {
-	m.unblock_reports = nil
-	m.addunblock_reports = nil
+// ResetBlocked resets all changes to the "blocked" field.
+func (m *BlocksMutation) ResetBlocked() {
+	m.blocked = nil
 }
 
 // SetLastReportedAt sets the "last_reported_at" field.
@@ -596,7 +517,7 @@ func (m *BlocksMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *BlocksMutation) Fields() []string {
-	fields := make([]string, 0, 8)
+	fields := make([]string, 0, 7)
 	if m.created_at != nil {
 		fields = append(fields, blocks.FieldCreatedAt)
 	}
@@ -612,11 +533,8 @@ func (m *BlocksMutation) Fields() []string {
 	if m.client_id != nil {
 		fields = append(fields, blocks.FieldClientID)
 	}
-	if m.block_reports != nil {
-		fields = append(fields, blocks.FieldBlockReports)
-	}
-	if m.unblock_reports != nil {
-		fields = append(fields, blocks.FieldUnblockReports)
+	if m.blocked != nil {
+		fields = append(fields, blocks.FieldBlocked)
 	}
 	if m.last_reported_at != nil {
 		fields = append(fields, blocks.FieldLastReportedAt)
@@ -639,10 +557,8 @@ func (m *BlocksMutation) Field(name string) (ent.Value, bool) {
 		return m.IspID()
 	case blocks.FieldClientID:
 		return m.ClientID()
-	case blocks.FieldBlockReports:
-		return m.BlockReports()
-	case blocks.FieldUnblockReports:
-		return m.UnblockReports()
+	case blocks.FieldBlocked:
+		return m.Blocked()
 	case blocks.FieldLastReportedAt:
 		return m.LastReportedAt()
 	}
@@ -664,10 +580,8 @@ func (m *BlocksMutation) OldField(ctx context.Context, name string) (ent.Value, 
 		return m.OldIspID(ctx)
 	case blocks.FieldClientID:
 		return m.OldClientID(ctx)
-	case blocks.FieldBlockReports:
-		return m.OldBlockReports(ctx)
-	case blocks.FieldUnblockReports:
-		return m.OldUnblockReports(ctx)
+	case blocks.FieldBlocked:
+		return m.OldBlocked(ctx)
 	case blocks.FieldLastReportedAt:
 		return m.OldLastReportedAt(ctx)
 	}
@@ -714,19 +628,12 @@ func (m *BlocksMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetClientID(v)
 		return nil
-	case blocks.FieldBlockReports:
-		v, ok := value.(int)
+	case blocks.FieldBlocked:
+		v, ok := value.(bool)
 		if !ok {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
-		m.SetBlockReports(v)
-		return nil
-	case blocks.FieldUnblockReports:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.SetUnblockReports(v)
+		m.SetBlocked(v)
 		return nil
 	case blocks.FieldLastReportedAt:
 		v, ok := value.(time.Time)
@@ -746,12 +653,6 @@ func (m *BlocksMutation) AddedFields() []string {
 	if m.addclient_id != nil {
 		fields = append(fields, blocks.FieldClientID)
 	}
-	if m.addblock_reports != nil {
-		fields = append(fields, blocks.FieldBlockReports)
-	}
-	if m.addunblock_reports != nil {
-		fields = append(fields, blocks.FieldUnblockReports)
-	}
 	return fields
 }
 
@@ -762,10 +663,6 @@ func (m *BlocksMutation) AddedField(name string) (ent.Value, bool) {
 	switch name {
 	case blocks.FieldClientID:
 		return m.AddedClientID()
-	case blocks.FieldBlockReports:
-		return m.AddedBlockReports()
-	case blocks.FieldUnblockReports:
-		return m.AddedUnblockReports()
 	}
 	return nil, false
 }
@@ -781,20 +678,6 @@ func (m *BlocksMutation) AddField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.AddClientID(v)
-		return nil
-	case blocks.FieldBlockReports:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddBlockReports(v)
-		return nil
-	case blocks.FieldUnblockReports:
-		v, ok := value.(int)
-		if !ok {
-			return fmt.Errorf("unexpected type %T for field %s", value, name)
-		}
-		m.AddUnblockReports(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Blocks numeric field %s", name)
@@ -838,11 +721,8 @@ func (m *BlocksMutation) ResetField(name string) error {
 	case blocks.FieldClientID:
 		m.ResetClientID()
 		return nil
-	case blocks.FieldBlockReports:
-		m.ResetBlockReports()
-		return nil
-	case blocks.FieldUnblockReports:
-		m.ResetUnblockReports()
+	case blocks.FieldBlocked:
+		m.ResetBlocked()
 		return nil
 	case blocks.FieldLastReportedAt:
 		m.ResetLastReportedAt()

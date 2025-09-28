@@ -14,8 +14,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "client_id", Type: field.TypeInt},
-		{Name: "block_reports", Type: field.TypeInt, Default: 0},
-		{Name: "unblock_reports", Type: field.TypeInt, Default: 0},
+		{Name: "blocked", Type: field.TypeBool},
 		{Name: "last_reported_at", Type: field.TypeTime},
 		{Name: "isp_id", Type: field.TypeInt},
 		{Name: "site_id", Type: field.TypeInt},
@@ -28,13 +27,13 @@ var (
 		ForeignKeys: []*schema.ForeignKey{
 			{
 				Symbol:     "blocks_isps_isp_blocks",
-				Columns:    []*schema.Column{BlocksColumns[7]},
+				Columns:    []*schema.Column{BlocksColumns[6]},
 				RefColumns: []*schema.Column{IspsColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
 			{
 				Symbol:     "blocks_sites_blocks",
-				Columns:    []*schema.Column{BlocksColumns[8]},
+				Columns:    []*schema.Column{BlocksColumns[7]},
 				RefColumns: []*schema.Column{SitesColumns[0]},
 				OnDelete:   schema.NoAction,
 			},
@@ -43,7 +42,7 @@ var (
 			{
 				Name:    "blocks_site_id_isp_id",
 				Unique:  true,
-				Columns: []*schema.Column{BlocksColumns[8], BlocksColumns[7]},
+				Columns: []*schema.Column{BlocksColumns[7], BlocksColumns[6]},
 			},
 		},
 	}

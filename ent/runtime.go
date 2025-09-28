@@ -32,14 +32,6 @@ func init() {
 	blocks.DefaultUpdatedAt = blocksDescUpdatedAt.Default.(func() time.Time)
 	// blocks.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	blocks.UpdateDefaultUpdatedAt = blocksDescUpdatedAt.UpdateDefault.(func() time.Time)
-	// blocksDescBlockReports is the schema descriptor for block_reports field.
-	blocksDescBlockReports := blocksFields[3].Descriptor()
-	// blocks.DefaultBlockReports holds the default value on creation for the block_reports field.
-	blocks.DefaultBlockReports = blocksDescBlockReports.Default.(int)
-	// blocksDescUnblockReports is the schema descriptor for unblock_reports field.
-	blocksDescUnblockReports := blocksFields[4].Descriptor()
-	// blocks.DefaultUnblockReports holds the default value on creation for the unblock_reports field.
-	blocks.DefaultUnblockReports = blocksDescUnblockReports.Default.(int)
 	categoriesMixin := schema.Categories{}.Mixin()
 	categoriesMixinFields0 := categoriesMixin[0].Fields()
 	_ = categoriesMixinFields0

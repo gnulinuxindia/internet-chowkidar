@@ -80,14 +80,9 @@ func ClientID(v int) predicate.Blocks {
 	return predicate.Blocks(sql.FieldEQ(FieldClientID, v))
 }
 
-// BlockReports applies equality check predicate on the "block_reports" field. It's identical to BlockReportsEQ.
-func BlockReports(v int) predicate.Blocks {
-	return predicate.Blocks(sql.FieldEQ(FieldBlockReports, v))
-}
-
-// UnblockReports applies equality check predicate on the "unblock_reports" field. It's identical to UnblockReportsEQ.
-func UnblockReports(v int) predicate.Blocks {
-	return predicate.Blocks(sql.FieldEQ(FieldUnblockReports, v))
+// Blocked applies equality check predicate on the "blocked" field. It's identical to BlockedEQ.
+func Blocked(v bool) predicate.Blocks {
+	return predicate.Blocks(sql.FieldEQ(FieldBlocked, v))
 }
 
 // LastReportedAt applies equality check predicate on the "last_reported_at" field. It's identical to LastReportedAtEQ.
@@ -255,84 +250,14 @@ func ClientIDLTE(v int) predicate.Blocks {
 	return predicate.Blocks(sql.FieldLTE(FieldClientID, v))
 }
 
-// BlockReportsEQ applies the EQ predicate on the "block_reports" field.
-func BlockReportsEQ(v int) predicate.Blocks {
-	return predicate.Blocks(sql.FieldEQ(FieldBlockReports, v))
+// BlockedEQ applies the EQ predicate on the "blocked" field.
+func BlockedEQ(v bool) predicate.Blocks {
+	return predicate.Blocks(sql.FieldEQ(FieldBlocked, v))
 }
 
-// BlockReportsNEQ applies the NEQ predicate on the "block_reports" field.
-func BlockReportsNEQ(v int) predicate.Blocks {
-	return predicate.Blocks(sql.FieldNEQ(FieldBlockReports, v))
-}
-
-// BlockReportsIn applies the In predicate on the "block_reports" field.
-func BlockReportsIn(vs ...int) predicate.Blocks {
-	return predicate.Blocks(sql.FieldIn(FieldBlockReports, vs...))
-}
-
-// BlockReportsNotIn applies the NotIn predicate on the "block_reports" field.
-func BlockReportsNotIn(vs ...int) predicate.Blocks {
-	return predicate.Blocks(sql.FieldNotIn(FieldBlockReports, vs...))
-}
-
-// BlockReportsGT applies the GT predicate on the "block_reports" field.
-func BlockReportsGT(v int) predicate.Blocks {
-	return predicate.Blocks(sql.FieldGT(FieldBlockReports, v))
-}
-
-// BlockReportsGTE applies the GTE predicate on the "block_reports" field.
-func BlockReportsGTE(v int) predicate.Blocks {
-	return predicate.Blocks(sql.FieldGTE(FieldBlockReports, v))
-}
-
-// BlockReportsLT applies the LT predicate on the "block_reports" field.
-func BlockReportsLT(v int) predicate.Blocks {
-	return predicate.Blocks(sql.FieldLT(FieldBlockReports, v))
-}
-
-// BlockReportsLTE applies the LTE predicate on the "block_reports" field.
-func BlockReportsLTE(v int) predicate.Blocks {
-	return predicate.Blocks(sql.FieldLTE(FieldBlockReports, v))
-}
-
-// UnblockReportsEQ applies the EQ predicate on the "unblock_reports" field.
-func UnblockReportsEQ(v int) predicate.Blocks {
-	return predicate.Blocks(sql.FieldEQ(FieldUnblockReports, v))
-}
-
-// UnblockReportsNEQ applies the NEQ predicate on the "unblock_reports" field.
-func UnblockReportsNEQ(v int) predicate.Blocks {
-	return predicate.Blocks(sql.FieldNEQ(FieldUnblockReports, v))
-}
-
-// UnblockReportsIn applies the In predicate on the "unblock_reports" field.
-func UnblockReportsIn(vs ...int) predicate.Blocks {
-	return predicate.Blocks(sql.FieldIn(FieldUnblockReports, vs...))
-}
-
-// UnblockReportsNotIn applies the NotIn predicate on the "unblock_reports" field.
-func UnblockReportsNotIn(vs ...int) predicate.Blocks {
-	return predicate.Blocks(sql.FieldNotIn(FieldUnblockReports, vs...))
-}
-
-// UnblockReportsGT applies the GT predicate on the "unblock_reports" field.
-func UnblockReportsGT(v int) predicate.Blocks {
-	return predicate.Blocks(sql.FieldGT(FieldUnblockReports, v))
-}
-
-// UnblockReportsGTE applies the GTE predicate on the "unblock_reports" field.
-func UnblockReportsGTE(v int) predicate.Blocks {
-	return predicate.Blocks(sql.FieldGTE(FieldUnblockReports, v))
-}
-
-// UnblockReportsLT applies the LT predicate on the "unblock_reports" field.
-func UnblockReportsLT(v int) predicate.Blocks {
-	return predicate.Blocks(sql.FieldLT(FieldUnblockReports, v))
-}
-
-// UnblockReportsLTE applies the LTE predicate on the "unblock_reports" field.
-func UnblockReportsLTE(v int) predicate.Blocks {
-	return predicate.Blocks(sql.FieldLTE(FieldUnblockReports, v))
+// BlockedNEQ applies the NEQ predicate on the "blocked" field.
+func BlockedNEQ(v bool) predicate.Blocks {
+	return predicate.Blocks(sql.FieldNEQ(FieldBlocked, v))
 }
 
 // LastReportedAtEQ applies the EQ predicate on the "last_reported_at" field.

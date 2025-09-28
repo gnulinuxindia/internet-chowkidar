@@ -29,10 +29,8 @@ type Blocks struct {
 	IspID int `json:"isp_id,omitempty"`
 	// ClientID holds the value of the "client_id" field.
 	ClientID int `json:"client_id,omitempty"`
-	// BlockReports holds the value of the "block_reports" field.
-	BlockReports int `json:"block_reports,omitempty"`
-	// UnblockReports holds the value of the "unblock_reports" field.
-	UnblockReports int `json:"unblock_reports,omitempty"`
+	// Blocked holds the value of the "blocked" field.
+	Blocked bool `json:"blocked,omitempty"`
 	// LastReportedAt holds the value of the "last_reported_at" field.
 	LastReportedAt time.Time `json:"last_reported_at,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
@@ -79,7 +77,9 @@ func (*Blocks) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case blocks.FieldID, blocks.FieldSiteID, blocks.FieldIspID, blocks.FieldClientID, blocks.FieldBlockReports, blocks.FieldUnblockReports:
+		case blocks.FieldBlocked:
+			values[i] = new(sql.NullBool)
+		case blocks.FieldID, blocks.FieldSiteID, blocks.FieldIspID, blocks.FieldClientID:
 			values[i] = new(sql.NullInt64)
 		case blocks.FieldCreatedAt, blocks.FieldUpdatedAt, blocks.FieldLastReportedAt:
 			values[i] = new(sql.NullTime)
@@ -134,17 +134,11 @@ func (_m *Blocks) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.ClientID = int(value.Int64)
 			}
-		case blocks.FieldBlockReports:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field block_reports", values[i])
+		case blocks.FieldBlocked:
+			if value, ok := values[i].(*sql.NullBool); !ok {
+				return fmt.Errorf("unexpected type %T for field blocked", values[i])
 			} else if value.Valid {
-				_m.BlockReports = int(value.Int64)
-			}
-		case blocks.FieldUnblockReports:
-			if value, ok := values[i].(*sql.NullInt64); !ok {
-				return fmt.Errorf("unexpected type %T for field unblock_reports", values[i])
-			} else if value.Valid {
-				_m.UnblockReports = int(value.Int64)
+				_m.Blocked = value.Bool
 			}
 		case blocks.FieldLastReportedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
@@ -213,11 +207,8 @@ func (_m *Blocks) String() string {
 	builder.WriteString("client_id=")
 	builder.WriteString(fmt.Sprintf("%v", _m.ClientID))
 	builder.WriteString(", ")
-	builder.WriteString("block_reports=")
-	builder.WriteString(fmt.Sprintf("%v", _m.BlockReports))
-	builder.WriteString(", ")
-	builder.WriteString("unblock_reports=")
-	builder.WriteString(fmt.Sprintf("%v", _m.UnblockReports))
+	builder.WriteString("blocked=")
+	builder.WriteString(fmt.Sprintf("%v", _m.Blocked))
 	builder.WriteString(", ")
 	builder.WriteString("last_reported_at=")
 	builder.WriteString(_m.LastReportedAt.Format(time.ANSIC))
