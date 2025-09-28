@@ -119,7 +119,7 @@ func (i *ispRepositoryImpl) GetBlocksForISP(ctx context.Context, id int) (map[in
 		return nil, nil
 	}
 
-	var sites map[int][]*ent.Blocks
+	sites := make(map[int][]*ent.Blocks)
 	for _, block := range blocks {
 		// Ignore nilderef, Site ID is a mandatory field so it should always exist
 		sites[block.SiteID] = append(sites[block.SiteID], block)

@@ -73,6 +73,7 @@ func (i *ispServiceImpl) GetISP(ctx context.Context, params genapi.GetISPParams)
 		UpdatedAt: isp.UpdatedAt,
 	}
 
+	count := 0
 	for i, block := range blocks {
 		blockReports, unblockReports := 0, 0
 		blockSites := block[0].Edges.Site
@@ -95,7 +96,7 @@ func (i *ispServiceImpl) GetISP(ctx context.Context, params genapi.GetISPParams)
 				createdAt = block2.CreatedAt
 			}
 		}
-		details.Blocks[i] = genapi.ISPBlock{
+		details.Blocks[count] = genapi.ISPBlock{
 			ID:             i,
 			BlockReports:   blockReports,
 			UnblockReports: unblockReports,
@@ -105,6 +106,7 @@ func (i *ispServiceImpl) GetISP(ctx context.Context, params genapi.GetISPParams)
 			CreatedAt:      block[0].CreatedAt,
 			UpdatedAt:      block[0].UpdatedAt,
 		}
+		count += 1
 	}
 
 	return details, nil

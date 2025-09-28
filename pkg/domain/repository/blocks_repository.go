@@ -36,6 +36,7 @@ func (b *blocksRepositoryImpl) CreateBlock(ctx context.Context, req *dto.BlockDt
 		Where(
 			blocks.IspIDEQ(req.IspID),
 			blocks.SiteIDEQ(req.SiteID),
+			blocks.ClientIDEQ(req.ClientID),
 		).
 		First(ctx)
 	if eBlk != nil {

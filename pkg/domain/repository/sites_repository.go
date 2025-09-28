@@ -217,7 +217,7 @@ func (s *sitesRepositoryImpl) GetSiteBlocksByID(ctx context.Context, id int) (ma
 		return nil, nil
 	}
 
-	var isps map[int][]*ent.Blocks
+	isps := make(map[int][]*ent.Blocks)
 	// Ignore nilderef, ISP ID is a mandatory field so it should always exist
 	for _, block := range blocks {
 		isps[block.IspID] = append(isps[block.IspID], block)
