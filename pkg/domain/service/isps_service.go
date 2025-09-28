@@ -74,15 +74,36 @@ func (i *ispServiceImpl) GetISP(ctx context.Context, params genapi.GetISPParams)
 	}
 
 	for i, block := range blocks {
+		blockReports, unblockReports := 0, 0
+		blockSites := block[0].Edges.Site
+		lastReportedAt := block[0].LastReportedAt
+		updatedAt := block[0].UpdatedAt
+		createdAt := block[0].CreatedAt
+		for _, block2 := range block {
+			if block2.Blocked {
+				blockReports += 1
+			} else {
+				unblockReports += 1
+			}
+			if lastReportedAt.Before(block2.LastReportedAt) {
+				lastReportedAt = block2.LastReportedAt
+			}
+			if updatedAt.Before(block2.UpdatedAt) {
+				updatedAt = block2.UpdatedAt
+			}
+			if createdAt.After(block2.CreatedAt) {
+				createdAt = block2.CreatedAt
+			}
+		}
 		details.Blocks[i] = genapi.ISPBlock{
-			ID:             block.ID,
-			BlockReports:   block.BlockReports,
-			UnblockReports: block.UnblockReports,
-			LastReportedAt: block.LastReportedAt,
-			SiteID:         block.Edges.Site.ID,
-			Domain:         block.Edges.Site.Domain,
-			CreatedAt:      block.CreatedAt,
-			UpdatedAt:      block.UpdatedAt,
+			ID:             i,
+			BlockReports:   blockReports,
+			UnblockReports: unblockReports,
+			LastReportedAt: lastReportedAt,
+			SiteID:         blockSites.ID,
+			Domain:         blockSites.Domain,
+			CreatedAt:      block[0].CreatedAt,
+			UpdatedAt:      block[0].UpdatedAt,
 		}
 	}
 

@@ -43,8 +43,6 @@ func (b *blocksServiceImpl) CreateBlock(ctx context.Context, req *genapi.BlockIn
 		SiteID:         genapi.NewOptInt(eb.SiteID),
 		ClientID:       genapi.NewOptInt(eb.ClientID),
 		LastReportedAt: genapi.NewOptDateTime(eb.LastReportedAt),
-		BlockReports:   genapi.NewOptInt(eb.BlockReports),
-		UnblockReports: genapi.NewOptInt(eb.UnblockReports),
 		CreatedAt:      genapi.NewOptDateTime(eb.CreatedAt),
 		UpdatedAt:      genapi.NewOptDateTime(eb.UpdatedAt),
 	}

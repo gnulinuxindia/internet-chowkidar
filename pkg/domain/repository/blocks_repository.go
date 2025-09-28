@@ -42,13 +42,8 @@ func (b *blocksRepositoryImpl) CreateBlock(ctx context.Context, req *dto.BlockDt
 		slog.Info("block already exists", "block", eBlk)
 
 		uQuery := tx.Blocks.UpdateOne(eBlk).
-			SetLastReportedAt(req.LastReportedAt)
-
-		if req.IsBlocked {
-			uQuery.SetBlockReports(eBlk.BlockReports + 1)
-		} else {
-			uQuery.SetUnblockReports(eBlk.UnblockReports + 1)
-		}
+			SetLastReportedAt(req.LastReportedAt).
+			SetBlocked(req.IsBlocked)
 
 		blk, err = uQuery.Save(ctx)
 		if err != nil {
@@ -63,13 +58,8 @@ func (b *blocksRepositoryImpl) CreateBlock(ctx context.Context, req *dto.BlockDt
 			SetIspID(req.IspID).
 			SetSiteID(req.SiteID).
 			SetClientID(req.ClientID).
-			SetLastReportedAt(req.LastReportedAt)
-
-		if req.IsBlocked {
-			iQuery.SetBlockReports(1)
-		} else {
-			iQuery.SetUnblockReports(1)
-		}
+			SetLastReportedAt(req.LastReportedAt).
+			SetBlocked(req.IsBlocked)
 
 		blk, err = iQuery.Save(ctx)
 		if err != nil {

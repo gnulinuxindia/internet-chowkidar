@@ -16,7 +16,7 @@ type IspRepository interface {
 	CreateISP(ctx context.Context, isp *genapi.ISPInput) (*ent.Isps, error)
 	GetAllISPs(ctx context.Context, params genapi.ListISPsParams) ([]genapi.ISP, error)
 	GetISPByID(ctx context.Context, id int) (*ent.Isps, error)
-	GetBlocksForISP(ctx context.Context, id int) ([]*ent.Blocks, error)
+	GetBlocksForISP(ctx context.Context, id int) (map[int][]*ent.Blocks, error)
 }
 
 type ispRepositoryImpl struct {
@@ -84,8 +84,11 @@ func (i *ispRepositoryImpl) GetAllISPs(ctx context.Context, params genapi.ListIS
 		}
 
 		for _, block := range isp.Edges.IspBlocks {
-			apiIsp.BlockReports = genapi.NewOptInt(apiIsp.GetBlockReports().Or(0) + block.BlockReports)
-			apiIsp.UnblockReports = genapi.NewOptInt(apiIsp.GetUnblockReports().Or(0) + block.UnblockReports)
+			if block.Blocked {
+				apiIsp.BlockReports = genapi.NewOptInt(apiIsp.GetBlockReports().Or(0) + 1)
+			} else {
+				apiIsp.UnblockReports = genapi.NewOptInt(apiIsp.GetUnblockReports().Or(0) + 1)
+			}
 			if apiIsp.LastReportedAt.Or(time.Time{}).Before(block.LastReportedAt) {
 				apiIsp.LastReportedAt = genapi.NewOptDateTime(block.LastReportedAt)
 			}
@@ -101,7 +104,7 @@ func (i *ispRepositoryImpl) GetISPByID(ctx context.Context, id int) (*ent.Isps, 
 	return db.Isps.Query().Where(isps.ID(id)).Only(ctx)
 }
 
-func (i *ispRepositoryImpl) GetBlocksForISP(ctx context.Context, id int) ([]*ent.Blocks, error) {
+func (i *ispRepositoryImpl) GetBlocksForISP(ctx context.Context, id int) (map[int][]*ent.Blocks, error) {
 	db := i.getDb(ctx)
 	blocks, err := db.Blocks.Query().
 		Where(blocks.HasIspWith(isps.ID(id))).
@@ -112,8 +115,17 @@ func (i *ispRepositoryImpl) GetBlocksForISP(ctx context.Context, id int) ([]*ent
 		slog.Error("failed to get blocks for isp", "error", err)
 		return nil, errors.Wrap(err, 0)
 	}
+	if len(blocks) == 0 {
+		return nil, nil
+	}
 
-	return blocks, nil
+	var sites map[int][]*ent.Blocks
+	for _, block := range blocks {
+		// Ignore nilderef, Site ID is a mandatory field so it should always exist
+		sites[block.SiteID] = append(sites[block.SiteID], block)
+	}
+
+	return sites, nil
 }
 
 func (i *ispRepositoryImpl) getDb(ctx context.Context) *ent.Client {

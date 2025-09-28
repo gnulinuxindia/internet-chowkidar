@@ -18,7 +18,7 @@ type SitesRepository interface {
 	CreateSite(ctx context.Context, req *genapi.SiteInput) (*ent.Sites, error)
 	GetAllSites(ctx context.Context, params genapi.ListSitesParams) ([]genapi.Site, error)
 	GetSiteByDomain(ctx context.Context, domain string) (*ent.Sites, error)
-	GetSiteBlocksByID(ctx context.Context, id int) ([]*ent.Blocks, error)
+	GetSiteBlocksByID(ctx context.Context, id int) (map[int][]*ent.Blocks, error)
 	GetSiteByID(ctx context.Context, id int) (*ent.Sites, error)
 }
 
@@ -170,8 +170,11 @@ func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.Lis
 			if _, ok := sites[site.Domain]; ok {
 				// Update the existing site
 				// Add the block and unblock reports
-				sites[site.Domain].BlockReports += block.BlockReports
-				sites[site.Domain].UnblockReports += block.UnblockReports
+				if block.Blocked {
+					sites[site.Domain].BlockReports += 1
+				} else {
+					sites[site.Domain].UnblockReports += 1
+				}
 
 				// Update the last reported at
 				if sites[site.Domain].LastReportedAt.Before(block.LastReportedAt) {
@@ -198,7 +201,7 @@ func (s *sitesRepositoryImpl) GetSiteByDomain(ctx context.Context, domain string
 		First(ctx)
 }
 
-func (s *sitesRepositoryImpl) GetSiteBlocksByID(ctx context.Context, id int) ([]*ent.Blocks, error) {
+func (s *sitesRepositoryImpl) GetSiteBlocksByID(ctx context.Context, id int) (map[int][]*ent.Blocks, error) {
 	db := s.getDb(ctx)
 
 	blocks, err := db.Blocks.Query().
@@ -210,12 +213,17 @@ func (s *sitesRepositoryImpl) GetSiteBlocksByID(ctx context.Context, id int) ([]
 		slog.Error("failed to get blocks", "error", err)
 		return nil, errors.Wrap(err, 0)
 	}
-
 	if len(blocks) == 0 {
 		return nil, nil
 	}
 
-	return blocks, nil
+	var isps map[int][]*ent.Blocks
+	// Ignore nilderef, ISP ID is a mandatory field so it should always exist
+	for _, block := range blocks {
+		isps[block.IspID] = append(isps[block.IspID], block)
+	}
+
+	return isps, nil
 }
 
 func (s *sitesRepositoryImpl) GetSiteByID(ctx context.Context, id int) (*ent.Sites, error) {

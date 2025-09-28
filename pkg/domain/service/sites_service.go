@@ -75,21 +75,29 @@ func (s *sitesServiceImpl) GetSite(ctx context.Context, params genapi.GetSitePar
 	}
 
 	for _, block := range blocks {
-		site.BlockReports += block.BlockReports
-		site.UnblockReports += block.UnblockReports
-		if site.LastReportedAt.Before(block.LastReportedAt) {
-			site.LastReportedAt = block.LastReportedAt
+		blockReports, unblockReports := 0, 0
+		blockIsp := block[0].Edges.Isp
+		for _, block2 := range block {
+			if block2.Blocked {
+				site.BlockReports += 1
+				blockReports += 1
+			} else {
+				site.UnblockReports += 1
+				unblockReports += 1
+			}
+			if site.LastReportedAt.Before(block2.LastReportedAt) {
+				site.LastReportedAt = block2.LastReportedAt
+			}
 		}
-		blockIsp := block.Edges.Isp
 		isp := genapi.ISP{
-			ID:        genapi.NewOptInt(blockIsp.ID),
-			Name:      genapi.NewOptString(blockIsp.Name),
-			Latitude:  genapi.NewOptFloat32(float32(blockIsp.Latitude)),
-			Longitude: genapi.NewOptFloat32(float32(blockIsp.Longitude)),
-			BlockReports: genapi.NewOptInt(block.BlockReports),
-			UnblockReports: genapi.NewOptInt(block.UnblockReports),
-			CreatedAt: genapi.NewOptDateTime(blockIsp.CreatedAt),
-			UpdatedAt: genapi.NewOptDateTime(blockIsp.UpdatedAt),
+			ID:             genapi.NewOptInt(blockIsp.ID),
+			Name:           genapi.NewOptString(blockIsp.Name),
+			Latitude:       genapi.NewOptFloat32(float32(blockIsp.Latitude)),
+			Longitude:      genapi.NewOptFloat32(float32(blockIsp.Longitude)),
+			BlockReports:   genapi.NewOptInt(blockReports),
+			UnblockReports: genapi.NewOptInt(unblockReports),
+			CreatedAt:      genapi.NewOptDateTime(blockIsp.CreatedAt),
+			UpdatedAt:      genapi.NewOptDateTime(blockIsp.UpdatedAt),
 		}
 
 		site.BlockedByIsps = append(site.BlockedByIsps, isp)
