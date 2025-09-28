@@ -291,6 +291,8 @@ paths:
               properties:
                 name:
                   type: string
+      security:
+        - ApiKeyAuth: []
       responses:
         '201':
           description: Created
