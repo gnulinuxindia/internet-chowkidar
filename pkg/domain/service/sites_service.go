@@ -32,6 +32,7 @@ func (s *sitesServiceImpl) CreateSite(ctx context.Context, req *genapi.SiteInput
 	return &genapi.SiteCreate{
 		ID:        site.ID,
 		Domain:    site.Domain,
+		PingURL:    site.PingURL,
 		CreatedAt: site.CreatedAt,
 		UpdatedAt: site.UpdatedAt,
 	}, nil
@@ -65,6 +66,7 @@ func (s *sitesServiceImpl) GetSite(ctx context.Context, params genapi.GetSitePar
 	site := &genapi.SiteDetails{
 		ID:         ds.ID,
 		Domain:     ds.Domain,
+		PingURL:     ds.PingURL,
 		CreatedAt:  ds.CreatedAt,
 		UpdatedAt:  ds.UpdatedAt,
 		Categories: make([]string, len(ds.Edges.Categories)),

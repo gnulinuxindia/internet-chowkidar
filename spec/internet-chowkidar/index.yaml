@@ -326,6 +326,7 @@ components:
       required:
         - id
         - domain
+        - ping_url
         - tags
         - block_reports
         - unblock_reports
@@ -336,6 +337,8 @@ components:
         id:
           type: integer
         domain:
+          type: string
+        ping_url:
           type: string
         categories:
           type: array
@@ -360,6 +363,7 @@ components:
       required:
         - id
         - domain
+        - ping_url
         - categories
         - block_reports
         - unblock_reports
@@ -370,6 +374,8 @@ components:
         id:
           type: integer
         domain:
+          type: string
+        ping_url:
           type: string
         categories:
           type: array
@@ -401,6 +407,8 @@ components:
       properties:
         domain:
           type: string
+        ping_url:
+          type: string
         categories:
           type: array
           items:
@@ -411,6 +419,7 @@ components:
       required:
         - id
         - domain
+        - ping_url
         - category_id
         - created_at
         - updated_at
@@ -418,6 +427,8 @@ components:
         id:
           type: integer
         domain:
+          type: string
+        ping_url:
           type: string
         created_at:
           type: string

@@ -75,8 +75,15 @@ func (s *sitesRepositoryImpl) CreateSite(ctx context.Context, req *genapi.SiteIn
 	}
 
 	// create the site
+	var ping_url string
+	if req.PingURL.Set {
+		ping_url = req.PingURL.Value
+	} else {
+		ping_url = req.Domain
+	}
 	site, err := tx.Sites.Create().
 		SetDomain(req.Domain).
+		SetPingURL(ping_url).
 		AddCategories(categories...).
 		Save(ctx)
 	if err != nil {
@@ -159,6 +166,7 @@ func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.Lis
 		sites[site.Domain] = &genapi.Site{
 			ID:         site.ID,
 			Domain:     site.Domain,
+			PingURL:    site.PingURL,
 			Categories: c,
 			CreatedAt:  site.CreatedAt,
 			UpdatedAt:  site.UpdatedAt,
