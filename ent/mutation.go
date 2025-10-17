@@ -2508,6 +2508,7 @@ type SitesMutation struct {
 	created_at              *time.Time
 	updated_at              *time.Time
 	domain                  *string
+	ping_url                *string
 	clearedFields           map[string]struct{}
 	blocks                  map[int]struct{}
 	removedblocks           map[int]struct{}
@@ -2729,6 +2730,42 @@ func (m *SitesMutation) ResetDomain() {
 	m.domain = nil
 }
 
+// SetPingURL sets the "ping_url" field.
+func (m *SitesMutation) SetPingURL(s string) {
+	m.ping_url = &s
+}
+
+// PingURL returns the value of the "ping_url" field in the mutation.
+func (m *SitesMutation) PingURL() (r string, exists bool) {
+	v := m.ping_url
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldPingURL returns the old "ping_url" field's value of the Sites entity.
+// If the Sites object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SitesMutation) OldPingURL(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldPingURL is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldPingURL requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldPingURL: %w", err)
+	}
+	return oldValue.PingURL, nil
+}
+
+// ResetPingURL resets all changes to the "ping_url" field.
+func (m *SitesMutation) ResetPingURL() {
+	m.ping_url = nil
+}
+
 // AddBlockIDs adds the "blocks" edge to the Blocks entity by ids.
 func (m *SitesMutation) AddBlockIDs(ids ...int) {
 	if m.blocks == nil {
@@ -2925,7 +2962,7 @@ func (m *SitesMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SitesMutation) Fields() []string {
-	fields := make([]string, 0, 3)
+	fields := make([]string, 0, 4)
 	if m.created_at != nil {
 		fields = append(fields, sites.FieldCreatedAt)
 	}
@@ -2934,6 +2971,9 @@ func (m *SitesMutation) Fields() []string {
 	}
 	if m.domain != nil {
 		fields = append(fields, sites.FieldDomain)
+	}
+	if m.ping_url != nil {
+		fields = append(fields, sites.FieldPingURL)
 	}
 	return fields
 }
@@ -2949,6 +2989,8 @@ func (m *SitesMutation) Field(name string) (ent.Value, bool) {
 		return m.UpdatedAt()
 	case sites.FieldDomain:
 		return m.Domain()
+	case sites.FieldPingURL:
+		return m.PingURL()
 	}
 	return nil, false
 }
@@ -2964,6 +3006,8 @@ func (m *SitesMutation) OldField(ctx context.Context, name string) (ent.Value, e
 		return m.OldUpdatedAt(ctx)
 	case sites.FieldDomain:
 		return m.OldDomain(ctx)
+	case sites.FieldPingURL:
+		return m.OldPingURL(ctx)
 	}
 	return nil, fmt.Errorf("unknown Sites field %s", name)
 }
@@ -2993,6 +3037,13 @@ func (m *SitesMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetDomain(v)
+		return nil
+	case sites.FieldPingURL:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetPingURL(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Sites field %s", name)
@@ -3051,6 +3102,9 @@ func (m *SitesMutation) ResetField(name string) error {
 		return nil
 	case sites.FieldDomain:
 		m.ResetDomain()
+		return nil
+	case sites.FieldPingURL:
+		m.ResetPingURL()
 		return nil
 	}
 	return fmt.Errorf("unknown Sites field %s", name)

@@ -1897,6 +1897,10 @@ func (s *Site) encodeFields(e *jx.Encoder) {
 		e.Str(s.Domain)
 	}
 	{
+		e.FieldStart("ping_url")
+		e.Str(s.PingURL)
+	}
+	{
 		if s.Categories != nil {
 			e.FieldStart("categories")
 			e.ArrStart()
@@ -1928,15 +1932,16 @@ func (s *Site) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfSite = [8]string{
+var jsonFieldsNameOfSite = [9]string{
 	0: "id",
 	1: "domain",
-	2: "categories",
-	3: "block_reports",
-	4: "unblock_reports",
-	5: "last_reported_at",
-	6: "created_at",
-	7: "updated_at",
+	2: "ping_url",
+	3: "categories",
+	4: "block_reports",
+	5: "unblock_reports",
+	6: "last_reported_at",
+	7: "created_at",
+	8: "updated_at",
 }
 
 // Decode decodes Site from json.
@@ -1944,7 +1949,7 @@ func (s *Site) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode Site to nil")
 	}
-	var requiredBitSet [1]uint8
+	var requiredBitSet [2]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
@@ -1972,6 +1977,18 @@ func (s *Site) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"domain\"")
 			}
+		case "ping_url":
+			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				v, err := d.Str()
+				s.PingURL = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"ping_url\"")
+			}
 		case "categories":
 			if err := func() error {
 				s.Categories = make([]string, 0)
@@ -1992,7 +2009,7 @@ func (s *Site) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"categories\"")
 			}
 		case "block_reports":
-			requiredBitSet[0] |= 1 << 3
+			requiredBitSet[0] |= 1 << 4
 			if err := func() error {
 				v, err := d.Int()
 				s.BlockReports = int(v)
@@ -2004,7 +2021,7 @@ func (s *Site) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"block_reports\"")
 			}
 		case "unblock_reports":
-			requiredBitSet[0] |= 1 << 4
+			requiredBitSet[0] |= 1 << 5
 			if err := func() error {
 				v, err := d.Int()
 				s.UnblockReports = int(v)
@@ -2016,7 +2033,7 @@ func (s *Site) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"unblock_reports\"")
 			}
 		case "last_reported_at":
-			requiredBitSet[0] |= 1 << 5
+			requiredBitSet[0] |= 1 << 6
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.LastReportedAt = v
@@ -2028,7 +2045,7 @@ func (s *Site) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"last_reported_at\"")
 			}
 		case "created_at":
-			requiredBitSet[0] |= 1 << 6
+			requiredBitSet[0] |= 1 << 7
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.CreatedAt = v
@@ -2040,7 +2057,7 @@ func (s *Site) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"created_at\"")
 			}
 		case "updated_at":
-			requiredBitSet[0] |= 1 << 7
+			requiredBitSet[1] |= 1 << 0
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.UpdatedAt = v
@@ -2060,8 +2077,9 @@ func (s *Site) Decode(d *jx.Decoder) error {
 	}
 	// Validate required fields.
 	var failures []validate.FieldError
-	for i, mask := range [1]uint8{
-		0b11111011,
+	for i, mask := range [2]uint8{
+		0b11110111,
+		0b00000001,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -2125,6 +2143,10 @@ func (s *SiteCreate) encodeFields(e *jx.Encoder) {
 		e.Str(s.Domain)
 	}
 	{
+		e.FieldStart("ping_url")
+		e.Str(s.PingURL)
+	}
+	{
 		e.FieldStart("created_at")
 		json.EncodeDateTime(e, s.CreatedAt)
 	}
@@ -2134,11 +2156,12 @@ func (s *SiteCreate) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfSiteCreate = [4]string{
+var jsonFieldsNameOfSiteCreate = [5]string{
 	0: "id",
 	1: "domain",
-	2: "created_at",
-	3: "updated_at",
+	2: "ping_url",
+	3: "created_at",
+	4: "updated_at",
 }
 
 // Decode decodes SiteCreate from json.
@@ -2174,8 +2197,20 @@ func (s *SiteCreate) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"domain\"")
 			}
-		case "created_at":
+		case "ping_url":
 			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				v, err := d.Str()
+				s.PingURL = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"ping_url\"")
+			}
+		case "created_at":
+			requiredBitSet[0] |= 1 << 3
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.CreatedAt = v
@@ -2187,7 +2222,7 @@ func (s *SiteCreate) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"created_at\"")
 			}
 		case "updated_at":
-			requiredBitSet[0] |= 1 << 3
+			requiredBitSet[0] |= 1 << 4
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.UpdatedAt = v
@@ -2208,7 +2243,7 @@ func (s *SiteCreate) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00001111,
+		0b00011111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -2272,6 +2307,10 @@ func (s *SiteDetails) encodeFields(e *jx.Encoder) {
 		e.Str(s.Domain)
 	}
 	{
+		e.FieldStart("ping_url")
+		e.Str(s.PingURL)
+	}
+	{
 		e.FieldStart("categories")
 		e.ArrStart()
 		for _, elem := range s.Categories {
@@ -2311,16 +2350,17 @@ func (s *SiteDetails) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfSiteDetails = [9]string{
+var jsonFieldsNameOfSiteDetails = [10]string{
 	0: "id",
 	1: "domain",
-	2: "categories",
-	3: "block_reports",
-	4: "unblock_reports",
-	5: "last_reported_at",
-	6: "blocked_by_isps",
-	7: "created_at",
-	8: "updated_at",
+	2: "ping_url",
+	3: "categories",
+	4: "block_reports",
+	5: "unblock_reports",
+	6: "last_reported_at",
+	7: "blocked_by_isps",
+	8: "created_at",
+	9: "updated_at",
 }
 
 // Decode decodes SiteDetails from json.
@@ -2356,8 +2396,20 @@ func (s *SiteDetails) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"domain\"")
 			}
-		case "categories":
+		case "ping_url":
 			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				v, err := d.Str()
+				s.PingURL = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"ping_url\"")
+			}
+		case "categories":
+			requiredBitSet[0] |= 1 << 3
 			if err := func() error {
 				s.Categories = make([]string, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
@@ -2377,7 +2429,7 @@ func (s *SiteDetails) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"categories\"")
 			}
 		case "block_reports":
-			requiredBitSet[0] |= 1 << 3
+			requiredBitSet[0] |= 1 << 4
 			if err := func() error {
 				v, err := d.Int()
 				s.BlockReports = int(v)
@@ -2389,7 +2441,7 @@ func (s *SiteDetails) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"block_reports\"")
 			}
 		case "unblock_reports":
-			requiredBitSet[0] |= 1 << 4
+			requiredBitSet[0] |= 1 << 5
 			if err := func() error {
 				v, err := d.Int()
 				s.UnblockReports = int(v)
@@ -2401,7 +2453,7 @@ func (s *SiteDetails) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"unblock_reports\"")
 			}
 		case "last_reported_at":
-			requiredBitSet[0] |= 1 << 5
+			requiredBitSet[0] |= 1 << 6
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.LastReportedAt = v
@@ -2430,7 +2482,7 @@ func (s *SiteDetails) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"blocked_by_isps\"")
 			}
 		case "created_at":
-			requiredBitSet[0] |= 1 << 7
+			requiredBitSet[1] |= 1 << 0
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.CreatedAt = v
@@ -2442,7 +2494,7 @@ func (s *SiteDetails) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"created_at\"")
 			}
 		case "updated_at":
-			requiredBitSet[1] |= 1 << 0
+			requiredBitSet[1] |= 1 << 1
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.UpdatedAt = v
@@ -2463,8 +2515,8 @@ func (s *SiteDetails) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [2]uint8{
-		0b10111111,
-		0b00000001,
+		0b01111111,
+		0b00000011,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -2524,6 +2576,12 @@ func (s *SiteInput) encodeFields(e *jx.Encoder) {
 		e.Str(s.Domain)
 	}
 	{
+		if s.PingURL.Set {
+			e.FieldStart("ping_url")
+			s.PingURL.Encode(e)
+		}
+	}
+	{
 		e.FieldStart("categories")
 		e.ArrStart()
 		for _, elem := range s.Categories {
@@ -2533,9 +2591,10 @@ func (s *SiteInput) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfSiteInput = [2]string{
+var jsonFieldsNameOfSiteInput = [3]string{
 	0: "domain",
-	1: "categories",
+	1: "ping_url",
+	2: "categories",
 }
 
 // Decode decodes SiteInput from json.
@@ -2559,8 +2618,18 @@ func (s *SiteInput) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"domain\"")
 			}
+		case "ping_url":
+			if err := func() error {
+				s.PingURL.Reset()
+				if err := s.PingURL.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"ping_url\"")
+			}
 		case "categories":
-			requiredBitSet[0] |= 1 << 1
+			requiredBitSet[0] |= 1 << 2
 			if err := func() error {
 				s.Categories = make([]string, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
@@ -2589,7 +2658,7 @@ func (s *SiteInput) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000011,
+		0b00000101,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

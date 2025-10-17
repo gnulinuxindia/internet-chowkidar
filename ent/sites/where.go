@@ -70,6 +70,11 @@ func Domain(v string) predicate.Sites {
 	return predicate.Sites(sql.FieldEQ(FieldDomain, v))
 }
 
+// PingURL applies equality check predicate on the "ping_url" field. It's identical to PingURLEQ.
+func PingURL(v string) predicate.Sites {
+	return predicate.Sites(sql.FieldEQ(FieldPingURL, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Sites {
 	return predicate.Sites(sql.FieldEQ(FieldCreatedAt, v))
@@ -213,6 +218,71 @@ func DomainEqualFold(v string) predicate.Sites {
 // DomainContainsFold applies the ContainsFold predicate on the "domain" field.
 func DomainContainsFold(v string) predicate.Sites {
 	return predicate.Sites(sql.FieldContainsFold(FieldDomain, v))
+}
+
+// PingURLEQ applies the EQ predicate on the "ping_url" field.
+func PingURLEQ(v string) predicate.Sites {
+	return predicate.Sites(sql.FieldEQ(FieldPingURL, v))
+}
+
+// PingURLNEQ applies the NEQ predicate on the "ping_url" field.
+func PingURLNEQ(v string) predicate.Sites {
+	return predicate.Sites(sql.FieldNEQ(FieldPingURL, v))
+}
+
+// PingURLIn applies the In predicate on the "ping_url" field.
+func PingURLIn(vs ...string) predicate.Sites {
+	return predicate.Sites(sql.FieldIn(FieldPingURL, vs...))
+}
+
+// PingURLNotIn applies the NotIn predicate on the "ping_url" field.
+func PingURLNotIn(vs ...string) predicate.Sites {
+	return predicate.Sites(sql.FieldNotIn(FieldPingURL, vs...))
+}
+
+// PingURLGT applies the GT predicate on the "ping_url" field.
+func PingURLGT(v string) predicate.Sites {
+	return predicate.Sites(sql.FieldGT(FieldPingURL, v))
+}
+
+// PingURLGTE applies the GTE predicate on the "ping_url" field.
+func PingURLGTE(v string) predicate.Sites {
+	return predicate.Sites(sql.FieldGTE(FieldPingURL, v))
+}
+
+// PingURLLT applies the LT predicate on the "ping_url" field.
+func PingURLLT(v string) predicate.Sites {
+	return predicate.Sites(sql.FieldLT(FieldPingURL, v))
+}
+
+// PingURLLTE applies the LTE predicate on the "ping_url" field.
+func PingURLLTE(v string) predicate.Sites {
+	return predicate.Sites(sql.FieldLTE(FieldPingURL, v))
+}
+
+// PingURLContains applies the Contains predicate on the "ping_url" field.
+func PingURLContains(v string) predicate.Sites {
+	return predicate.Sites(sql.FieldContains(FieldPingURL, v))
+}
+
+// PingURLHasPrefix applies the HasPrefix predicate on the "ping_url" field.
+func PingURLHasPrefix(v string) predicate.Sites {
+	return predicate.Sites(sql.FieldHasPrefix(FieldPingURL, v))
+}
+
+// PingURLHasSuffix applies the HasSuffix predicate on the "ping_url" field.
+func PingURLHasSuffix(v string) predicate.Sites {
+	return predicate.Sites(sql.FieldHasSuffix(FieldPingURL, v))
+}
+
+// PingURLEqualFold applies the EqualFold predicate on the "ping_url" field.
+func PingURLEqualFold(v string) predicate.Sites {
+	return predicate.Sites(sql.FieldEqualFold(FieldPingURL, v))
+}
+
+// PingURLContainsFold applies the ContainsFold predicate on the "ping_url" field.
+func PingURLContainsFold(v string) predicate.Sites {
+	return predicate.Sites(sql.FieldContainsFold(FieldPingURL, v))
 }
 
 // HasBlocks applies the HasEdge predicate on the "blocks" edge.

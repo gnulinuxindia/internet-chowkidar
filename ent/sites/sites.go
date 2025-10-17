@@ -20,6 +20,8 @@ const (
 	FieldUpdatedAt = "updated_at"
 	// FieldDomain holds the string denoting the domain field in the database.
 	FieldDomain = "domain"
+	// FieldPingURL holds the string denoting the ping_url field in the database.
+	FieldPingURL = "ping_url"
 	// EdgeBlocks holds the string denoting the blocks edge name in mutations.
 	EdgeBlocks = "blocks"
 	// EdgeCategories holds the string denoting the categories edge name in mutations.
@@ -55,6 +57,7 @@ var Columns = []string{
 	FieldCreatedAt,
 	FieldUpdatedAt,
 	FieldDomain,
+	FieldPingURL,
 }
 
 var (
@@ -103,6 +106,11 @@ func ByUpdatedAt(opts ...sql.OrderTermOption) OrderOption {
 // ByDomain orders the results by the domain field.
 func ByDomain(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldDomain, opts...).ToFunc()
+}
+
+// ByPingURL orders the results by the ping_url field.
+func ByPingURL(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldPingURL, opts...).ToFunc()
 }
 
 // ByBlocksCount orders the results by blocks count.

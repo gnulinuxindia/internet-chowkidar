@@ -23,6 +23,8 @@ type Sites struct {
 	UpdatedAt time.Time `json:"updated_at,omitempty"`
 	// Domain holds the value of the "domain" field.
 	Domain string `json:"domain,omitempty"`
+	// PingURL holds the value of the "ping_url" field.
+	PingURL string `json:"ping_url,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the SitesQuery when eager-loading is set.
 	Edges        SitesEdges `json:"edges"`
@@ -76,7 +78,7 @@ func (*Sites) scanValues(columns []string) ([]any, error) {
 		switch columns[i] {
 		case sites.FieldID:
 			values[i] = new(sql.NullInt64)
-		case sites.FieldDomain:
+		case sites.FieldDomain, sites.FieldPingURL:
 			values[i] = new(sql.NullString)
 		case sites.FieldCreatedAt, sites.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -118,6 +120,12 @@ func (_m *Sites) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field domain", values[i])
 			} else if value.Valid {
 				_m.Domain = value.String
+			}
+		case sites.FieldPingURL:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field ping_url", values[i])
+			} else if value.Valid {
+				_m.PingURL = value.String
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -178,6 +186,9 @@ func (_m *Sites) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("domain=")
 	builder.WriteString(_m.Domain)
+	builder.WriteString(", ")
+	builder.WriteString("ping_url=")
+	builder.WriteString(_m.PingURL)
 	builder.WriteByte(')')
 	return builder.String()
 }

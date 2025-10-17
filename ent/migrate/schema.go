@@ -98,6 +98,7 @@ var (
 		{Name: "created_at", Type: field.TypeTime},
 		{Name: "updated_at", Type: field.TypeTime},
 		{Name: "domain", Type: field.TypeString, Unique: true},
+		{Name: "ping_url", Type: field.TypeString, Unique: true},
 	}
 	// SitesTable holds the schema information for the "sites" table.
 	SitesTable = &schema.Table{

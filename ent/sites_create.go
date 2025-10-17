@@ -57,6 +57,12 @@ func (_c *SitesCreate) SetDomain(v string) *SitesCreate {
 	return _c
 }
 
+// SetPingURL sets the "ping_url" field.
+func (_c *SitesCreate) SetPingURL(v string) *SitesCreate {
+	_c.mutation.SetPingURL(v)
+	return _c
+}
+
 // AddBlockIDs adds the "blocks" edge to the Blocks entity by IDs.
 func (_c *SitesCreate) AddBlockIDs(ids ...int) *SitesCreate {
 	_c.mutation.AddBlockIDs(ids...)
@@ -158,6 +164,9 @@ func (_c *SitesCreate) check() error {
 	if _, ok := _c.mutation.Domain(); !ok {
 		return &ValidationError{Name: "domain", err: errors.New(`ent: missing required field "Sites.domain"`)}
 	}
+	if _, ok := _c.mutation.PingURL(); !ok {
+		return &ValidationError{Name: "ping_url", err: errors.New(`ent: missing required field "Sites.ping_url"`)}
+	}
 	return nil
 }
 
@@ -195,6 +204,10 @@ func (_c *SitesCreate) createSpec() (*Sites, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Domain(); ok {
 		_spec.SetField(sites.FieldDomain, field.TypeString, value)
 		_node.Domain = value
+	}
+	if value, ok := _c.mutation.PingURL(); ok {
+		_spec.SetField(sites.FieldPingURL, field.TypeString, value)
+		_node.PingURL = value
 	}
 	if nodes := _c.mutation.BlocksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

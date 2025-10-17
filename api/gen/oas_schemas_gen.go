@@ -1165,6 +1165,7 @@ func (o OptString) Or(d string) string {
 type Site struct {
 	ID             int       `json:"id"`
 	Domain         string    `json:"domain"`
+	PingURL        string    `json:"ping_url"`
 	Categories     []string  `json:"categories"`
 	BlockReports   int       `json:"block_reports"`
 	UnblockReports int       `json:"unblock_reports"`
@@ -1181,6 +1182,11 @@ func (s *Site) GetID() int {
 // GetDomain returns the value of Domain.
 func (s *Site) GetDomain() string {
 	return s.Domain
+}
+
+// GetPingURL returns the value of PingURL.
+func (s *Site) GetPingURL() string {
+	return s.PingURL
 }
 
 // GetCategories returns the value of Categories.
@@ -1223,6 +1229,11 @@ func (s *Site) SetDomain(val string) {
 	s.Domain = val
 }
 
+// SetPingURL sets the value of PingURL.
+func (s *Site) SetPingURL(val string) {
+	s.PingURL = val
+}
+
 // SetCategories sets the value of Categories.
 func (s *Site) SetCategories(val []string) {
 	s.Categories = val
@@ -1257,6 +1268,7 @@ func (s *Site) SetUpdatedAt(val time.Time) {
 type SiteCreate struct {
 	ID        int       `json:"id"`
 	Domain    string    `json:"domain"`
+	PingURL   string    `json:"ping_url"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -1269,6 +1281,11 @@ func (s *SiteCreate) GetID() int {
 // GetDomain returns the value of Domain.
 func (s *SiteCreate) GetDomain() string {
 	return s.Domain
+}
+
+// GetPingURL returns the value of PingURL.
+func (s *SiteCreate) GetPingURL() string {
+	return s.PingURL
 }
 
 // GetCreatedAt returns the value of CreatedAt.
@@ -1291,6 +1308,11 @@ func (s *SiteCreate) SetDomain(val string) {
 	s.Domain = val
 }
 
+// SetPingURL sets the value of PingURL.
+func (s *SiteCreate) SetPingURL(val string) {
+	s.PingURL = val
+}
+
 // SetCreatedAt sets the value of CreatedAt.
 func (s *SiteCreate) SetCreatedAt(val time.Time) {
 	s.CreatedAt = val
@@ -1305,6 +1327,7 @@ func (s *SiteCreate) SetUpdatedAt(val time.Time) {
 type SiteDetails struct {
 	ID             int       `json:"id"`
 	Domain         string    `json:"domain"`
+	PingURL        string    `json:"ping_url"`
 	Categories     []string  `json:"categories"`
 	BlockReports   int       `json:"block_reports"`
 	UnblockReports int       `json:"unblock_reports"`
@@ -1322,6 +1345,11 @@ func (s *SiteDetails) GetID() int {
 // GetDomain returns the value of Domain.
 func (s *SiteDetails) GetDomain() string {
 	return s.Domain
+}
+
+// GetPingURL returns the value of PingURL.
+func (s *SiteDetails) GetPingURL() string {
+	return s.PingURL
 }
 
 // GetCategories returns the value of Categories.
@@ -1369,6 +1397,11 @@ func (s *SiteDetails) SetDomain(val string) {
 	s.Domain = val
 }
 
+// SetPingURL sets the value of PingURL.
+func (s *SiteDetails) SetPingURL(val string) {
+	s.PingURL = val
+}
+
 // SetCategories sets the value of Categories.
 func (s *SiteDetails) SetCategories(val []string) {
 	s.Categories = val
@@ -1406,13 +1439,19 @@ func (s *SiteDetails) SetUpdatedAt(val time.Time) {
 
 // Ref: #/components/schemas/SiteInput
 type SiteInput struct {
-	Domain     string   `json:"domain"`
-	Categories []string `json:"categories"`
+	Domain     string    `json:"domain"`
+	PingURL    OptString `json:"ping_url"`
+	Categories []string  `json:"categories"`
 }
 
 // GetDomain returns the value of Domain.
 func (s *SiteInput) GetDomain() string {
 	return s.Domain
+}
+
+// GetPingURL returns the value of PingURL.
+func (s *SiteInput) GetPingURL() OptString {
+	return s.PingURL
 }
 
 // GetCategories returns the value of Categories.
@@ -1423,6 +1462,11 @@ func (s *SiteInput) GetCategories() []string {
 // SetDomain sets the value of Domain.
 func (s *SiteInput) SetDomain(val string) {
 	s.Domain = val
+}
+
+// SetPingURL sets the value of PingURL.
+func (s *SiteInput) SetPingURL(val OptString) {
+	s.PingURL = val
 }
 
 // SetCategories sets the value of Categories.

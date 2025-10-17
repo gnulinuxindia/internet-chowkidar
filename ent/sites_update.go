@@ -51,6 +51,20 @@ func (_u *SitesUpdate) SetNillableDomain(v *string) *SitesUpdate {
 	return _u
 }
 
+// SetPingURL sets the "ping_url" field.
+func (_u *SitesUpdate) SetPingURL(v string) *SitesUpdate {
+	_u.mutation.SetPingURL(v)
+	return _u
+}
+
+// SetNillablePingURL sets the "ping_url" field if the given value is not nil.
+func (_u *SitesUpdate) SetNillablePingURL(v *string) *SitesUpdate {
+	if v != nil {
+		_u.SetPingURL(*v)
+	}
+	return _u
+}
+
 // AddBlockIDs adds the "blocks" edge to the Blocks entity by IDs.
 func (_u *SitesUpdate) AddBlockIDs(ids ...int) *SitesUpdate {
 	_u.mutation.AddBlockIDs(ids...)
@@ -214,6 +228,9 @@ func (_u *SitesUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.Domain(); ok {
 		_spec.SetField(sites.FieldDomain, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.PingURL(); ok {
+		_spec.SetField(sites.FieldPingURL, field.TypeString, value)
 	}
 	if _u.mutation.BlocksCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -386,6 +403,20 @@ func (_u *SitesUpdateOne) SetDomain(v string) *SitesUpdateOne {
 func (_u *SitesUpdateOne) SetNillableDomain(v *string) *SitesUpdateOne {
 	if v != nil {
 		_u.SetDomain(*v)
+	}
+	return _u
+}
+
+// SetPingURL sets the "ping_url" field.
+func (_u *SitesUpdateOne) SetPingURL(v string) *SitesUpdateOne {
+	_u.mutation.SetPingURL(v)
+	return _u
+}
+
+// SetNillablePingURL sets the "ping_url" field if the given value is not nil.
+func (_u *SitesUpdateOne) SetNillablePingURL(v *string) *SitesUpdateOne {
+	if v != nil {
+		_u.SetPingURL(*v)
 	}
 	return _u
 }
@@ -583,6 +614,9 @@ func (_u *SitesUpdateOne) sqlSave(ctx context.Context) (_node *Sites, err error)
 	}
 	if value, ok := _u.mutation.Domain(); ok {
 		_spec.SetField(sites.FieldDomain, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.PingURL(); ok {
+		_spec.SetField(sites.FieldPingURL, field.TypeString, value)
 	}
 	if _u.mutation.BlocksCleared() {
 		edge := &sqlgraph.EdgeSpec{
