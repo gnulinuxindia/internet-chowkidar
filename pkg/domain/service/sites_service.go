@@ -14,7 +14,9 @@ type SitesService interface {
 	CreateSite(ctx context.Context, req *genapi.SiteInput) (*genapi.SiteCreate, error)
 	CreateSiteSuggestion(ctx context.Context, req *genapi.SiteSuggestionInput) (*genapi.SiteSuggestion, error)
 	GetAllSites(ctx context.Context, params genapi.ListSitesParams) ([]genapi.Site, error)
+	GetAllSiteSuggestions(ctx context.Context, params genapi.ListSiteSuggestionsParams) ([]genapi.SiteSuggestion, error)
 	GetSite(ctx context.Context, params genapi.GetSiteParams) (*genapi.SiteDetails, error)
+	GetSiteSuggestion(ctx context.Context, params genapi.GetSiteSuggestionParams) (*genapi.SiteSuggestion, error)
 }
 
 type sitesServiceImpl struct {
@@ -62,6 +64,11 @@ func (s *sitesServiceImpl) CreateSiteSuggestion(ctx context.Context, req *genapi
 func (s *sitesServiceImpl) GetAllSites(ctx context.Context, params genapi.ListSitesParams) ([]genapi.Site, error) {
 	// TODO: add validation and business logic etc
 	return s.sitesRepository.GetAllSites(ctx, params)
+}
+
+func (s *sitesServiceImpl) GetAllSiteSuggestions(ctx context.Context, params genapi.ListSiteSuggestionsParams) ([]genapi.SiteSuggestion, error) {
+	// TODO: add validation and business logic etc
+	return s.sitesRepository.GetAllSiteSuggestions(ctx, params)
 }
 
 func (s *sitesServiceImpl) GetSite(ctx context.Context, params genapi.GetSiteParams) (*genapi.SiteDetails, error) {
@@ -124,6 +131,37 @@ func (s *sitesServiceImpl) GetSite(ctx context.Context, params genapi.GetSitePar
 		}
 
 		site.BlockedByIsps = append(site.BlockedByIsps, isp)
+	}
+
+	return site, tx.Commit()
+}
+
+func (s *sitesServiceImpl) GetSiteSuggestion(ctx context.Context, params genapi.GetSiteSuggestionParams) (*genapi.SiteSuggestion, error) {
+	tx, err := s.txHandler.Begin(ctx)
+	if err != nil {
+		return nil, errors.Wrap(err, 0)
+	}
+
+	defer tx.Rollback()
+
+	txCtx := ent.NewContext(ctx, tx.Client())
+
+	ds, err := s.sitesRepository.GetSiteSuggestionByID(txCtx, params.ID)
+	if err != nil {
+		return nil, errors.Wrap(err, 0)
+	}
+
+	site := &genapi.SiteSuggestion{
+		ID:            ds.ID,
+		Domain:        ds.Domain,
+		PingURL:       ds.PingURL,
+		Categories:    strings.Split(ds.Categories, ","),
+		Reason:        ds.Reason,
+		Status:        genapi.SiteSuggestionStatus(ds.Status),
+		ResolveReason: ds.ResolveReason,
+		ResolvedAt:    ds.ResolvedAt,
+		CreatedAt:     ds.CreatedAt,
+		UpdatedAt:     ds.UpdatedAt,
 	}
 
 	return site, tx.Commit()

@@ -9,10 +9,11 @@ import (
 
 type SitesHandler interface {
 	ListSites(ctx context.Context, params genapi.ListSitesParams) ([]genapi.Site, error)
-	ListSiteSuggestions(ctx context.Context) ([]genapi.SiteSuggestion, error)
+	ListSiteSuggestions(ctx context.Context, params genapi.ListSiteSuggestionsParams) ([]genapi.SiteSuggestion, error)
 	CreateSite(ctx context.Context, req *genapi.SiteInput) (*genapi.SiteCreate, error)
 	CreateSiteSuggestion(ctx context.Context, req *genapi.SiteSuggestionInput) (*genapi.SiteSuggestion, error)
 	GetSite(ctx context.Context, params genapi.GetSiteParams) (*genapi.SiteDetails, error)
+	GetSiteSuggestion(ctx context.Context, params genapi.GetSiteSuggestionParams) (*genapi.SiteSuggestion, error)
 }
 
 type sitesHandlerImpl struct {
@@ -23,9 +24,8 @@ func (s *sitesHandlerImpl) ListSites(ctx context.Context, params genapi.ListSite
 	return s.sitesService.GetAllSites(ctx, params)
 }
 
-func (s *sitesHandlerImpl) ListSiteSuggestions(ctx context.Context) ([]genapi.SiteSuggestion, error) {
-	//return s.sitesService.GetAllSiteSuggestions(ctx, params)
-	panic("not implemented")
+func (s *sitesHandlerImpl) ListSiteSuggestions(ctx context.Context, params genapi.ListSiteSuggestionsParams) ([]genapi.SiteSuggestion, error) {
+	return s.sitesService.GetAllSiteSuggestions(ctx, params)
 }
 
 func (s *sitesHandlerImpl) CreateSite(ctx context.Context, req *genapi.SiteInput) (*genapi.SiteCreate, error) {
@@ -39,6 +39,15 @@ func (s *sitesHandlerImpl) GetSite(ctx context.Context, params genapi.GetSitePar
 	}
 
 	return siteDetails, nil
+}
+
+func (s *sitesHandlerImpl) GetSiteSuggestion(ctx context.Context, params genapi.GetSiteSuggestionParams) (*genapi.SiteSuggestion, error) {
+	suggestionDetails, err := s.sitesService.GetSiteSuggestion(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+
+	return suggestionDetails, nil
 }
 
 func (s *sitesHandlerImpl) CreateSiteSuggestion(ctx context.Context, req *genapi.SiteSuggestionInput) (*genapi.SiteSuggestion, error) {

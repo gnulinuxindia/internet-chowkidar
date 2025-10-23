@@ -238,6 +238,39 @@ paths:
     get:
       summary: List all site suggestions
       operationId: listSiteSuggestions
+      parameters:
+        - in: query
+          name: category
+          schema:
+            type: string
+          description: Filter sites by category, separated by commas
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 50
+          description: Number of sites to return
+        - in: query
+          name: offset
+          schema:
+            type: integer
+            default: 0
+          description: Number of sites to skip
+        - in: query
+          name: sort
+          schema:
+            type: string
+            default: 'id'
+          description: Sort sites by field
+        - in: query
+          name: order
+          schema:
+            type: string
+            enum:
+              - asc
+              - desc
+            default: asc
+          description: Sort order
       responses:
         '200':
           description: Successful response
@@ -259,6 +292,23 @@ paths:
       responses:
         '201':
           description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteSuggestion'
+  /sites/suggestions/{id}:
+    get:
+      summary: Get a site suggestion by ID
+      operationId: getSiteSuggestion
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successful response
           content:
             application/json:
               schema:

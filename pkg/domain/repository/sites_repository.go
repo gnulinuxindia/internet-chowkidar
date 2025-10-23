@@ -3,6 +3,7 @@ package repository
 import (
 	"context"
 	"log/slog"
+	"slices"
 	"strings"
 
 	genapi "github.com/gnulinuxindia/internet-chowkidar/api/gen"
@@ -11,6 +12,7 @@ import (
 	"github.com/gnulinuxindia/internet-chowkidar/ent/categories"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/predicate"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/sitesuggestions"
 	"github.com/go-errors/errors"
 )
 
@@ -18,9 +20,11 @@ type SitesRepository interface {
 	CreateSite(ctx context.Context, req *genapi.SiteInput) (*ent.Sites, error)
 	CreateSiteSuggestion(ctx context.Context, req *genapi.SiteSuggestionInput) (*ent.SiteSuggestions, error)
 	GetAllSites(ctx context.Context, params genapi.ListSitesParams) ([]genapi.Site, error)
+	GetAllSiteSuggestions(ctx context.Context, params genapi.ListSiteSuggestionsParams) ([]genapi.SiteSuggestion, error)
 	GetSiteByDomain(ctx context.Context, domain string) (*ent.Sites, error)
 	GetSiteBlocksByID(ctx context.Context, id int) (map[int][]*ent.Blocks, error)
 	GetSiteByID(ctx context.Context, id int) (*ent.Sites, error)
+	GetSiteSuggestionByID(ctx context.Context, id int) (*ent.SiteSuggestions, error)
 }
 
 type sitesRepositoryImpl struct {
@@ -158,7 +162,7 @@ func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.Lis
 		}
 	}
 
-	dbSites, err := query.All(ctx)
+	dbSites, err := query.Limit(params.Limit.Or(50)).Offset(params.Offset.Or(0)).All(ctx)
 	if err != nil {
 		slog.Error("failed to get sites", "error", err)
 		return nil, rollback(tx, errors.Wrap(err, 0))
@@ -233,6 +237,82 @@ func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.Lis
 	return result, nil
 }
 
+func (s *sitesRepositoryImpl) GetAllSiteSuggestions(ctx context.Context, params genapi.ListSiteSuggestionsParams) ([]genapi.SiteSuggestion, error) {
+	tx, err := s.db.Tx(ctx)
+	if err != nil {
+		slog.Error("failed to start transaction", "error", err)
+		return nil, errors.Wrap(err, 0)
+	}
+
+	// get all sites in the database
+	query := tx.SiteSuggestions.Query()
+
+	if params.Order.Set {
+		if params.Order.Value == genapi.ListSiteSuggestionsOrderAsc {
+			query = query.Order(ent.Asc(params.Sort.Or("id")))
+		} else {
+			query = query.Order(ent.Desc(params.Sort.Or("id")))
+		}
+	}
+
+	dbSites, err := query.Limit(params.Limit.Or(50)).Offset(params.Offset.Or(0)).All(ctx)
+
+	if err != nil {
+		slog.Error("failed to get site suggestions", "error", err)
+		return nil, rollback(tx, errors.Wrap(err, 0))
+	}
+
+	var filteredSiteSuggestions []*ent.SiteSuggestions
+	if params.Category.Set {
+		catNames := strings.Split(params.Category.Or(""), ",")
+		for i, cat := range catNames {
+			catNames[i] = strings.TrimSpace(cat)
+		}
+
+		for _, s := range dbSites {
+			siteCats := strings.Split(s.Categories, ",")
+			addSite := true
+			for _, cat := range catNames {
+				if !slices.Contains(siteCats, cat) {
+					addSite = false
+					break
+				}
+			}
+			if addSite {
+				filteredSiteSuggestions = append(filteredSiteSuggestions, s)
+			}
+		}
+	} else {
+		filteredSiteSuggestions = dbSites
+	}
+
+	// create a map of sites
+	suggestions := map[string]*genapi.SiteSuggestion{}
+	for _, suggestion := range filteredSiteSuggestions {
+		// map domain to site struct
+		suggestions[suggestion.Domain] = &genapi.SiteSuggestion{
+			ID:            suggestion.ID,
+			Domain:        suggestion.Domain,
+			PingURL:       suggestion.PingURL,
+			Categories:    strings.Split(suggestion.Categories, ","),
+			Reason:        suggestion.Reason,
+			Status:        genapi.SiteSuggestionStatus(suggestion.Status),
+			ResolveReason: suggestion.ResolveReason,
+			ResolvedAt:    suggestion.ResolvedAt,
+			CreatedAt:     suggestion.CreatedAt,
+			UpdatedAt:     suggestion.UpdatedAt,
+		}
+	}
+
+	// convert the map to a slice
+	result := make([]genapi.SiteSuggestion, 0, len(suggestions))
+	for _, suggestion := range suggestions {
+		result = append(result, *suggestion)
+	}
+
+	return result, nil
+}
+
 func (s *sitesRepositoryImpl) GetSiteByDomain(ctx context.Context, domain string) (*ent.Sites, error) {
 	db := s.getDb(ctx)
 
@@ -270,6 +350,12 @@ func (s *sitesRepositoryImpl) GetSiteByID(ctx context.Context, id int) (*ent.Sit
 	db := s.getDb(ctx)
 
 	return db.Sites.Query().WithCategories().Where(sites.ID(id)).First(ctx)
+}
+
+func (s *sitesRepositoryImpl) GetSiteSuggestionByID(ctx context.Context, id int) (*ent.SiteSuggestions, error) {
+	db := s.getDb(ctx)
+
+	return db.SiteSuggestions.Query().Where(sitesuggestions.ID(id)).First(ctx)
 }
 
 func (s *sitesRepositoryImpl) getDb(ctx context.Context) *ent.Client {
