@@ -327,7 +327,7 @@ components:
         - id
         - domain
         - ping_url
-        - tags
+        - categories
         - block_reports
         - unblock_reports
         - last_reported_at
@@ -621,16 +621,35 @@ components:
 
     SiteSuggestion:
       type: object
+      required:
+        - id
+        - domain
+        - ping_url
+        - categories
+        - reason
+        - status
+        - resolve_reason
+        - resolved_at
+        - created_at
+        - updated_at
       properties:
         id:
           type: integer
-        site_id:
-          type: integer
+        domain:
+          type: string
+        ping_url:
+          type: string
+        categories:
+          type: array
+          items:
+            type: string
         reason:
           type: string
         status:
           type: string
-          enum: [pending, resolved]
+          enum: [pending, accepted, rejected]
+        resolve_reason:
+          type: string
         resolved_at:
           type: string
           format: date-time
@@ -644,11 +663,17 @@ components:
     SiteSuggestionInput:
       type: object
       required:
-        - site_id
+        - domain 
         - reason
       properties:
-        site_id:
-          type: integer
+        domain:
+          type: string
+        ping_url:
+          type: string
+        categories:
+          type: array
+          items:
+            type: string
         reason:
           type: string
     

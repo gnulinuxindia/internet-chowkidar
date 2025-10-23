@@ -16,6 +16,7 @@ import (
 
 type SitesRepository interface {
 	CreateSite(ctx context.Context, req *genapi.SiteInput) (*ent.Sites, error)
+	CreateSiteSuggestion(ctx context.Context, req *genapi.SiteSuggestionInput) (*ent.SiteSuggestions, error)
 	GetAllSites(ctx context.Context, params genapi.ListSitesParams) ([]genapi.Site, error)
 	GetSiteByDomain(ctx context.Context, domain string) (*ent.Sites, error)
 	GetSiteBlocksByID(ctx context.Context, id int) (map[int][]*ent.Blocks, error)
@@ -92,6 +93,37 @@ func (s *sitesRepositoryImpl) CreateSite(ctx context.Context, req *genapi.SiteIn
 	}
 
 	return site, tx.Commit()
+}
+
+func (s *sitesRepositoryImpl) CreateSiteSuggestion(ctx context.Context, req *genapi.SiteSuggestionInput) (*ent.SiteSuggestions, error) {
+	tx, err := s.db.Tx(ctx)
+	if err != nil {
+		slog.Error("failed to start transaction", "error", err)
+		return nil, errors.Wrap(err, 0)
+	}
+
+	// create the site
+	var ping_url string
+	if req.PingURL.Set {
+		ping_url = req.PingURL.Value
+	} else {
+		ping_url = req.Domain
+	}
+
+	categories := strings.Join(req.Categories, ",")
+
+	suggestion, err := tx.SiteSuggestions.Create().
+		SetDomain(req.Domain).
+		SetPingURL(ping_url).
+		SetCategories(categories).
+		SetReason(req.Reason).
+		Save(ctx)
+	if err != nil {
+		slog.Error("failed to create site suggestion", "error", err)
+		return nil, rollback(tx, errors.Wrap(err, 0))
+	}
+
+	return suggestion, tx.Commit()
 }
 
 func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.ListSitesParams) ([]genapi.Site, error) {

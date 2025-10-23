@@ -2,6 +2,7 @@ package service
 
 import (
 	"context"
+	"strings"
 
 	genapi "github.com/gnulinuxindia/internet-chowkidar/api/gen"
 	"github.com/gnulinuxindia/internet-chowkidar/ent"
@@ -11,6 +12,7 @@ import (
 
 type SitesService interface {
 	CreateSite(ctx context.Context, req *genapi.SiteInput) (*genapi.SiteCreate, error)
+	CreateSiteSuggestion(ctx context.Context, req *genapi.SiteSuggestionInput) (*genapi.SiteSuggestion, error)
 	GetAllSites(ctx context.Context, params genapi.ListSitesParams) ([]genapi.Site, error)
 	GetSite(ctx context.Context, params genapi.GetSiteParams) (*genapi.SiteDetails, error)
 }
@@ -32,9 +34,28 @@ func (s *sitesServiceImpl) CreateSite(ctx context.Context, req *genapi.SiteInput
 	return &genapi.SiteCreate{
 		ID:        site.ID,
 		Domain:    site.Domain,
-		PingURL:    site.PingURL,
+		PingURL:   site.PingURL,
 		CreatedAt: site.CreatedAt,
 		UpdatedAt: site.UpdatedAt,
+	}, nil
+}
+
+func (s *sitesServiceImpl) CreateSiteSuggestion(ctx context.Context, req *genapi.SiteSuggestionInput) (*genapi.SiteSuggestion, error) {
+	suggestion, err := s.sitesRepository.CreateSiteSuggestion(ctx, req)
+	if err != nil {
+		return nil, err
+	}
+
+	return &genapi.SiteSuggestion{
+		ID:            suggestion.ID,
+		Domain:        suggestion.Domain,
+		Categories:    strings.Split(suggestion.Categories, ","),
+		PingURL:       suggestion.PingURL,
+		Reason:        suggestion.Reason,
+		Status:        genapi.SiteSuggestionStatus(suggestion.Status),
+		ResolveReason: suggestion.ResolveReason,
+		CreatedAt:     suggestion.CreatedAt,
+		UpdatedAt:     suggestion.UpdatedAt,
 	}, nil
 }
 
@@ -66,7 +87,7 @@ func (s *sitesServiceImpl) GetSite(ctx context.Context, params genapi.GetSitePar
 	site := &genapi.SiteDetails{
 		ID:         ds.ID,
 		Domain:     ds.Domain,
-		PingURL:     ds.PingURL,
+		PingURL:    ds.PingURL,
 		CreatedAt:  ds.CreatedAt,
 		UpdatedAt:  ds.UpdatedAt,
 		Categories: make([]string, len(ds.Edges.Categories)),
