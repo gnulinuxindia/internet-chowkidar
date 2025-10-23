@@ -15,6 +15,7 @@ const (
 	CreateSiteSuggestionOperation OperationName = "CreateSiteSuggestion"
 	GetISPOperation               OperationName = "GetISP"
 	GetSiteOperation              OperationName = "GetSite"
+	GetSiteSuggestionOperation    OperationName = "GetSiteSuggestion"
 	HealthCheckOperation          OperationName = "HealthCheck"
 	ListAbuseReportsOperation     OperationName = "ListAbuseReports"
 	ListBlocksOperation           OperationName = "ListBlocks"

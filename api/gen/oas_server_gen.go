@@ -62,6 +62,12 @@ type Handler interface {
 	//
 	// GET /sites/{id}
 	GetSite(ctx context.Context, params GetSiteParams) (*SiteDetails, error)
+	// GetSiteSuggestion implements getSiteSuggestion operation.
+	//
+	// Get a site suggestion by ID.
+	//
+	// GET /sites/suggestions/{id}
+	GetSiteSuggestion(ctx context.Context, params GetSiteSuggestionParams) (*SiteSuggestion, error)
 	// HealthCheck implements healthCheck operation.
 	//
 	// Health check.
@@ -97,7 +103,7 @@ type Handler interface {
 	// List all site suggestions.
 	//
 	// GET /sites/suggestions
-	ListSiteSuggestions(ctx context.Context) ([]SiteSuggestion, error)
+	ListSiteSuggestions(ctx context.Context, params ListSiteSuggestionsParams) ([]SiteSuggestion, error)
 	// ListSites implements listSites operation.
 	//
 	// List all sites.

@@ -189,6 +189,17 @@ func (s ListISPsOrder) Validate() error {
 	}
 }
 
+func (s ListSiteSuggestionsOrder) Validate() error {
+	switch s {
+	case "asc":
+		return nil
+	case "desc":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+
 func (s ListSitesOrder) Validate() error {
 	switch s {
 	case "asc":

@@ -752,6 +752,47 @@ func (s *ListISPsOrder) UnmarshalText(data []byte) error {
 	}
 }
 
+type ListSiteSuggestionsOrder string
+
+const (
+	ListSiteSuggestionsOrderAsc  ListSiteSuggestionsOrder = "asc"
+	ListSiteSuggestionsOrderDesc ListSiteSuggestionsOrder = "desc"
+)
+
+// AllValues returns all ListSiteSuggestionsOrder values.
+func (ListSiteSuggestionsOrder) AllValues() []ListSiteSuggestionsOrder {
+	return []ListSiteSuggestionsOrder{
+		ListSiteSuggestionsOrderAsc,
+		ListSiteSuggestionsOrderDesc,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s ListSiteSuggestionsOrder) MarshalText() ([]byte, error) {
+	switch s {
+	case ListSiteSuggestionsOrderAsc:
+		return []byte(s), nil
+	case ListSiteSuggestionsOrderDesc:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *ListSiteSuggestionsOrder) UnmarshalText(data []byte) error {
+	switch ListSiteSuggestionsOrder(data) {
+	case ListSiteSuggestionsOrderAsc:
+		*s = ListSiteSuggestionsOrderAsc
+		return nil
+	case ListSiteSuggestionsOrderDesc:
+		*s = ListSiteSuggestionsOrderDesc
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
 type ListSitesOrder string
 
 const (
@@ -1017,6 +1058,52 @@ func (o OptListISPsOrder) Get() (v ListISPsOrder, ok bool) {
 
 // Or returns value if set, or given parameter if does not.
 func (o OptListISPsOrder) Or(d ListISPsOrder) ListISPsOrder {
+	if v, ok := o.Get(); ok {
+		return v
+	}
+	return d
+}
+
+// NewOptListSiteSuggestionsOrder returns new OptListSiteSuggestionsOrder with value set to v.
+func NewOptListSiteSuggestionsOrder(v ListSiteSuggestionsOrder) OptListSiteSuggestionsOrder {
+	return OptListSiteSuggestionsOrder{
+		Value: v,
+		Set:   true,
+	}
+}
+
+// OptListSiteSuggestionsOrder is optional ListSiteSuggestionsOrder.
+type OptListSiteSuggestionsOrder struct {
+	Value ListSiteSuggestionsOrder
+	Set   bool
+}
+
+// IsSet returns true if OptListSiteSuggestionsOrder was set.
+func (o OptListSiteSuggestionsOrder) IsSet() bool { return o.Set }
+
+// Reset unsets value.
+func (o *OptListSiteSuggestionsOrder) Reset() {
+	var v ListSiteSuggestionsOrder
+	o.Value = v
+	o.Set = false
+}
+
+// SetTo sets value to v.
+func (o *OptListSiteSuggestionsOrder) SetTo(v ListSiteSuggestionsOrder) {
+	o.Set = true
+	o.Value = v
+}
+
+// Get returns value and boolean that denotes whether value was set.
+func (o OptListSiteSuggestionsOrder) Get() (v ListSiteSuggestionsOrder, ok bool) {
+	if !o.Set {
+		return v, false
+	}
+	return o.Value, true
+}
+
+// Or returns value if set, or given parameter if does not.
+func (o OptListSiteSuggestionsOrder) Or(d ListSiteSuggestionsOrder) ListSiteSuggestionsOrder {
 	if v, ok := o.Get(); ok {
 		return v
 	}

@@ -94,6 +94,15 @@ func (UnimplementedHandler) GetSite(ctx context.Context, params GetSiteParams) (
 	return r, ht.ErrNotImplemented
 }
 
+// GetSiteSuggestion implements getSiteSuggestion operation.
+//
+// Get a site suggestion by ID.
+//
+// GET /sites/suggestions/{id}
+func (UnimplementedHandler) GetSiteSuggestion(ctx context.Context, params GetSiteSuggestionParams) (r *SiteSuggestion, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // HealthCheck implements healthCheck operation.
 //
 // Health check.
@@ -144,7 +153,7 @@ func (UnimplementedHandler) ListISPs(ctx context.Context, params ListISPsParams)
 // List all site suggestions.
 //
 // GET /sites/suggestions
-func (UnimplementedHandler) ListSiteSuggestions(ctx context.Context) (r []SiteSuggestion, _ error) {
+func (UnimplementedHandler) ListSiteSuggestions(ctx context.Context, params ListSiteSuggestionsParams) (r []SiteSuggestion, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
