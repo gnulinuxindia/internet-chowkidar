@@ -11,6 +11,7 @@ import (
 	"github.com/gnulinuxindia/internet-chowkidar/ent/isps"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/schema"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/sitesuggestions"
 )
 
 // The init function reads all schema descriptors with runtime code
@@ -68,6 +69,21 @@ func init() {
 	isps.DefaultUpdatedAt = ispsDescUpdatedAt.Default.(func() time.Time)
 	// isps.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
 	isps.UpdateDefaultUpdatedAt = ispsDescUpdatedAt.UpdateDefault.(func() time.Time)
+	sitesuggestionsMixin := schema.SiteSuggestions{}.Mixin()
+	sitesuggestionsMixinFields0 := sitesuggestionsMixin[0].Fields()
+	_ = sitesuggestionsMixinFields0
+	sitesuggestionsFields := schema.SiteSuggestions{}.Fields()
+	_ = sitesuggestionsFields
+	// sitesuggestionsDescCreatedAt is the schema descriptor for created_at field.
+	sitesuggestionsDescCreatedAt := sitesuggestionsMixinFields0[0].Descriptor()
+	// sitesuggestions.DefaultCreatedAt holds the default value on creation for the created_at field.
+	sitesuggestions.DefaultCreatedAt = sitesuggestionsDescCreatedAt.Default.(func() time.Time)
+	// sitesuggestionsDescUpdatedAt is the schema descriptor for updated_at field.
+	sitesuggestionsDescUpdatedAt := sitesuggestionsMixinFields0[1].Descriptor()
+	// sitesuggestions.DefaultUpdatedAt holds the default value on creation for the updated_at field.
+	sitesuggestions.DefaultUpdatedAt = sitesuggestionsDescUpdatedAt.Default.(func() time.Time)
+	// sitesuggestions.UpdateDefaultUpdatedAt holds the default value on update for the updated_at field.
+	sitesuggestions.UpdateDefaultUpdatedAt = sitesuggestionsDescUpdatedAt.UpdateDefault.(func() time.Time)
 	sitesMixin := schema.Sites{}.Mixin()
 	sitesMixinFields0 := sitesMixin[0].Fields()
 	_ = sitesMixinFields0

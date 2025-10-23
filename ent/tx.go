@@ -20,6 +20,8 @@ type Tx struct {
 	Counter *CounterClient
 	// Isps is the client for interacting with the Isps builders.
 	Isps *IspsClient
+	// SiteSuggestions is the client for interacting with the SiteSuggestions builders.
+	SiteSuggestions *SiteSuggestionsClient
 	// Sites is the client for interacting with the Sites builders.
 	Sites *SitesClient
 	// SitesCategories is the client for interacting with the SitesCategories builders.
@@ -159,6 +161,7 @@ func (tx *Tx) init() {
 	tx.Categories = NewCategoriesClient(tx.config)
 	tx.Counter = NewCounterClient(tx.config)
 	tx.Isps = NewIspsClient(tx.config)
+	tx.SiteSuggestions = NewSiteSuggestionsClient(tx.config)
 	tx.Sites = NewSitesClient(tx.config)
 	tx.SitesCategories = NewSitesCategoriesClient(tx.config)
 }

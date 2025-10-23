@@ -18,6 +18,7 @@ import (
 	"github.com/gnulinuxindia/internet-chowkidar/ent/isps"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sitescategories"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/sitesuggestions"
 )
 
 // ent aliases to avoid import conflicts in user's code.
@@ -82,6 +83,7 @@ func checkColumn(t, c string) error {
 			categories.Table:      categories.ValidColumn,
 			counter.Table:         counter.ValidColumn,
 			isps.Table:            isps.ValidColumn,
+			sitesuggestions.Table: sitesuggestions.ValidColumn,
 			sites.Table:           sites.ValidColumn,
 			sitescategories.Table: sitescategories.ValidColumn,
 		})

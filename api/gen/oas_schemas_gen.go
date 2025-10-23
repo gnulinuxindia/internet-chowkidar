@@ -1069,52 +1069,6 @@ func (o OptListSitesOrder) Or(d ListSitesOrder) ListSitesOrder {
 	return d
 }
 
-// NewOptSiteSuggestionStatus returns new OptSiteSuggestionStatus with value set to v.
-func NewOptSiteSuggestionStatus(v SiteSuggestionStatus) OptSiteSuggestionStatus {
-	return OptSiteSuggestionStatus{
-		Value: v,
-		Set:   true,
-	}
-}
-
-// OptSiteSuggestionStatus is optional SiteSuggestionStatus.
-type OptSiteSuggestionStatus struct {
-	Value SiteSuggestionStatus
-	Set   bool
-}
-
-// IsSet returns true if OptSiteSuggestionStatus was set.
-func (o OptSiteSuggestionStatus) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptSiteSuggestionStatus) Reset() {
-	var v SiteSuggestionStatus
-	o.Value = v
-	o.Set = false
-}
-
-// SetTo sets value to v.
-func (o *OptSiteSuggestionStatus) SetTo(v SiteSuggestionStatus) {
-	o.Set = true
-	o.Value = v
-}
-
-// Get returns value and boolean that denotes whether value was set.
-func (o OptSiteSuggestionStatus) Get() (v SiteSuggestionStatus, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
-}
-
-// Or returns value if set, or given parameter if does not.
-func (o OptSiteSuggestionStatus) Or(d SiteSuggestionStatus) SiteSuggestionStatus {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
-}
-
 // NewOptString returns new OptString with value set to v.
 func NewOptString(v string) OptString {
 	return OptString{
@@ -1476,94 +1430,139 @@ func (s *SiteInput) SetCategories(val []string) {
 
 // Ref: #/components/schemas/SiteSuggestion
 type SiteSuggestion struct {
-	ID         OptInt                  `json:"id"`
-	SiteID     OptInt                  `json:"site_id"`
-	Reason     OptString               `json:"reason"`
-	Status     OptSiteSuggestionStatus `json:"status"`
-	ResolvedAt OptDateTime             `json:"resolved_at"`
-	CreatedAt  OptDateTime             `json:"created_at"`
-	UpdatedAt  OptDateTime             `json:"updated_at"`
+	ID            int                  `json:"id"`
+	Domain        string               `json:"domain"`
+	PingURL       string               `json:"ping_url"`
+	Categories    []string             `json:"categories"`
+	Reason        string               `json:"reason"`
+	Status        SiteSuggestionStatus `json:"status"`
+	ResolveReason string               `json:"resolve_reason"`
+	ResolvedAt    time.Time            `json:"resolved_at"`
+	CreatedAt     time.Time            `json:"created_at"`
+	UpdatedAt     time.Time            `json:"updated_at"`
 }
 
 // GetID returns the value of ID.
-func (s *SiteSuggestion) GetID() OptInt {
+func (s *SiteSuggestion) GetID() int {
 	return s.ID
 }
 
-// GetSiteID returns the value of SiteID.
-func (s *SiteSuggestion) GetSiteID() OptInt {
-	return s.SiteID
+// GetDomain returns the value of Domain.
+func (s *SiteSuggestion) GetDomain() string {
+	return s.Domain
+}
+
+// GetPingURL returns the value of PingURL.
+func (s *SiteSuggestion) GetPingURL() string {
+	return s.PingURL
+}
+
+// GetCategories returns the value of Categories.
+func (s *SiteSuggestion) GetCategories() []string {
+	return s.Categories
 }
 
 // GetReason returns the value of Reason.
-func (s *SiteSuggestion) GetReason() OptString {
+func (s *SiteSuggestion) GetReason() string {
 	return s.Reason
 }
 
 // GetStatus returns the value of Status.
-func (s *SiteSuggestion) GetStatus() OptSiteSuggestionStatus {
+func (s *SiteSuggestion) GetStatus() SiteSuggestionStatus {
 	return s.Status
 }
 
+// GetResolveReason returns the value of ResolveReason.
+func (s *SiteSuggestion) GetResolveReason() string {
+	return s.ResolveReason
+}
+
 // GetResolvedAt returns the value of ResolvedAt.
-func (s *SiteSuggestion) GetResolvedAt() OptDateTime {
+func (s *SiteSuggestion) GetResolvedAt() time.Time {
 	return s.ResolvedAt
 }
 
 // GetCreatedAt returns the value of CreatedAt.
-func (s *SiteSuggestion) GetCreatedAt() OptDateTime {
+func (s *SiteSuggestion) GetCreatedAt() time.Time {
 	return s.CreatedAt
 }
 
 // GetUpdatedAt returns the value of UpdatedAt.
-func (s *SiteSuggestion) GetUpdatedAt() OptDateTime {
+func (s *SiteSuggestion) GetUpdatedAt() time.Time {
 	return s.UpdatedAt
 }
 
 // SetID sets the value of ID.
-func (s *SiteSuggestion) SetID(val OptInt) {
+func (s *SiteSuggestion) SetID(val int) {
 	s.ID = val
 }
 
-// SetSiteID sets the value of SiteID.
-func (s *SiteSuggestion) SetSiteID(val OptInt) {
-	s.SiteID = val
+// SetDomain sets the value of Domain.
+func (s *SiteSuggestion) SetDomain(val string) {
+	s.Domain = val
+}
+
+// SetPingURL sets the value of PingURL.
+func (s *SiteSuggestion) SetPingURL(val string) {
+	s.PingURL = val
+}
+
+// SetCategories sets the value of Categories.
+func (s *SiteSuggestion) SetCategories(val []string) {
+	s.Categories = val
 }
 
 // SetReason sets the value of Reason.
-func (s *SiteSuggestion) SetReason(val OptString) {
+func (s *SiteSuggestion) SetReason(val string) {
 	s.Reason = val
 }
 
 // SetStatus sets the value of Status.
-func (s *SiteSuggestion) SetStatus(val OptSiteSuggestionStatus) {
+func (s *SiteSuggestion) SetStatus(val SiteSuggestionStatus) {
 	s.Status = val
 }
 
+// SetResolveReason sets the value of ResolveReason.
+func (s *SiteSuggestion) SetResolveReason(val string) {
+	s.ResolveReason = val
+}
+
 // SetResolvedAt sets the value of ResolvedAt.
-func (s *SiteSuggestion) SetResolvedAt(val OptDateTime) {
+func (s *SiteSuggestion) SetResolvedAt(val time.Time) {
 	s.ResolvedAt = val
 }
 
 // SetCreatedAt sets the value of CreatedAt.
-func (s *SiteSuggestion) SetCreatedAt(val OptDateTime) {
+func (s *SiteSuggestion) SetCreatedAt(val time.Time) {
 	s.CreatedAt = val
 }
 
 // SetUpdatedAt sets the value of UpdatedAt.
-func (s *SiteSuggestion) SetUpdatedAt(val OptDateTime) {
+func (s *SiteSuggestion) SetUpdatedAt(val time.Time) {
 	s.UpdatedAt = val
 }
 
 // Ref: #/components/schemas/SiteSuggestionInput
 type SiteSuggestionInput struct {
-	SiteID int    `json:"site_id"`
-	Reason string `json:"reason"`
+	Domain     string    `json:"domain"`
+	PingURL    OptString `json:"ping_url"`
+	Categories []string  `json:"categories"`
+	Reason     string    `json:"reason"`
 }
 
-// GetSiteID returns the value of SiteID.
-func (s *SiteSuggestionInput) GetSiteID() int {
-	return s.SiteID
+// GetDomain returns the value of Domain.
+func (s *SiteSuggestionInput) GetDomain() string {
+	return s.Domain
+}
+
+// GetPingURL returns the value of PingURL.
+func (s *SiteSuggestionInput) GetPingURL() OptString {
+	return s.PingURL
+}
+
+// GetCategories returns the value of Categories.
+func (s *SiteSuggestionInput) GetCategories() []string {
+	return s.Categories
 }
 
 // GetReason returns the value of Reason.
@@ -1571,9 +1570,19 @@ func (s *SiteSuggestionInput) GetReason() string {
 	return s.Reason
 }
 
-// SetSiteID sets the value of SiteID.
-func (s *SiteSuggestionInput) SetSiteID(val int) {
-	s.SiteID = val
+// SetDomain sets the value of Domain.
+func (s *SiteSuggestionInput) SetDomain(val string) {
+	s.Domain = val
+}
+
+// SetPingURL sets the value of PingURL.
+func (s *SiteSuggestionInput) SetPingURL(val OptString) {
+	s.PingURL = val
+}
+
+// SetCategories sets the value of Categories.
+func (s *SiteSuggestionInput) SetCategories(val []string) {
+	s.Categories = val
 }
 
 // SetReason sets the value of Reason.
@@ -1585,14 +1594,16 @@ type SiteSuggestionStatus string
 
 const (
 	SiteSuggestionStatusPending  SiteSuggestionStatus = "pending"
-	SiteSuggestionStatusResolved SiteSuggestionStatus = "resolved"
+	SiteSuggestionStatusAccepted SiteSuggestionStatus = "accepted"
+	SiteSuggestionStatusRejected SiteSuggestionStatus = "rejected"
 )
 
 // AllValues returns all SiteSuggestionStatus values.
 func (SiteSuggestionStatus) AllValues() []SiteSuggestionStatus {
 	return []SiteSuggestionStatus{
 		SiteSuggestionStatusPending,
-		SiteSuggestionStatusResolved,
+		SiteSuggestionStatusAccepted,
+		SiteSuggestionStatusRejected,
 	}
 }
 
@@ -1601,7 +1612,9 @@ func (s SiteSuggestionStatus) MarshalText() ([]byte, error) {
 	switch s {
 	case SiteSuggestionStatusPending:
 		return []byte(s), nil
-	case SiteSuggestionStatusResolved:
+	case SiteSuggestionStatusAccepted:
+		return []byte(s), nil
+	case SiteSuggestionStatusRejected:
 		return []byte(s), nil
 	default:
 		return nil, errors.Errorf("invalid value: %q", s)
@@ -1614,8 +1627,11 @@ func (s *SiteSuggestionStatus) UnmarshalText(data []byte) error {
 	case SiteSuggestionStatusPending:
 		*s = SiteSuggestionStatusPending
 		return nil
-	case SiteSuggestionStatusResolved:
-		*s = SiteSuggestionStatusResolved
+	case SiteSuggestionStatusAccepted:
+		*s = SiteSuggestionStatusAccepted
+		return nil
+	case SiteSuggestionStatusRejected:
+		*s = SiteSuggestionStatusRejected
 		return nil
 	default:
 		return errors.Errorf("invalid value: %q", data)

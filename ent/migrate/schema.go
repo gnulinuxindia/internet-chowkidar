@@ -92,6 +92,32 @@ var (
 		Columns:    IspsColumns,
 		PrimaryKey: []*schema.Column{IspsColumns[0]},
 	}
+	// SiteSuggestionsColumns holds the columns for the "site_suggestions" table.
+	SiteSuggestionsColumns = []*schema.Column{
+		{Name: "id", Type: field.TypeInt, Increment: true},
+		{Name: "created_at", Type: field.TypeTime},
+		{Name: "updated_at", Type: field.TypeTime},
+		{Name: "domain", Type: field.TypeString, Unique: true},
+		{Name: "ping_url", Type: field.TypeString, Unique: true},
+		{Name: "categories", Type: field.TypeString, Nullable: true},
+		{Name: "reason", Type: field.TypeString},
+		{Name: "status", Type: field.TypeEnum, Enums: []string{"pending", "accepted", "rejected"}, Default: "pending"},
+		{Name: "resolve_reason", Type: field.TypeString, Nullable: true},
+		{Name: "resolved_at", Type: field.TypeTime, Nullable: true},
+	}
+	// SiteSuggestionsTable holds the schema information for the "site_suggestions" table.
+	SiteSuggestionsTable = &schema.Table{
+		Name:       "site_suggestions",
+		Columns:    SiteSuggestionsColumns,
+		PrimaryKey: []*schema.Column{SiteSuggestionsColumns[0]},
+		Indexes: []*schema.Index{
+			{
+				Name:    "sitesuggestions_domain",
+				Unique:  true,
+				Columns: []*schema.Column{SiteSuggestionsColumns[3]},
+			},
+		},
+	}
 	// SitesColumns holds the columns for the "sites" table.
 	SitesColumns = []*schema.Column{
 		{Name: "id", Type: field.TypeInt, Increment: true},
@@ -152,6 +178,7 @@ var (
 		CategoriesTable,
 		CountersTable,
 		IspsTable,
+		SiteSuggestionsTable,
 		SitesTable,
 		SitesCategoriesTable,
 	}

@@ -21,6 +21,7 @@ import (
 	"github.com/gnulinuxindia/internet-chowkidar/ent/isps"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sitescategories"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/sitesuggestions"
 )
 
 // Client is the client that holds all ent builders.
@@ -36,6 +37,8 @@ type Client struct {
 	Counter *CounterClient
 	// Isps is the client for interacting with the Isps builders.
 	Isps *IspsClient
+	// SiteSuggestions is the client for interacting with the SiteSuggestions builders.
+	SiteSuggestions *SiteSuggestionsClient
 	// Sites is the client for interacting with the Sites builders.
 	Sites *SitesClient
 	// SitesCategories is the client for interacting with the SitesCategories builders.
@@ -55,6 +58,7 @@ func (c *Client) init() {
 	c.Categories = NewCategoriesClient(c.config)
 	c.Counter = NewCounterClient(c.config)
 	c.Isps = NewIspsClient(c.config)
+	c.SiteSuggestions = NewSiteSuggestionsClient(c.config)
 	c.Sites = NewSitesClient(c.config)
 	c.SitesCategories = NewSitesCategoriesClient(c.config)
 }
@@ -153,6 +157,7 @@ func (c *Client) Tx(ctx context.Context) (*Tx, error) {
 		Categories:      NewCategoriesClient(cfg),
 		Counter:         NewCounterClient(cfg),
 		Isps:            NewIspsClient(cfg),
+		SiteSuggestions: NewSiteSuggestionsClient(cfg),
 		Sites:           NewSitesClient(cfg),
 		SitesCategories: NewSitesCategoriesClient(cfg),
 	}, nil
@@ -178,6 +183,7 @@ func (c *Client) BeginTx(ctx context.Context, opts *sql.TxOptions) (*Tx, error) 
 		Categories:      NewCategoriesClient(cfg),
 		Counter:         NewCounterClient(cfg),
 		Isps:            NewIspsClient(cfg),
+		SiteSuggestions: NewSiteSuggestionsClient(cfg),
 		Sites:           NewSitesClient(cfg),
 		SitesCategories: NewSitesCategoriesClient(cfg),
 	}, nil
@@ -209,7 +215,8 @@ func (c *Client) Close() error {
 // In order to add hooks to a specific client, call: `client.Node.Use(...)`.
 func (c *Client) Use(hooks ...Hook) {
 	for _, n := range []interface{ Use(...Hook) }{
-		c.Blocks, c.Categories, c.Counter, c.Isps, c.Sites, c.SitesCategories,
+		c.Blocks, c.Categories, c.Counter, c.Isps, c.SiteSuggestions, c.Sites,
+		c.SitesCategories,
 	} {
 		n.Use(hooks...)
 	}
@@ -219,7 +226,8 @@ func (c *Client) Use(hooks ...Hook) {
 // In order to add interceptors to a specific client, call: `client.Node.Intercept(...)`.
 func (c *Client) Intercept(interceptors ...Interceptor) {
 	for _, n := range []interface{ Intercept(...Interceptor) }{
-		c.Blocks, c.Categories, c.Counter, c.Isps, c.Sites, c.SitesCategories,
+		c.Blocks, c.Categories, c.Counter, c.Isps, c.SiteSuggestions, c.Sites,
+		c.SitesCategories,
 	} {
 		n.Intercept(interceptors...)
 	}
@@ -236,6 +244,8 @@ func (c *Client) Mutate(ctx context.Context, m Mutation) (Value, error) {
 		return c.Counter.mutate(ctx, m)
 	case *IspsMutation:
 		return c.Isps.mutate(ctx, m)
+	case *SiteSuggestionsMutation:
+		return c.SiteSuggestions.mutate(ctx, m)
 	case *SitesMutation:
 		return c.Sites.mutate(ctx, m)
 	case *SitesCategoriesMutation:
@@ -857,6 +867,139 @@ func (c *IspsClient) mutate(ctx context.Context, m *IspsMutation) (Value, error)
 	}
 }
 
+// SiteSuggestionsClient is a client for the SiteSuggestions schema.
+type SiteSuggestionsClient struct {
+	config
+}
+
+// NewSiteSuggestionsClient returns a client for the SiteSuggestions from the given config.
+func NewSiteSuggestionsClient(c config) *SiteSuggestionsClient {
+	return &SiteSuggestionsClient{config: c}
+}
+
+// Use adds a list of mutation hooks to the hooks stack.
+// A call to `Use(f, g, h)` equals to `sitesuggestions.Hooks(f(g(h())))`.
+func (c *SiteSuggestionsClient) Use(hooks ...Hook) {
+	c.hooks.SiteSuggestions = append(c.hooks.SiteSuggestions, hooks...)
+}
+
+// Intercept adds a list of query interceptors to the interceptors stack.
+// A call to `Intercept(f, g, h)` equals to `sitesuggestions.Intercept(f(g(h())))`.
+func (c *SiteSuggestionsClient) Intercept(interceptors ...Interceptor) {
+	c.inters.SiteSuggestions = append(c.inters.SiteSuggestions, interceptors...)
+}
+
+// Create returns a builder for creating a SiteSuggestions entity.
+func (c *SiteSuggestionsClient) Create() *SiteSuggestionsCreate {
+	mutation := newSiteSuggestionsMutation(c.config, OpCreate)
+	return &SiteSuggestionsCreate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// CreateBulk returns a builder for creating a bulk of SiteSuggestions entities.
+func (c *SiteSuggestionsClient) CreateBulk(builders ...*SiteSuggestionsCreate) *SiteSuggestionsCreateBulk {
+	return &SiteSuggestionsCreateBulk{config: c.config, builders: builders}
+}
+
+// MapCreateBulk creates a bulk creation builder from the given slice. For each item in the slice, the function creates
+// a builder and applies setFunc on it.
+func (c *SiteSuggestionsClient) MapCreateBulk(slice any, setFunc func(*SiteSuggestionsCreate, int)) *SiteSuggestionsCreateBulk {
+	rv := reflect.ValueOf(slice)
+	if rv.Kind() != reflect.Slice {
+		return &SiteSuggestionsCreateBulk{err: fmt.Errorf("calling to SiteSuggestionsClient.MapCreateBulk with wrong type %T, need slice", slice)}
+	}
+	builders := make([]*SiteSuggestionsCreate, rv.Len())
+	for i := 0; i < rv.Len(); i++ {
+		builders[i] = c.Create()
+		setFunc(builders[i], i)
+	}
+	return &SiteSuggestionsCreateBulk{config: c.config, builders: builders}
+}
+
+// Update returns an update builder for SiteSuggestions.
+func (c *SiteSuggestionsClient) Update() *SiteSuggestionsUpdate {
+	mutation := newSiteSuggestionsMutation(c.config, OpUpdate)
+	return &SiteSuggestionsUpdate{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOne returns an update builder for the given entity.
+func (c *SiteSuggestionsClient) UpdateOne(_m *SiteSuggestions) *SiteSuggestionsUpdateOne {
+	mutation := newSiteSuggestionsMutation(c.config, OpUpdateOne, withSiteSuggestions(_m))
+	return &SiteSuggestionsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// UpdateOneID returns an update builder for the given id.
+func (c *SiteSuggestionsClient) UpdateOneID(id int) *SiteSuggestionsUpdateOne {
+	mutation := newSiteSuggestionsMutation(c.config, OpUpdateOne, withSiteSuggestionsID(id))
+	return &SiteSuggestionsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// Delete returns a delete builder for SiteSuggestions.
+func (c *SiteSuggestionsClient) Delete() *SiteSuggestionsDelete {
+	mutation := newSiteSuggestionsMutation(c.config, OpDelete)
+	return &SiteSuggestionsDelete{config: c.config, hooks: c.Hooks(), mutation: mutation}
+}
+
+// DeleteOne returns a builder for deleting the given entity.
+func (c *SiteSuggestionsClient) DeleteOne(_m *SiteSuggestions) *SiteSuggestionsDeleteOne {
+	return c.DeleteOneID(_m.ID)
+}
+
+// DeleteOneID returns a builder for deleting the given entity by its id.
+func (c *SiteSuggestionsClient) DeleteOneID(id int) *SiteSuggestionsDeleteOne {
+	builder := c.Delete().Where(sitesuggestions.ID(id))
+	builder.mutation.id = &id
+	builder.mutation.op = OpDeleteOne
+	return &SiteSuggestionsDeleteOne{builder}
+}
+
+// Query returns a query builder for SiteSuggestions.
+func (c *SiteSuggestionsClient) Query() *SiteSuggestionsQuery {
+	return &SiteSuggestionsQuery{
+		config: c.config,
+		ctx:    &QueryContext{Type: TypeSiteSuggestions},
+		inters: c.Interceptors(),
+	}
+}
+
+// Get returns a SiteSuggestions entity by its id.
+func (c *SiteSuggestionsClient) Get(ctx context.Context, id int) (*SiteSuggestions, error) {
+	return c.Query().Where(sitesuggestions.ID(id)).Only(ctx)
+}
+
+// GetX is like Get, but panics if an error occurs.
+func (c *SiteSuggestionsClient) GetX(ctx context.Context, id int) *SiteSuggestions {
+	obj, err := c.Get(ctx, id)
+	if err != nil {
+		panic(err)
+	}
+	return obj
+}
+
+// Hooks returns the client hooks.
+func (c *SiteSuggestionsClient) Hooks() []Hook {
+	return c.hooks.SiteSuggestions
+}
+
+// Interceptors returns the client interceptors.
+func (c *SiteSuggestionsClient) Interceptors() []Interceptor {
+	return c.inters.SiteSuggestions
+}
+
+func (c *SiteSuggestionsClient) mutate(ctx context.Context, m *SiteSuggestionsMutation) (Value, error) {
+	switch m.Op() {
+	case OpCreate:
+		return (&SiteSuggestionsCreate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdate:
+		return (&SiteSuggestionsUpdate{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpUpdateOne:
+		return (&SiteSuggestionsUpdateOne{config: c.config, hooks: c.Hooks(), mutation: m}).Save(ctx)
+	case OpDelete, OpDeleteOne:
+		return (&SiteSuggestionsDelete{config: c.config, hooks: c.Hooks(), mutation: m}).Exec(ctx)
+	default:
+		return nil, fmt.Errorf("ent: unknown SiteSuggestions mutation op: %q", m.Op())
+	}
+}
+
 // SitesClient is a client for the Sites schema.
 type SitesClient struct {
 	config
@@ -1206,9 +1349,11 @@ func (c *SitesCategoriesClient) mutate(ctx context.Context, m *SitesCategoriesMu
 // hooks and interceptors per client, for fast access.
 type (
 	hooks struct {
-		Blocks, Categories, Counter, Isps, Sites, SitesCategories []ent.Hook
+		Blocks, Categories, Counter, Isps, SiteSuggestions, Sites,
+		SitesCategories []ent.Hook
 	}
 	inters struct {
-		Blocks, Categories, Counter, Isps, Sites, SitesCategories []ent.Interceptor
+		Blocks, Categories, Counter, Isps, SiteSuggestions, Sites,
+		SitesCategories []ent.Interceptor
 	}
 )

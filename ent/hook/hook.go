@@ -57,6 +57,18 @@ func (f IspsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error)
 	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.IspsMutation", m)
 }
 
+// The SiteSuggestionsFunc type is an adapter to allow the use of ordinary
+// function as SiteSuggestions mutator.
+type SiteSuggestionsFunc func(context.Context, *ent.SiteSuggestionsMutation) (ent.Value, error)
+
+// Mutate calls f(ctx, m).
+func (f SiteSuggestionsFunc) Mutate(ctx context.Context, m ent.Mutation) (ent.Value, error) {
+	if mv, ok := m.(*ent.SiteSuggestionsMutation); ok {
+		return f(ctx, mv)
+	}
+	return nil, fmt.Errorf("unexpected mutation type %T. expect *ent.SiteSuggestionsMutation", m)
+}
+
 // The SitesFunc type is an adapter to allow the use of ordinary
 // function as Sites mutator.
 type SitesFunc func(context.Context, *ent.SitesMutation) (ent.Value, error)

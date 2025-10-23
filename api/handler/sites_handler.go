@@ -24,6 +24,7 @@ func (s *sitesHandlerImpl) ListSites(ctx context.Context, params genapi.ListSite
 }
 
 func (s *sitesHandlerImpl) ListSiteSuggestions(ctx context.Context) ([]genapi.SiteSuggestion, error) {
+	//return s.sitesService.GetAllSiteSuggestions(ctx, params)
 	panic("not implemented")
 }
 
@@ -41,5 +42,5 @@ func (s *sitesHandlerImpl) GetSite(ctx context.Context, params genapi.GetSitePar
 }
 
 func (s *sitesHandlerImpl) CreateSiteSuggestion(ctx context.Context, req *genapi.SiteSuggestionInput) (*genapi.SiteSuggestion, error) {
-	panic("not implemented")
+	return s.sitesService.CreateSiteSuggestion(ctx, req)
 }

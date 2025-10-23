@@ -1811,39 +1811,6 @@ func (s *OptInt) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
-// Encode encodes SiteSuggestionStatus as json.
-func (o OptSiteSuggestionStatus) Encode(e *jx.Encoder) {
-	if !o.Set {
-		return
-	}
-	e.Str(string(o.Value))
-}
-
-// Decode decodes SiteSuggestionStatus from json.
-func (o *OptSiteSuggestionStatus) Decode(d *jx.Decoder) error {
-	if o == nil {
-		return errors.New("invalid: unable to decode OptSiteSuggestionStatus to nil")
-	}
-	o.Set = true
-	if err := o.Value.Decode(d); err != nil {
-		return err
-	}
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s OptSiteSuggestionStatus) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *OptSiteSuggestionStatus) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
 // Encode encodes string as json.
 func (o OptString) Encode(e *jx.Encoder) {
 	if !o.Set {
@@ -1901,14 +1868,12 @@ func (s *Site) encodeFields(e *jx.Encoder) {
 		e.Str(s.PingURL)
 	}
 	{
-		if s.Categories != nil {
-			e.FieldStart("categories")
-			e.ArrStart()
-			for _, elem := range s.Categories {
-				e.Str(elem)
-			}
-			e.ArrEnd()
+		e.FieldStart("categories")
+		e.ArrStart()
+		for _, elem := range s.Categories {
+			e.Str(elem)
 		}
+		e.ArrEnd()
 	}
 	{
 		e.FieldStart("block_reports")
@@ -1990,6 +1955,7 @@ func (s *Site) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"ping_url\"")
 			}
 		case "categories":
+			requiredBitSet[0] |= 1 << 3
 			if err := func() error {
 				s.Categories = make([]string, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
@@ -2078,7 +2044,7 @@ func (s *Site) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [2]uint8{
-		0b11110111,
+		0b11111111,
 		0b00000001,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
@@ -2714,57 +2680,62 @@ func (s *SiteSuggestion) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *SiteSuggestion) encodeFields(e *jx.Encoder) {
 	{
-		if s.ID.Set {
-			e.FieldStart("id")
-			s.ID.Encode(e)
-		}
+		e.FieldStart("id")
+		e.Int(s.ID)
 	}
 	{
-		if s.SiteID.Set {
-			e.FieldStart("site_id")
-			s.SiteID.Encode(e)
-		}
+		e.FieldStart("domain")
+		e.Str(s.Domain)
 	}
 	{
-		if s.Reason.Set {
-			e.FieldStart("reason")
-			s.Reason.Encode(e)
-		}
+		e.FieldStart("ping_url")
+		e.Str(s.PingURL)
 	}
 	{
-		if s.Status.Set {
-			e.FieldStart("status")
-			s.Status.Encode(e)
+		e.FieldStart("categories")
+		e.ArrStart()
+		for _, elem := range s.Categories {
+			e.Str(elem)
 		}
+		e.ArrEnd()
 	}
 	{
-		if s.ResolvedAt.Set {
-			e.FieldStart("resolved_at")
-			s.ResolvedAt.Encode(e, json.EncodeDateTime)
-		}
+		e.FieldStart("reason")
+		e.Str(s.Reason)
 	}
 	{
-		if s.CreatedAt.Set {
-			e.FieldStart("created_at")
-			s.CreatedAt.Encode(e, json.EncodeDateTime)
-		}
+		e.FieldStart("status")
+		s.Status.Encode(e)
 	}
 	{
-		if s.UpdatedAt.Set {
-			e.FieldStart("updated_at")
-			s.UpdatedAt.Encode(e, json.EncodeDateTime)
-		}
+		e.FieldStart("resolve_reason")
+		e.Str(s.ResolveReason)
+	}
+	{
+		e.FieldStart("resolved_at")
+		json.EncodeDateTime(e, s.ResolvedAt)
+	}
+	{
+		e.FieldStart("created_at")
+		json.EncodeDateTime(e, s.CreatedAt)
+	}
+	{
+		e.FieldStart("updated_at")
+		json.EncodeDateTime(e, s.UpdatedAt)
 	}
 }
 
-var jsonFieldsNameOfSiteSuggestion = [7]string{
+var jsonFieldsNameOfSiteSuggestion = [10]string{
 	0: "id",
-	1: "site_id",
-	2: "reason",
-	3: "status",
-	4: "resolved_at",
-	5: "created_at",
-	6: "updated_at",
+	1: "domain",
+	2: "ping_url",
+	3: "categories",
+	4: "reason",
+	5: "status",
+	6: "resolve_reason",
+	7: "resolved_at",
+	8: "created_at",
+	9: "updated_at",
 }
 
 // Decode decodes SiteSuggestion from json.
@@ -2772,33 +2743,72 @@ func (s *SiteSuggestion) Decode(d *jx.Decoder) error {
 	if s == nil {
 		return errors.New("invalid: unable to decode SiteSuggestion to nil")
 	}
+	var requiredBitSet [2]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
 		case "id":
+			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				s.ID.Reset()
-				if err := s.ID.Decode(d); err != nil {
+				v, err := d.Int()
+				s.ID = int(v)
+				if err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"id\"")
 			}
-		case "site_id":
+		case "domain":
+			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
-				s.SiteID.Reset()
-				if err := s.SiteID.Decode(d); err != nil {
+				v, err := d.Str()
+				s.Domain = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"site_id\"")
+				return errors.Wrap(err, "decode field \"domain\"")
+			}
+		case "ping_url":
+			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				v, err := d.Str()
+				s.PingURL = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"ping_url\"")
+			}
+		case "categories":
+			requiredBitSet[0] |= 1 << 3
+			if err := func() error {
+				s.Categories = make([]string, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem string
+					v, err := d.Str()
+					elem = string(v)
+					if err != nil {
+						return err
+					}
+					s.Categories = append(s.Categories, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"categories\"")
 			}
 		case "reason":
+			requiredBitSet[0] |= 1 << 4
 			if err := func() error {
-				s.Reason.Reset()
-				if err := s.Reason.Decode(d); err != nil {
+				v, err := d.Str()
+				s.Reason = string(v)
+				if err != nil {
 					return err
 				}
 				return nil
@@ -2806,8 +2816,8 @@ func (s *SiteSuggestion) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"reason\"")
 			}
 		case "status":
+			requiredBitSet[0] |= 1 << 5
 			if err := func() error {
-				s.Status.Reset()
 				if err := s.Status.Decode(d); err != nil {
 					return err
 				}
@@ -2815,10 +2825,24 @@ func (s *SiteSuggestion) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"status\"")
 			}
-		case "resolved_at":
+		case "resolve_reason":
+			requiredBitSet[0] |= 1 << 6
 			if err := func() error {
-				s.ResolvedAt.Reset()
-				if err := s.ResolvedAt.Decode(d, json.DecodeDateTime); err != nil {
+				v, err := d.Str()
+				s.ResolveReason = string(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"resolve_reason\"")
+			}
+		case "resolved_at":
+			requiredBitSet[0] |= 1 << 7
+			if err := func() error {
+				v, err := json.DecodeDateTime(d)
+				s.ResolvedAt = v
+				if err != nil {
 					return err
 				}
 				return nil
@@ -2826,9 +2850,11 @@ func (s *SiteSuggestion) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"resolved_at\"")
 			}
 		case "created_at":
+			requiredBitSet[1] |= 1 << 0
 			if err := func() error {
-				s.CreatedAt.Reset()
-				if err := s.CreatedAt.Decode(d, json.DecodeDateTime); err != nil {
+				v, err := json.DecodeDateTime(d)
+				s.CreatedAt = v
+				if err != nil {
 					return err
 				}
 				return nil
@@ -2836,9 +2862,11 @@ func (s *SiteSuggestion) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"created_at\"")
 			}
 		case "updated_at":
+			requiredBitSet[1] |= 1 << 1
 			if err := func() error {
-				s.UpdatedAt.Reset()
-				if err := s.UpdatedAt.Decode(d, json.DecodeDateTime); err != nil {
+				v, err := json.DecodeDateTime(d)
+				s.UpdatedAt = v
+				if err != nil {
 					return err
 				}
 				return nil
@@ -2851,6 +2879,39 @@ func (s *SiteSuggestion) Decode(d *jx.Decoder) error {
 		return nil
 	}); err != nil {
 		return errors.Wrap(err, "decode SiteSuggestion")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [2]uint8{
+		0b11111111,
+		0b00000011,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfSiteSuggestion) {
+					name = jsonFieldsNameOfSiteSuggestion[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
 	}
 
 	return nil
@@ -2879,8 +2940,24 @@ func (s *SiteSuggestionInput) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *SiteSuggestionInput) encodeFields(e *jx.Encoder) {
 	{
-		e.FieldStart("site_id")
-		e.Int(s.SiteID)
+		e.FieldStart("domain")
+		e.Str(s.Domain)
+	}
+	{
+		if s.PingURL.Set {
+			e.FieldStart("ping_url")
+			s.PingURL.Encode(e)
+		}
+	}
+	{
+		if s.Categories != nil {
+			e.FieldStart("categories")
+			e.ArrStart()
+			for _, elem := range s.Categories {
+				e.Str(elem)
+			}
+			e.ArrEnd()
+		}
 	}
 	{
 		e.FieldStart("reason")
@@ -2888,9 +2965,11 @@ func (s *SiteSuggestionInput) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfSiteSuggestionInput = [2]string{
-	0: "site_id",
-	1: "reason",
+var jsonFieldsNameOfSiteSuggestionInput = [4]string{
+	0: "domain",
+	1: "ping_url",
+	2: "categories",
+	3: "reason",
 }
 
 // Decode decodes SiteSuggestionInput from json.
@@ -2902,20 +2981,49 @@ func (s *SiteSuggestionInput) Decode(d *jx.Decoder) error {
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
-		case "site_id":
+		case "domain":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
-				v, err := d.Int()
-				s.SiteID = int(v)
+				v, err := d.Str()
+				s.Domain = string(v)
 				if err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"site_id\"")
+				return errors.Wrap(err, "decode field \"domain\"")
+			}
+		case "ping_url":
+			if err := func() error {
+				s.PingURL.Reset()
+				if err := s.PingURL.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"ping_url\"")
+			}
+		case "categories":
+			if err := func() error {
+				s.Categories = make([]string, 0)
+				if err := d.Arr(func(d *jx.Decoder) error {
+					var elem string
+					v, err := d.Str()
+					elem = string(v)
+					if err != nil {
+						return err
+					}
+					s.Categories = append(s.Categories, elem)
+					return nil
+				}); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"categories\"")
 			}
 		case "reason":
-			requiredBitSet[0] |= 1 << 1
+			requiredBitSet[0] |= 1 << 3
 			if err := func() error {
 				v, err := d.Str()
 				s.Reason = string(v)
@@ -2936,7 +3044,7 @@ func (s *SiteSuggestionInput) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000011,
+		0b00001001,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -3000,8 +3108,10 @@ func (s *SiteSuggestionStatus) Decode(d *jx.Decoder) error {
 	switch SiteSuggestionStatus(v) {
 	case SiteSuggestionStatusPending:
 		*s = SiteSuggestionStatusPending
-	case SiteSuggestionStatusResolved:
-		*s = SiteSuggestionStatusResolved
+	case SiteSuggestionStatusAccepted:
+		*s = SiteSuggestionStatusAccepted
+	case SiteSuggestionStatusRejected:
+		*s = SiteSuggestionStatusRejected
 	default:
 		*s = SiteSuggestionStatus(v)
 	}
