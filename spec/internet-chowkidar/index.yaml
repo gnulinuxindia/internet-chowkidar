@@ -4,6 +4,12 @@ info:
   version: 1.0.0
   description: API for managing site blocking, ISPs, abuse reports, and site suggestions
 
+servers:
+  - url: https://inetc.kat.directory
+    description: Production server (uses live data)
+  - url: http://localhost:9000
+    description: Use this if you are checking with a local instance
+
 paths:
   /:
     get:

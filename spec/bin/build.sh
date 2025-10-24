@@ -13,7 +13,8 @@ for file in `find . -maxdepth 2 -name index.yaml -type f`; do
 
     pushd $site
         mkdir -p ${build_dir}/
-        redocly bundle index.yaml -o ${build_dir}/index.yaml --ext yaml
-        redocly build-docs ${build_dir}/index.yaml -o ${build_dir}/index.html
+		snippet-enricher-cli --input=index.yaml > ${build_dir}/index.enriched.json
+        redocly bundle ${build_dir}/index.enriched.json -o ${build_dir}/index.json --ext json
+        redocly build-docs ${build_dir}/index.json -o ${build_dir}/index.html
     popd
 done

@@ -11,8 +11,9 @@ This repository contains the code for internet chowkidar, a web application that
 ## Requirements
 - [Go >= 1.21.5](https://go.dev/doc/install)
 - [redocly](https://github.com/Redocly/redocly-cli) (generate API documentation)
+- [oas3-api-snippet-enricher](https://github.com/cdwv/oas3-api-snippet-enricher) (add curl examples to API Docs)
 - [ent](https://entgo.io/docs/getting-started) (DB ORM)
-- [goose](https://github.com/pressly/goose?tab=readme-ov-file#install) (DB migrations tool)
+- [goose](https://github.com/pressly/goose) (DB migrations tool)
 - [ogen](https://ogen.dev/docs/intro) (generate APIs)
 - [wire](https://github.com/google/wire) (dependency injection)
 - [just](https://just.systems/docs/en/getting-started) (task runner)
