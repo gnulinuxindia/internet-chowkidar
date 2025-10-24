@@ -5,6 +5,7 @@ import (
 	"log/slog"
 	"slices"
 	"strings"
+	"time"
 
 	genapi "github.com/gnulinuxindia/internet-chowkidar/api/gen"
 	"github.com/gnulinuxindia/internet-chowkidar/ent"
@@ -19,6 +20,7 @@ import (
 type SitesRepository interface {
 	CreateSite(ctx context.Context, req *genapi.SiteInput) (*ent.Sites, error)
 	CreateSiteSuggestion(ctx context.Context, req *genapi.SiteSuggestionInput) (*ent.SiteSuggestions, error)
+	ResolveSiteSuggestion(ctx context.Context, req *genapi.ResolveSiteSuggestionInput, params genapi.ResolveSiteSuggestionParams) (*ent.SiteSuggestions, error)
 	GetAllSites(ctx context.Context, params genapi.ListSitesParams) ([]genapi.Site, error)
 	GetAllSiteSuggestions(ctx context.Context, params genapi.ListSiteSuggestionsParams) ([]genapi.SiteSuggestion, error)
 	GetSiteByDomain(ctx context.Context, domain string) (*ent.Sites, error)
@@ -124,6 +126,27 @@ func (s *sitesRepositoryImpl) CreateSiteSuggestion(ctx context.Context, req *gen
 		Save(ctx)
 	if err != nil {
 		slog.Error("failed to create site suggestion", "error", err)
+		return nil, rollback(tx, errors.Wrap(err, 0))
+	}
+
+	return suggestion, tx.Commit()
+}
+
+func (s *sitesRepositoryImpl) ResolveSiteSuggestion(ctx context.Context, req *genapi.ResolveSiteSuggestionInput, params genapi.ResolveSiteSuggestionParams) (*ent.SiteSuggestions, error) {
+	resolvedAt := time.Now()
+	tx, err := s.db.Tx(ctx)
+	if err != nil {
+		slog.Error("failed to start transaction", "error", err)
+		return nil, errors.Wrap(err, 0)
+	}
+
+	suggestion, err := tx.SiteSuggestions.UpdateOneID(params.ID).
+		SetStatus(sitesuggestions.Status(req.Status)).
+		SetResolveReason(req.ResolveReason).
+		SetResolvedAt(resolvedAt).
+		Save(ctx)
+	if err != nil {
+		slog.Error("failed to update site suggestion", "error", err)
 		return nil, rollback(tx, errors.Wrap(err, 0))
 	}
 

@@ -13,6 +13,7 @@ import (
 type SitesService interface {
 	CreateSite(ctx context.Context, req *genapi.SiteInput) (*genapi.SiteCreate, error)
 	CreateSiteSuggestion(ctx context.Context, req *genapi.SiteSuggestionInput) (*genapi.SiteSuggestion, error)
+	ResolveSiteSuggestion(ctx context.Context, req *genapi.ResolveSiteSuggestionInput, params genapi.ResolveSiteSuggestionParams) (*genapi.SiteSuggestion, error)
 	GetAllSites(ctx context.Context, params genapi.ListSitesParams) ([]genapi.Site, error)
 	GetAllSiteSuggestions(ctx context.Context, params genapi.ListSiteSuggestionsParams) ([]genapi.SiteSuggestion, error)
 	GetSite(ctx context.Context, params genapi.GetSiteParams) (*genapi.SiteDetails, error)
@@ -39,6 +40,50 @@ func (s *sitesServiceImpl) CreateSite(ctx context.Context, req *genapi.SiteInput
 		PingURL:   site.PingURL,
 		CreatedAt: site.CreatedAt,
 		UpdatedAt: site.UpdatedAt,
+	}, nil
+}
+
+func (s *sitesServiceImpl) ResolveSiteSuggestion(ctx context.Context, req *genapi.ResolveSiteSuggestionInput, params genapi.ResolveSiteSuggestionParams) (*genapi.SiteSuggestion, error) {
+	site, err := s.sitesRepository.GetSiteSuggestionByID(ctx, params.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	if req.Status == "accepted" {
+		data := &genapi.SiteInput{
+			Domain:     site.Domain,
+			PingURL:    genapi.NewOptString(site.PingURL),
+			Categories: strings.Split(site.Categories, ","),
+		}
+		if req.Domain.Set {
+			data.Domain = req.Domain.Value
+		}
+		if req.PingURL.Set {
+			data.PingURL = req.PingURL
+		}
+		if len(req.Categories) > 0 {
+			data.Categories = req.Categories
+		}
+		_, err := s.CreateSite(ctx, data)
+		if err != nil {
+			return nil, err
+		}
+	}
+	site2, err := s.sitesRepository.ResolveSiteSuggestion(ctx, req, params)
+	if err != nil {
+		return nil, err
+	}
+	return &genapi.SiteSuggestion{
+		ID:            site2.ID,
+		Domain:        site2.Domain,
+		PingURL:       site2.PingURL,
+		Categories:    strings.Split(site2.Categories, ","),
+		Reason:        site2.Reason,
+		Status:        genapi.SiteSuggestionStatus(site2.Status),
+		ResolveReason: site2.ResolveReason,
+		ResolvedAt:    site2.ResolvedAt,
+		CreatedAt:     site2.CreatedAt,
+		UpdatedAt:     site2.UpdatedAt,
 	}, nil
 }
 

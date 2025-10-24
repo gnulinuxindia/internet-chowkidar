@@ -12,6 +12,7 @@ type SitesHandler interface {
 	ListSiteSuggestions(ctx context.Context, params genapi.ListSiteSuggestionsParams) ([]genapi.SiteSuggestion, error)
 	CreateSite(ctx context.Context, req *genapi.SiteInput) (*genapi.SiteCreate, error)
 	CreateSiteSuggestion(ctx context.Context, req *genapi.SiteSuggestionInput) (*genapi.SiteSuggestion, error)
+	ResolveSiteSuggestion(ctx context.Context, req *genapi.ResolveSiteSuggestionInput, params genapi.ResolveSiteSuggestionParams) (*genapi.SiteSuggestion, error)
 	GetSite(ctx context.Context, params genapi.GetSiteParams) (*genapi.SiteDetails, error)
 	GetSiteSuggestion(ctx context.Context, params genapi.GetSiteSuggestionParams) (*genapi.SiteSuggestion, error)
 }
@@ -43,6 +44,15 @@ func (s *sitesHandlerImpl) GetSite(ctx context.Context, params genapi.GetSitePar
 
 func (s *sitesHandlerImpl) GetSiteSuggestion(ctx context.Context, params genapi.GetSiteSuggestionParams) (*genapi.SiteSuggestion, error) {
 	suggestionDetails, err := s.sitesService.GetSiteSuggestion(ctx, params)
+	if err != nil {
+		return nil, err
+	}
+
+	return suggestionDetails, nil
+}
+
+func (s *sitesHandlerImpl) ResolveSiteSuggestion(ctx context.Context, req *genapi.ResolveSiteSuggestionInput, params genapi.ResolveSiteSuggestionParams) (*genapi.SiteSuggestion, error) {
+	suggestionDetails, err := s.sitesService.ResolveSiteSuggestion(ctx, req, params)
 	if err != nil {
 		return nil, err
 	}

@@ -319,6 +319,31 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SiteSuggestion'
+  /sites/suggestions/{id}/resolve:
+    post:
+      security:
+        - ApiKeyAuth: []
+      summary: Resolve a site suggestion
+      operationId: resolveSiteSuggestion
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ResolveSiteSuggestionInput'
+      responses:
+        '201':
+          description: Resolved
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SiteSuggestion'
 
   /categories:
     get:
@@ -715,6 +740,26 @@ components:
         updated_at:
           type: string
           format: date-time
+
+    ResolveSiteSuggestionInput:
+      type: object
+      required:
+        - resolve_reason
+        - status
+      properties:
+        domain:
+          type: string
+        ping_url:
+          type: string
+        categories:
+          type: array
+          items:
+            type: string
+        resolve_reason:
+          type: string
+        status:
+          type: string
+          enum: [pending, accepted, rejected]
 
     SiteSuggestionInput:
       type: object
