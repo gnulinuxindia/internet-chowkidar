@@ -16,6 +16,7 @@ import (
 	"github.com/gnulinuxindia/internet-chowkidar/ent/predicate"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sitescategories"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/sitesuggestions"
 )
 
 // SitesUpdate is the builder for updating Sites entities.
@@ -80,6 +81,21 @@ func (_u *SitesUpdate) AddBlocks(v ...*Blocks) *SitesUpdate {
 	return _u.AddBlockIDs(ids...)
 }
 
+// AddSitesuggestionIDs adds the "sitesuggestions" edge to the SiteSuggestions entity by IDs.
+func (_u *SitesUpdate) AddSitesuggestionIDs(ids ...int) *SitesUpdate {
+	_u.mutation.AddSitesuggestionIDs(ids...)
+	return _u
+}
+
+// AddSitesuggestions adds the "sitesuggestions" edges to the SiteSuggestions entity.
+func (_u *SitesUpdate) AddSitesuggestions(v ...*SiteSuggestions) *SitesUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSitesuggestionIDs(ids...)
+}
+
 // AddCategoryIDs adds the "categories" edge to the Categories entity by IDs.
 func (_u *SitesUpdate) AddCategoryIDs(ids ...int) *SitesUpdate {
 	_u.mutation.AddCategoryIDs(ids...)
@@ -134,6 +150,27 @@ func (_u *SitesUpdate) RemoveBlocks(v ...*Blocks) *SitesUpdate {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveBlockIDs(ids...)
+}
+
+// ClearSitesuggestions clears all "sitesuggestions" edges to the SiteSuggestions entity.
+func (_u *SitesUpdate) ClearSitesuggestions() *SitesUpdate {
+	_u.mutation.ClearSitesuggestions()
+	return _u
+}
+
+// RemoveSitesuggestionIDs removes the "sitesuggestions" edge to SiteSuggestions entities by IDs.
+func (_u *SitesUpdate) RemoveSitesuggestionIDs(ids ...int) *SitesUpdate {
+	_u.mutation.RemoveSitesuggestionIDs(ids...)
+	return _u
+}
+
+// RemoveSitesuggestions removes "sitesuggestions" edges to SiteSuggestions entities.
+func (_u *SitesUpdate) RemoveSitesuggestions(v ...*SiteSuggestions) *SitesUpdate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSitesuggestionIDs(ids...)
 }
 
 // ClearCategories clears all "categories" edges to the Categories entity.
@@ -270,6 +307,51 @@ func (_u *SitesUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.SitesuggestionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   sites.SitesuggestionsTable,
+			Columns: []string{sites.SitesuggestionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sitesuggestions.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSitesuggestionsIDs(); len(nodes) > 0 && !_u.mutation.SitesuggestionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   sites.SitesuggestionsTable,
+			Columns: []string{sites.SitesuggestionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sitesuggestions.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SitesuggestionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   sites.SitesuggestionsTable,
+			Columns: []string{sites.SitesuggestionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sitesuggestions.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {
@@ -436,6 +518,21 @@ func (_u *SitesUpdateOne) AddBlocks(v ...*Blocks) *SitesUpdateOne {
 	return _u.AddBlockIDs(ids...)
 }
 
+// AddSitesuggestionIDs adds the "sitesuggestions" edge to the SiteSuggestions entity by IDs.
+func (_u *SitesUpdateOne) AddSitesuggestionIDs(ids ...int) *SitesUpdateOne {
+	_u.mutation.AddSitesuggestionIDs(ids...)
+	return _u
+}
+
+// AddSitesuggestions adds the "sitesuggestions" edges to the SiteSuggestions entity.
+func (_u *SitesUpdateOne) AddSitesuggestions(v ...*SiteSuggestions) *SitesUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.AddSitesuggestionIDs(ids...)
+}
+
 // AddCategoryIDs adds the "categories" edge to the Categories entity by IDs.
 func (_u *SitesUpdateOne) AddCategoryIDs(ids ...int) *SitesUpdateOne {
 	_u.mutation.AddCategoryIDs(ids...)
@@ -490,6 +587,27 @@ func (_u *SitesUpdateOne) RemoveBlocks(v ...*Blocks) *SitesUpdateOne {
 		ids[i] = v[i].ID
 	}
 	return _u.RemoveBlockIDs(ids...)
+}
+
+// ClearSitesuggestions clears all "sitesuggestions" edges to the SiteSuggestions entity.
+func (_u *SitesUpdateOne) ClearSitesuggestions() *SitesUpdateOne {
+	_u.mutation.ClearSitesuggestions()
+	return _u
+}
+
+// RemoveSitesuggestionIDs removes the "sitesuggestions" edge to SiteSuggestions entities by IDs.
+func (_u *SitesUpdateOne) RemoveSitesuggestionIDs(ids ...int) *SitesUpdateOne {
+	_u.mutation.RemoveSitesuggestionIDs(ids...)
+	return _u
+}
+
+// RemoveSitesuggestions removes "sitesuggestions" edges to SiteSuggestions entities.
+func (_u *SitesUpdateOne) RemoveSitesuggestions(v ...*SiteSuggestions) *SitesUpdateOne {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _u.RemoveSitesuggestionIDs(ids...)
 }
 
 // ClearCategories clears all "categories" edges to the Categories entity.
@@ -656,6 +774,51 @@ func (_u *SitesUpdateOne) sqlSave(ctx context.Context) (_node *Sites, err error)
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
+	}
+	if _u.mutation.SitesuggestionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   sites.SitesuggestionsTable,
+			Columns: []string{sites.SitesuggestionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sitesuggestions.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.RemovedSitesuggestionsIDs(); len(nodes) > 0 && !_u.mutation.SitesuggestionsCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   sites.SitesuggestionsTable,
+			Columns: []string{sites.SitesuggestionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sitesuggestions.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SitesuggestionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   sites.SitesuggestionsTable,
+			Columns: []string{sites.SitesuggestionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sitesuggestions.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

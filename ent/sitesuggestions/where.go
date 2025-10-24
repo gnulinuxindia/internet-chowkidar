@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/predicate"
 )
 
@@ -87,6 +88,11 @@ func Reason(v string) predicate.SiteSuggestions {
 // ResolveReason applies equality check predicate on the "resolve_reason" field. It's identical to ResolveReasonEQ.
 func ResolveReason(v string) predicate.SiteSuggestions {
 	return predicate.SiteSuggestions(sql.FieldEQ(FieldResolveReason, v))
+}
+
+// LinkedSite applies equality check predicate on the "linked_site" field. It's identical to LinkedSiteEQ.
+func LinkedSite(v int) predicate.SiteSuggestions {
+	return predicate.SiteSuggestions(sql.FieldEQ(FieldLinkedSite, v))
 }
 
 // ResolvedAt applies equality check predicate on the "resolved_at" field. It's identical to ResolvedAtEQ.
@@ -539,6 +545,36 @@ func ResolveReasonContainsFold(v string) predicate.SiteSuggestions {
 	return predicate.SiteSuggestions(sql.FieldContainsFold(FieldResolveReason, v))
 }
 
+// LinkedSiteEQ applies the EQ predicate on the "linked_site" field.
+func LinkedSiteEQ(v int) predicate.SiteSuggestions {
+	return predicate.SiteSuggestions(sql.FieldEQ(FieldLinkedSite, v))
+}
+
+// LinkedSiteNEQ applies the NEQ predicate on the "linked_site" field.
+func LinkedSiteNEQ(v int) predicate.SiteSuggestions {
+	return predicate.SiteSuggestions(sql.FieldNEQ(FieldLinkedSite, v))
+}
+
+// LinkedSiteIn applies the In predicate on the "linked_site" field.
+func LinkedSiteIn(vs ...int) predicate.SiteSuggestions {
+	return predicate.SiteSuggestions(sql.FieldIn(FieldLinkedSite, vs...))
+}
+
+// LinkedSiteNotIn applies the NotIn predicate on the "linked_site" field.
+func LinkedSiteNotIn(vs ...int) predicate.SiteSuggestions {
+	return predicate.SiteSuggestions(sql.FieldNotIn(FieldLinkedSite, vs...))
+}
+
+// LinkedSiteIsNil applies the IsNil predicate on the "linked_site" field.
+func LinkedSiteIsNil() predicate.SiteSuggestions {
+	return predicate.SiteSuggestions(sql.FieldIsNull(FieldLinkedSite))
+}
+
+// LinkedSiteNotNil applies the NotNil predicate on the "linked_site" field.
+func LinkedSiteNotNil() predicate.SiteSuggestions {
+	return predicate.SiteSuggestions(sql.FieldNotNull(FieldLinkedSite))
+}
+
 // ResolvedAtEQ applies the EQ predicate on the "resolved_at" field.
 func ResolvedAtEQ(v time.Time) predicate.SiteSuggestions {
 	return predicate.SiteSuggestions(sql.FieldEQ(FieldResolvedAt, v))
@@ -587,6 +623,29 @@ func ResolvedAtIsNil() predicate.SiteSuggestions {
 // ResolvedAtNotNil applies the NotNil predicate on the "resolved_at" field.
 func ResolvedAtNotNil() predicate.SiteSuggestions {
 	return predicate.SiteSuggestions(sql.FieldNotNull(FieldResolvedAt))
+}
+
+// HasSite applies the HasEdge predicate on the "site" edge.
+func HasSite() predicate.SiteSuggestions {
+	return predicate.SiteSuggestions(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, SiteTable, SiteColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSiteWith applies the HasEdge predicate on the "site" edge with a given conditions (other predicates).
+func HasSiteWith(preds ...predicate.Sites) predicate.SiteSuggestions {
+	return predicate.SiteSuggestions(func(s *sql.Selector) {
+		step := newSiteStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
 }
 
 // And groups predicates with the AND operator between them.

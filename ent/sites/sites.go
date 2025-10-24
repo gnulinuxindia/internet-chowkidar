@@ -24,6 +24,8 @@ const (
 	FieldPingURL = "ping_url"
 	// EdgeBlocks holds the string denoting the blocks edge name in mutations.
 	EdgeBlocks = "blocks"
+	// EdgeSitesuggestions holds the string denoting the sitesuggestions edge name in mutations.
+	EdgeSitesuggestions = "sitesuggestions"
 	// EdgeCategories holds the string denoting the categories edge name in mutations.
 	EdgeCategories = "categories"
 	// EdgeSitesCategories holds the string denoting the sites_categories edge name in mutations.
@@ -37,6 +39,13 @@ const (
 	BlocksInverseTable = "blocks"
 	// BlocksColumn is the table column denoting the blocks relation/edge.
 	BlocksColumn = "site_id"
+	// SitesuggestionsTable is the table that holds the sitesuggestions relation/edge.
+	SitesuggestionsTable = "site_suggestions"
+	// SitesuggestionsInverseTable is the table name for the SiteSuggestions entity.
+	// It exists in this package in order to avoid circular dependency with the "sitesuggestions" package.
+	SitesuggestionsInverseTable = "site_suggestions"
+	// SitesuggestionsColumn is the table column denoting the sitesuggestions relation/edge.
+	SitesuggestionsColumn = "linked_site"
 	// CategoriesTable is the table that holds the categories relation/edge. The primary key declared below.
 	CategoriesTable = "sites_categories"
 	// CategoriesInverseTable is the table name for the Categories entity.
@@ -127,6 +136,20 @@ func ByBlocks(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
 	}
 }
 
+// BySitesuggestionsCount orders the results by sitesuggestions count.
+func BySitesuggestionsCount(opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborsCount(s, newSitesuggestionsStep(), opts...)
+	}
+}
+
+// BySitesuggestions orders the results by sitesuggestions terms.
+func BySitesuggestions(term sql.OrderTerm, terms ...sql.OrderTerm) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSitesuggestionsStep(), append([]sql.OrderTerm{term}, terms...)...)
+	}
+}
+
 // ByCategoriesCount orders the results by categories count.
 func ByCategoriesCount(opts ...sql.OrderTermOption) OrderOption {
 	return func(s *sql.Selector) {
@@ -159,6 +182,13 @@ func newBlocksStep() *sqlgraph.Step {
 		sqlgraph.From(Table, FieldID),
 		sqlgraph.To(BlocksInverseTable, FieldID),
 		sqlgraph.Edge(sqlgraph.O2M, false, BlocksTable, BlocksColumn),
+	)
+}
+func newSitesuggestionsStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SitesuggestionsInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.O2M, false, SitesuggestionsTable, SitesuggestionsColumn),
 	)
 }
 func newCategoriesStep() *sqlgraph.Step {

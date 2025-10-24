@@ -308,6 +308,29 @@ func HasBlocksWith(preds ...predicate.Blocks) predicate.Sites {
 	})
 }
 
+// HasSitesuggestions applies the HasEdge predicate on the "sitesuggestions" edge.
+func HasSitesuggestions() predicate.Sites {
+	return predicate.Sites(func(s *sql.Selector) {
+		step := sqlgraph.NewStep(
+			sqlgraph.From(Table, FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, SitesuggestionsTable, SitesuggestionsColumn),
+		)
+		sqlgraph.HasNeighbors(s, step)
+	})
+}
+
+// HasSitesuggestionsWith applies the HasEdge predicate on the "sitesuggestions" edge with a given conditions (other predicates).
+func HasSitesuggestionsWith(preds ...predicate.SiteSuggestions) predicate.Sites {
+	return predicate.Sites(func(s *sql.Selector) {
+		step := newSitesuggestionsStep()
+		sqlgraph.HasNeighborsWith(s, step, func(s *sql.Selector) {
+			for _, p := range preds {
+				p(s)
+			}
+		})
+	})
+}
+
 // HasCategories applies the HasEdge predicate on the "categories" edge.
 func HasCategories() predicate.Sites {
 	return predicate.Sites(func(s *sql.Selector) {

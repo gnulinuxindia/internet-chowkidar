@@ -10,6 +10,7 @@ import (
 
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sitesuggestions"
 )
 
@@ -108,6 +109,20 @@ func (_c *SiteSuggestionsCreate) SetNillableResolveReason(v *string) *SiteSugges
 	return _c
 }
 
+// SetLinkedSite sets the "linked_site" field.
+func (_c *SiteSuggestionsCreate) SetLinkedSite(v int) *SiteSuggestionsCreate {
+	_c.mutation.SetLinkedSite(v)
+	return _c
+}
+
+// SetNillableLinkedSite sets the "linked_site" field if the given value is not nil.
+func (_c *SiteSuggestionsCreate) SetNillableLinkedSite(v *int) *SiteSuggestionsCreate {
+	if v != nil {
+		_c.SetLinkedSite(*v)
+	}
+	return _c
+}
+
 // SetResolvedAt sets the "resolved_at" field.
 func (_c *SiteSuggestionsCreate) SetResolvedAt(v time.Time) *SiteSuggestionsCreate {
 	_c.mutation.SetResolvedAt(v)
@@ -120,6 +135,25 @@ func (_c *SiteSuggestionsCreate) SetNillableResolvedAt(v *time.Time) *SiteSugges
 		_c.SetResolvedAt(*v)
 	}
 	return _c
+}
+
+// SetSiteID sets the "site" edge to the Sites entity by ID.
+func (_c *SiteSuggestionsCreate) SetSiteID(id int) *SiteSuggestionsCreate {
+	_c.mutation.SetSiteID(id)
+	return _c
+}
+
+// SetNillableSiteID sets the "site" edge to the Sites entity by ID if the given value is not nil.
+func (_c *SiteSuggestionsCreate) SetNillableSiteID(id *int) *SiteSuggestionsCreate {
+	if id != nil {
+		_c = _c.SetSiteID(*id)
+	}
+	return _c
+}
+
+// SetSite sets the "site" edge to the Sites entity.
+func (_c *SiteSuggestionsCreate) SetSite(v *Sites) *SiteSuggestionsCreate {
+	return _c.SetSiteID(v.ID)
 }
 
 // Mutation returns the SiteSuggestionsMutation object of the builder.
@@ -257,6 +291,23 @@ func (_c *SiteSuggestionsCreate) createSpec() (*SiteSuggestions, *sqlgraph.Creat
 	if value, ok := _c.mutation.ResolvedAt(); ok {
 		_spec.SetField(sitesuggestions.FieldResolvedAt, field.TypeTime, value)
 		_node.ResolvedAt = value
+	}
+	if nodes := _c.mutation.SiteIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   sitesuggestions.SiteTable,
+			Columns: []string{sitesuggestions.SiteColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sites.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_node.LinkedSite = nodes[0]
+		_spec.Edges = append(_spec.Edges, edge)
 	}
 	return _node, _spec
 }

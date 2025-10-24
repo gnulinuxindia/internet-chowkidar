@@ -9,6 +9,7 @@ import (
 
 	"entgo.io/ent"
 	"entgo.io/ent/dialect/sql"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sitesuggestions"
 )
 
@@ -33,9 +34,34 @@ type SiteSuggestions struct {
 	Status sitesuggestions.Status `json:"status,omitempty"`
 	// ResolveReason holds the value of the "resolve_reason" field.
 	ResolveReason string `json:"resolve_reason,omitempty"`
+	// LinkedSite holds the value of the "linked_site" field.
+	LinkedSite int `json:"linked_site,omitempty"`
 	// ResolvedAt holds the value of the "resolved_at" field.
-	ResolvedAt   time.Time `json:"resolved_at,omitempty"`
+	ResolvedAt time.Time `json:"resolved_at,omitempty"`
+	// Edges holds the relations/edges for other nodes in the graph.
+	// The values are being populated by the SiteSuggestionsQuery when eager-loading is set.
+	Edges        SiteSuggestionsEdges `json:"edges"`
 	selectValues sql.SelectValues
+}
+
+// SiteSuggestionsEdges holds the relations/edges for other nodes in the graph.
+type SiteSuggestionsEdges struct {
+	// Site holds the value of the site edge.
+	Site *Sites `json:"site,omitempty"`
+	// loadedTypes holds the information for reporting if a
+	// type was loaded (or requested) in eager-loading or not.
+	loadedTypes [1]bool
+}
+
+// SiteOrErr returns the Site value or an error if the edge
+// was not loaded in eager-loading, or loaded but was not found.
+func (e SiteSuggestionsEdges) SiteOrErr() (*Sites, error) {
+	if e.Site != nil {
+		return e.Site, nil
+	} else if e.loadedTypes[0] {
+		return nil, &NotFoundError{label: sites.Label}
+	}
+	return nil, &NotLoadedError{edge: "site"}
 }
 
 // scanValues returns the types for scanning values from sql.Rows.
@@ -43,7 +69,7 @@ func (*SiteSuggestions) scanValues(columns []string) ([]any, error) {
 	values := make([]any, len(columns))
 	for i := range columns {
 		switch columns[i] {
-		case sitesuggestions.FieldID:
+		case sitesuggestions.FieldID, sitesuggestions.FieldLinkedSite:
 			values[i] = new(sql.NullInt64)
 		case sitesuggestions.FieldDomain, sitesuggestions.FieldPingURL, sitesuggestions.FieldCategories, sitesuggestions.FieldReason, sitesuggestions.FieldStatus, sitesuggestions.FieldResolveReason:
 			values[i] = new(sql.NullString)
@@ -118,6 +144,12 @@ func (_m *SiteSuggestions) assignValues(columns []string, values []any) error {
 			} else if value.Valid {
 				_m.ResolveReason = value.String
 			}
+		case sitesuggestions.FieldLinkedSite:
+			if value, ok := values[i].(*sql.NullInt64); !ok {
+				return fmt.Errorf("unexpected type %T for field linked_site", values[i])
+			} else if value.Valid {
+				_m.LinkedSite = int(value.Int64)
+			}
 		case sitesuggestions.FieldResolvedAt:
 			if value, ok := values[i].(*sql.NullTime); !ok {
 				return fmt.Errorf("unexpected type %T for field resolved_at", values[i])
@@ -135,6 +167,11 @@ func (_m *SiteSuggestions) assignValues(columns []string, values []any) error {
 // This includes values selected through modifiers, order, etc.
 func (_m *SiteSuggestions) Value(name string) (ent.Value, error) {
 	return _m.selectValues.Get(name)
+}
+
+// QuerySite queries the "site" edge of the SiteSuggestions entity.
+func (_m *SiteSuggestions) QuerySite() *SitesQuery {
+	return NewSiteSuggestionsClient(_m.config).QuerySite(_m)
 }
 
 // Update returns a builder for updating this SiteSuggestions.
@@ -183,6 +220,9 @@ func (_m *SiteSuggestions) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("resolve_reason=")
 	builder.WriteString(_m.ResolveReason)
+	builder.WriteString(", ")
+	builder.WriteString("linked_site=")
+	builder.WriteString(fmt.Sprintf("%v", _m.LinkedSite))
 	builder.WriteString(", ")
 	builder.WriteString("resolved_at=")
 	builder.WriteString(_m.ResolvedAt.Format(time.ANSIC))

@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"entgo.io/ent/dialect/sql"
+	"entgo.io/ent/dialect/sql/sqlgraph"
 )
 
 const (
@@ -30,10 +31,21 @@ const (
 	FieldStatus = "status"
 	// FieldResolveReason holds the string denoting the resolve_reason field in the database.
 	FieldResolveReason = "resolve_reason"
+	// FieldLinkedSite holds the string denoting the linked_site field in the database.
+	FieldLinkedSite = "linked_site"
 	// FieldResolvedAt holds the string denoting the resolved_at field in the database.
 	FieldResolvedAt = "resolved_at"
+	// EdgeSite holds the string denoting the site edge name in mutations.
+	EdgeSite = "site"
 	// Table holds the table name of the sitesuggestions in the database.
 	Table = "site_suggestions"
+	// SiteTable is the table that holds the site relation/edge.
+	SiteTable = "site_suggestions"
+	// SiteInverseTable is the table name for the Sites entity.
+	// It exists in this package in order to avoid circular dependency with the "sites" package.
+	SiteInverseTable = "sites"
+	// SiteColumn is the table column denoting the site relation/edge.
+	SiteColumn = "linked_site"
 )
 
 // Columns holds all SQL columns for sitesuggestions fields.
@@ -47,6 +59,7 @@ var Columns = []string{
 	FieldReason,
 	FieldStatus,
 	FieldResolveReason,
+	FieldLinkedSite,
 	FieldResolvedAt,
 }
 
@@ -144,7 +157,26 @@ func ByResolveReason(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldResolveReason, opts...).ToFunc()
 }
 
+// ByLinkedSite orders the results by the linked_site field.
+func ByLinkedSite(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldLinkedSite, opts...).ToFunc()
+}
+
 // ByResolvedAt orders the results by the resolved_at field.
 func ByResolvedAt(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldResolvedAt, opts...).ToFunc()
+}
+
+// BySiteField orders the results by site field.
+func BySiteField(field string, opts ...sql.OrderTermOption) OrderOption {
+	return func(s *sql.Selector) {
+		sqlgraph.OrderByNeighborTerms(s, newSiteStep(), sql.OrderByField(field, opts...))
+	}
+}
+func newSiteStep() *sqlgraph.Step {
+	return sqlgraph.NewStep(
+		sqlgraph.From(Table, FieldID),
+		sqlgraph.To(SiteInverseTable, FieldID),
+		sqlgraph.Edge(sqlgraph.M2O, true, SiteTable, SiteColumn),
+	)
 }

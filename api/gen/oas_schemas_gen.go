@@ -1208,6 +1208,7 @@ type ResolveSiteSuggestionInput struct {
 	PingURL       OptString                        `json:"ping_url"`
 	Categories    []string                         `json:"categories"`
 	ResolveReason string                           `json:"resolve_reason"`
+	LinkedSite    OptInt                           `json:"linked_site"`
 	Status        ResolveSiteSuggestionInputStatus `json:"status"`
 }
 
@@ -1229,6 +1230,11 @@ func (s *ResolveSiteSuggestionInput) GetCategories() []string {
 // GetResolveReason returns the value of ResolveReason.
 func (s *ResolveSiteSuggestionInput) GetResolveReason() string {
 	return s.ResolveReason
+}
+
+// GetLinkedSite returns the value of LinkedSite.
+func (s *ResolveSiteSuggestionInput) GetLinkedSite() OptInt {
+	return s.LinkedSite
 }
 
 // GetStatus returns the value of Status.
@@ -1254,6 +1260,11 @@ func (s *ResolveSiteSuggestionInput) SetCategories(val []string) {
 // SetResolveReason sets the value of ResolveReason.
 func (s *ResolveSiteSuggestionInput) SetResolveReason(val string) {
 	s.ResolveReason = val
+}
+
+// SetLinkedSite sets the value of LinkedSite.
+func (s *ResolveSiteSuggestionInput) SetLinkedSite(val OptInt) {
+	s.LinkedSite = val
 }
 
 // SetStatus sets the value of Status.
@@ -1631,6 +1642,7 @@ type SiteSuggestion struct {
 	Reason        string               `json:"reason"`
 	Status        SiteSuggestionStatus `json:"status"`
 	ResolveReason string               `json:"resolve_reason"`
+	LinkedSite    int                  `json:"linked_site"`
 	ResolvedAt    time.Time            `json:"resolved_at"`
 	CreatedAt     time.Time            `json:"created_at"`
 	UpdatedAt     time.Time            `json:"updated_at"`
@@ -1669,6 +1681,11 @@ func (s *SiteSuggestion) GetStatus() SiteSuggestionStatus {
 // GetResolveReason returns the value of ResolveReason.
 func (s *SiteSuggestion) GetResolveReason() string {
 	return s.ResolveReason
+}
+
+// GetLinkedSite returns the value of LinkedSite.
+func (s *SiteSuggestion) GetLinkedSite() int {
+	return s.LinkedSite
 }
 
 // GetResolvedAt returns the value of ResolvedAt.
@@ -1719,6 +1736,11 @@ func (s *SiteSuggestion) SetStatus(val SiteSuggestionStatus) {
 // SetResolveReason sets the value of ResolveReason.
 func (s *SiteSuggestion) SetResolveReason(val string) {
 	s.ResolveReason = val
+}
+
+// SetLinkedSite sets the value of LinkedSite.
+func (s *SiteSuggestion) SetLinkedSite(val int) {
+	s.LinkedSite = val
 }
 
 // SetResolvedAt sets the value of ResolvedAt.

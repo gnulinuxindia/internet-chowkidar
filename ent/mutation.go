@@ -2517,6 +2517,8 @@ type SiteSuggestionsMutation struct {
 	resolve_reason *string
 	resolved_at    *time.Time
 	clearedFields  map[string]struct{}
+	site           *int
+	clearedsite    bool
 	done           bool
 	oldValue       func(context.Context) (*SiteSuggestions, error)
 	predicates     []predicate.SiteSuggestions
@@ -2934,6 +2936,55 @@ func (m *SiteSuggestionsMutation) ResetResolveReason() {
 	delete(m.clearedFields, sitesuggestions.FieldResolveReason)
 }
 
+// SetLinkedSite sets the "linked_site" field.
+func (m *SiteSuggestionsMutation) SetLinkedSite(i int) {
+	m.site = &i
+}
+
+// LinkedSite returns the value of the "linked_site" field in the mutation.
+func (m *SiteSuggestionsMutation) LinkedSite() (r int, exists bool) {
+	v := m.site
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldLinkedSite returns the old "linked_site" field's value of the SiteSuggestions entity.
+// If the SiteSuggestions object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *SiteSuggestionsMutation) OldLinkedSite(ctx context.Context) (v int, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldLinkedSite is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldLinkedSite requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldLinkedSite: %w", err)
+	}
+	return oldValue.LinkedSite, nil
+}
+
+// ClearLinkedSite clears the value of the "linked_site" field.
+func (m *SiteSuggestionsMutation) ClearLinkedSite() {
+	m.site = nil
+	m.clearedFields[sitesuggestions.FieldLinkedSite] = struct{}{}
+}
+
+// LinkedSiteCleared returns if the "linked_site" field was cleared in this mutation.
+func (m *SiteSuggestionsMutation) LinkedSiteCleared() bool {
+	_, ok := m.clearedFields[sitesuggestions.FieldLinkedSite]
+	return ok
+}
+
+// ResetLinkedSite resets all changes to the "linked_site" field.
+func (m *SiteSuggestionsMutation) ResetLinkedSite() {
+	m.site = nil
+	delete(m.clearedFields, sitesuggestions.FieldLinkedSite)
+}
+
 // SetResolvedAt sets the "resolved_at" field.
 func (m *SiteSuggestionsMutation) SetResolvedAt(t time.Time) {
 	m.resolved_at = &t
@@ -2983,6 +3034,46 @@ func (m *SiteSuggestionsMutation) ResetResolvedAt() {
 	delete(m.clearedFields, sitesuggestions.FieldResolvedAt)
 }
 
+// SetSiteID sets the "site" edge to the Sites entity by id.
+func (m *SiteSuggestionsMutation) SetSiteID(id int) {
+	m.site = &id
+}
+
+// ClearSite clears the "site" edge to the Sites entity.
+func (m *SiteSuggestionsMutation) ClearSite() {
+	m.clearedsite = true
+	m.clearedFields[sitesuggestions.FieldLinkedSite] = struct{}{}
+}
+
+// SiteCleared reports if the "site" edge to the Sites entity was cleared.
+func (m *SiteSuggestionsMutation) SiteCleared() bool {
+	return m.LinkedSiteCleared() || m.clearedsite
+}
+
+// SiteID returns the "site" edge ID in the mutation.
+func (m *SiteSuggestionsMutation) SiteID() (id int, exists bool) {
+	if m.site != nil {
+		return *m.site, true
+	}
+	return
+}
+
+// SiteIDs returns the "site" edge IDs in the mutation.
+// Note that IDs always returns len(IDs) <= 1 for unique edges, and you should use
+// SiteID instead. It exists only for internal usage by the builders.
+func (m *SiteSuggestionsMutation) SiteIDs() (ids []int) {
+	if id := m.site; id != nil {
+		ids = append(ids, *id)
+	}
+	return
+}
+
+// ResetSite resets all changes to the "site" edge.
+func (m *SiteSuggestionsMutation) ResetSite() {
+	m.site = nil
+	m.clearedsite = false
+}
+
 // Where appends a list predicates to the SiteSuggestionsMutation builder.
 func (m *SiteSuggestionsMutation) Where(ps ...predicate.SiteSuggestions) {
 	m.predicates = append(m.predicates, ps...)
@@ -3017,7 +3108,7 @@ func (m *SiteSuggestionsMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *SiteSuggestionsMutation) Fields() []string {
-	fields := make([]string, 0, 9)
+	fields := make([]string, 0, 10)
 	if m.created_at != nil {
 		fields = append(fields, sitesuggestions.FieldCreatedAt)
 	}
@@ -3041,6 +3132,9 @@ func (m *SiteSuggestionsMutation) Fields() []string {
 	}
 	if m.resolve_reason != nil {
 		fields = append(fields, sitesuggestions.FieldResolveReason)
+	}
+	if m.site != nil {
+		fields = append(fields, sitesuggestions.FieldLinkedSite)
 	}
 	if m.resolved_at != nil {
 		fields = append(fields, sitesuggestions.FieldResolvedAt)
@@ -3069,6 +3163,8 @@ func (m *SiteSuggestionsMutation) Field(name string) (ent.Value, bool) {
 		return m.Status()
 	case sitesuggestions.FieldResolveReason:
 		return m.ResolveReason()
+	case sitesuggestions.FieldLinkedSite:
+		return m.LinkedSite()
 	case sitesuggestions.FieldResolvedAt:
 		return m.ResolvedAt()
 	}
@@ -3096,6 +3192,8 @@ func (m *SiteSuggestionsMutation) OldField(ctx context.Context, name string) (en
 		return m.OldStatus(ctx)
 	case sitesuggestions.FieldResolveReason:
 		return m.OldResolveReason(ctx)
+	case sitesuggestions.FieldLinkedSite:
+		return m.OldLinkedSite(ctx)
 	case sitesuggestions.FieldResolvedAt:
 		return m.OldResolvedAt(ctx)
 	}
@@ -3163,6 +3261,13 @@ func (m *SiteSuggestionsMutation) SetField(name string, value ent.Value) error {
 		}
 		m.SetResolveReason(v)
 		return nil
+	case sitesuggestions.FieldLinkedSite:
+		v, ok := value.(int)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetLinkedSite(v)
+		return nil
 	case sitesuggestions.FieldResolvedAt:
 		v, ok := value.(time.Time)
 		if !ok {
@@ -3177,13 +3282,16 @@ func (m *SiteSuggestionsMutation) SetField(name string, value ent.Value) error {
 // AddedFields returns all numeric fields that were incremented/decremented during
 // this mutation.
 func (m *SiteSuggestionsMutation) AddedFields() []string {
-	return nil
+	var fields []string
+	return fields
 }
 
 // AddedField returns the numeric value that was incremented/decremented on a field
 // with the given name. The second boolean return value indicates that this field
 // was not set, or was not defined in the schema.
 func (m *SiteSuggestionsMutation) AddedField(name string) (ent.Value, bool) {
+	switch name {
+	}
 	return nil, false
 }
 
@@ -3205,6 +3313,9 @@ func (m *SiteSuggestionsMutation) ClearedFields() []string {
 	}
 	if m.FieldCleared(sitesuggestions.FieldResolveReason) {
 		fields = append(fields, sitesuggestions.FieldResolveReason)
+	}
+	if m.FieldCleared(sitesuggestions.FieldLinkedSite) {
+		fields = append(fields, sitesuggestions.FieldLinkedSite)
 	}
 	if m.FieldCleared(sitesuggestions.FieldResolvedAt) {
 		fields = append(fields, sitesuggestions.FieldResolvedAt)
@@ -3228,6 +3339,9 @@ func (m *SiteSuggestionsMutation) ClearField(name string) error {
 		return nil
 	case sitesuggestions.FieldResolveReason:
 		m.ClearResolveReason()
+		return nil
+	case sitesuggestions.FieldLinkedSite:
+		m.ClearLinkedSite()
 		return nil
 	case sitesuggestions.FieldResolvedAt:
 		m.ClearResolvedAt()
@@ -3264,6 +3378,9 @@ func (m *SiteSuggestionsMutation) ResetField(name string) error {
 	case sitesuggestions.FieldResolveReason:
 		m.ResetResolveReason()
 		return nil
+	case sitesuggestions.FieldLinkedSite:
+		m.ResetLinkedSite()
+		return nil
 	case sitesuggestions.FieldResolvedAt:
 		m.ResetResolvedAt()
 		return nil
@@ -3273,19 +3390,28 @@ func (m *SiteSuggestionsMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *SiteSuggestionsMutation) AddedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.site != nil {
+		edges = append(edges, sitesuggestions.EdgeSite)
+	}
 	return edges
 }
 
 // AddedIDs returns all IDs (to other nodes) that were added for the given edge
 // name in this mutation.
 func (m *SiteSuggestionsMutation) AddedIDs(name string) []ent.Value {
+	switch name {
+	case sitesuggestions.EdgeSite:
+		if id := m.site; id != nil {
+			return []ent.Value{*id}
+		}
+	}
 	return nil
 }
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *SiteSuggestionsMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
 	return edges
 }
 
@@ -3297,25 +3423,42 @@ func (m *SiteSuggestionsMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *SiteSuggestionsMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 0)
+	edges := make([]string, 0, 1)
+	if m.clearedsite {
+		edges = append(edges, sitesuggestions.EdgeSite)
+	}
 	return edges
 }
 
 // EdgeCleared returns a boolean which indicates if the edge with the given name
 // was cleared in this mutation.
 func (m *SiteSuggestionsMutation) EdgeCleared(name string) bool {
+	switch name {
+	case sitesuggestions.EdgeSite:
+		return m.clearedsite
+	}
 	return false
 }
 
 // ClearEdge clears the value of the edge with the given name. It returns an error
 // if that edge is not defined in the schema.
 func (m *SiteSuggestionsMutation) ClearEdge(name string) error {
+	switch name {
+	case sitesuggestions.EdgeSite:
+		m.ClearSite()
+		return nil
+	}
 	return fmt.Errorf("unknown SiteSuggestions unique edge %s", name)
 }
 
 // ResetEdge resets all changes to the edge with the given name in this mutation.
 // It returns an error if the edge is not defined in the schema.
 func (m *SiteSuggestionsMutation) ResetEdge(name string) error {
+	switch name {
+	case sitesuggestions.EdgeSite:
+		m.ResetSite()
+		return nil
+	}
 	return fmt.Errorf("unknown SiteSuggestions edge %s", name)
 }
 
@@ -3333,6 +3476,9 @@ type SitesMutation struct {
 	blocks                  map[int]struct{}
 	removedblocks           map[int]struct{}
 	clearedblocks           bool
+	sitesuggestions         map[int]struct{}
+	removedsitesuggestions  map[int]struct{}
+	clearedsitesuggestions  bool
 	categories              map[int]struct{}
 	removedcategories       map[int]struct{}
 	clearedcategories       bool
@@ -3640,6 +3786,60 @@ func (m *SitesMutation) ResetBlocks() {
 	m.removedblocks = nil
 }
 
+// AddSitesuggestionIDs adds the "sitesuggestions" edge to the SiteSuggestions entity by ids.
+func (m *SitesMutation) AddSitesuggestionIDs(ids ...int) {
+	if m.sitesuggestions == nil {
+		m.sitesuggestions = make(map[int]struct{})
+	}
+	for i := range ids {
+		m.sitesuggestions[ids[i]] = struct{}{}
+	}
+}
+
+// ClearSitesuggestions clears the "sitesuggestions" edge to the SiteSuggestions entity.
+func (m *SitesMutation) ClearSitesuggestions() {
+	m.clearedsitesuggestions = true
+}
+
+// SitesuggestionsCleared reports if the "sitesuggestions" edge to the SiteSuggestions entity was cleared.
+func (m *SitesMutation) SitesuggestionsCleared() bool {
+	return m.clearedsitesuggestions
+}
+
+// RemoveSitesuggestionIDs removes the "sitesuggestions" edge to the SiteSuggestions entity by IDs.
+func (m *SitesMutation) RemoveSitesuggestionIDs(ids ...int) {
+	if m.removedsitesuggestions == nil {
+		m.removedsitesuggestions = make(map[int]struct{})
+	}
+	for i := range ids {
+		delete(m.sitesuggestions, ids[i])
+		m.removedsitesuggestions[ids[i]] = struct{}{}
+	}
+}
+
+// RemovedSitesuggestions returns the removed IDs of the "sitesuggestions" edge to the SiteSuggestions entity.
+func (m *SitesMutation) RemovedSitesuggestionsIDs() (ids []int) {
+	for id := range m.removedsitesuggestions {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// SitesuggestionsIDs returns the "sitesuggestions" edge IDs in the mutation.
+func (m *SitesMutation) SitesuggestionsIDs() (ids []int) {
+	for id := range m.sitesuggestions {
+		ids = append(ids, id)
+	}
+	return
+}
+
+// ResetSitesuggestions resets all changes to the "sitesuggestions" edge.
+func (m *SitesMutation) ResetSitesuggestions() {
+	m.sitesuggestions = nil
+	m.clearedsitesuggestions = false
+	m.removedsitesuggestions = nil
+}
+
 // AddCategoryIDs adds the "categories" edge to the Categories entity by ids.
 func (m *SitesMutation) AddCategoryIDs(ids ...int) {
 	if m.categories == nil {
@@ -3932,9 +4132,12 @@ func (m *SitesMutation) ResetField(name string) error {
 
 // AddedEdges returns all edge names that were set/added in this mutation.
 func (m *SitesMutation) AddedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.blocks != nil {
 		edges = append(edges, sites.EdgeBlocks)
+	}
+	if m.sitesuggestions != nil {
+		edges = append(edges, sites.EdgeSitesuggestions)
 	}
 	if m.categories != nil {
 		edges = append(edges, sites.EdgeCategories)
@@ -3952,6 +4155,12 @@ func (m *SitesMutation) AddedIDs(name string) []ent.Value {
 	case sites.EdgeBlocks:
 		ids := make([]ent.Value, 0, len(m.blocks))
 		for id := range m.blocks {
+			ids = append(ids, id)
+		}
+		return ids
+	case sites.EdgeSitesuggestions:
+		ids := make([]ent.Value, 0, len(m.sitesuggestions))
+		for id := range m.sitesuggestions {
 			ids = append(ids, id)
 		}
 		return ids
@@ -3973,9 +4182,12 @@ func (m *SitesMutation) AddedIDs(name string) []ent.Value {
 
 // RemovedEdges returns all edge names that were removed in this mutation.
 func (m *SitesMutation) RemovedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.removedblocks != nil {
 		edges = append(edges, sites.EdgeBlocks)
+	}
+	if m.removedsitesuggestions != nil {
+		edges = append(edges, sites.EdgeSitesuggestions)
 	}
 	if m.removedcategories != nil {
 		edges = append(edges, sites.EdgeCategories)
@@ -3993,6 +4205,12 @@ func (m *SitesMutation) RemovedIDs(name string) []ent.Value {
 	case sites.EdgeBlocks:
 		ids := make([]ent.Value, 0, len(m.removedblocks))
 		for id := range m.removedblocks {
+			ids = append(ids, id)
+		}
+		return ids
+	case sites.EdgeSitesuggestions:
+		ids := make([]ent.Value, 0, len(m.removedsitesuggestions))
+		for id := range m.removedsitesuggestions {
 			ids = append(ids, id)
 		}
 		return ids
@@ -4014,9 +4232,12 @@ func (m *SitesMutation) RemovedIDs(name string) []ent.Value {
 
 // ClearedEdges returns all edge names that were cleared in this mutation.
 func (m *SitesMutation) ClearedEdges() []string {
-	edges := make([]string, 0, 3)
+	edges := make([]string, 0, 4)
 	if m.clearedblocks {
 		edges = append(edges, sites.EdgeBlocks)
+	}
+	if m.clearedsitesuggestions {
+		edges = append(edges, sites.EdgeSitesuggestions)
 	}
 	if m.clearedcategories {
 		edges = append(edges, sites.EdgeCategories)
@@ -4033,6 +4254,8 @@ func (m *SitesMutation) EdgeCleared(name string) bool {
 	switch name {
 	case sites.EdgeBlocks:
 		return m.clearedblocks
+	case sites.EdgeSitesuggestions:
+		return m.clearedsitesuggestions
 	case sites.EdgeCategories:
 		return m.clearedcategories
 	case sites.EdgeSitesCategories:
@@ -4055,6 +4278,9 @@ func (m *SitesMutation) ResetEdge(name string) error {
 	switch name {
 	case sites.EdgeBlocks:
 		m.ResetBlocks()
+		return nil
+	case sites.EdgeSitesuggestions:
+		m.ResetSitesuggestions()
 		return nil
 	case sites.EdgeCategories:
 		m.ResetCategories()

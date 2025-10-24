@@ -17,6 +17,7 @@ import (
 	"github.com/gnulinuxindia/internet-chowkidar/ent/predicate"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sitescategories"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/sitesuggestions"
 )
 
 // SitesQuery is the builder for querying Sites entities.
@@ -27,6 +28,7 @@ type SitesQuery struct {
 	inters              []Interceptor
 	predicates          []predicate.Sites
 	withBlocks          *BlocksQuery
+	withSitesuggestions *SiteSuggestionsQuery
 	withCategories      *CategoriesQuery
 	withSitesCategories *SitesCategoriesQuery
 	// intermediate query (i.e. traversal path).
@@ -80,6 +82,28 @@ func (_q *SitesQuery) QueryBlocks() *BlocksQuery {
 			sqlgraph.From(sites.Table, sites.FieldID, selector),
 			sqlgraph.To(blocks.Table, blocks.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, sites.BlocksTable, sites.BlocksColumn),
+		)
+		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
+		return fromU, nil
+	}
+	return query
+}
+
+// QuerySitesuggestions chains the current query on the "sitesuggestions" edge.
+func (_q *SitesQuery) QuerySitesuggestions() *SiteSuggestionsQuery {
+	query := (&SiteSuggestionsClient{config: _q.config}).Query()
+	query.path = func(ctx context.Context) (fromU *sql.Selector, err error) {
+		if err := _q.prepareQuery(ctx); err != nil {
+			return nil, err
+		}
+		selector := _q.sqlQuery(ctx)
+		if err := selector.Err(); err != nil {
+			return nil, err
+		}
+		step := sqlgraph.NewStep(
+			sqlgraph.From(sites.Table, sites.FieldID, selector),
+			sqlgraph.To(sitesuggestions.Table, sitesuggestions.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, sites.SitesuggestionsTable, sites.SitesuggestionsColumn),
 		)
 		fromU = sqlgraph.SetNeighbors(_q.driver.Dialect(), step)
 		return fromU, nil
@@ -324,6 +348,7 @@ func (_q *SitesQuery) Clone() *SitesQuery {
 		inters:              append([]Interceptor{}, _q.inters...),
 		predicates:          append([]predicate.Sites{}, _q.predicates...),
 		withBlocks:          _q.withBlocks.Clone(),
+		withSitesuggestions: _q.withSitesuggestions.Clone(),
 		withCategories:      _q.withCategories.Clone(),
 		withSitesCategories: _q.withSitesCategories.Clone(),
 		// clone intermediate query.
@@ -340,6 +365,17 @@ func (_q *SitesQuery) WithBlocks(opts ...func(*BlocksQuery)) *SitesQuery {
 		opt(query)
 	}
 	_q.withBlocks = query
+	return _q
+}
+
+// WithSitesuggestions tells the query-builder to eager-load the nodes that are connected to
+// the "sitesuggestions" edge. The optional arguments are used to configure the query builder of the edge.
+func (_q *SitesQuery) WithSitesuggestions(opts ...func(*SiteSuggestionsQuery)) *SitesQuery {
+	query := (&SiteSuggestionsClient{config: _q.config}).Query()
+	for _, opt := range opts {
+		opt(query)
+	}
+	_q.withSitesuggestions = query
 	return _q
 }
 
@@ -443,8 +479,9 @@ func (_q *SitesQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Sites,
 	var (
 		nodes       = []*Sites{}
 		_spec       = _q.querySpec()
-		loadedTypes = [3]bool{
+		loadedTypes = [4]bool{
 			_q.withBlocks != nil,
+			_q.withSitesuggestions != nil,
 			_q.withCategories != nil,
 			_q.withSitesCategories != nil,
 		}
@@ -471,6 +508,13 @@ func (_q *SitesQuery) sqlAll(ctx context.Context, hooks ...queryHook) ([]*Sites,
 		if err := _q.loadBlocks(ctx, query, nodes,
 			func(n *Sites) { n.Edges.Blocks = []*Blocks{} },
 			func(n *Sites, e *Blocks) { n.Edges.Blocks = append(n.Edges.Blocks, e) }); err != nil {
+			return nil, err
+		}
+	}
+	if query := _q.withSitesuggestions; query != nil {
+		if err := _q.loadSitesuggestions(ctx, query, nodes,
+			func(n *Sites) { n.Edges.Sitesuggestions = []*SiteSuggestions{} },
+			func(n *Sites, e *SiteSuggestions) { n.Edges.Sitesuggestions = append(n.Edges.Sitesuggestions, e) }); err != nil {
 			return nil, err
 		}
 	}
@@ -516,6 +560,36 @@ func (_q *SitesQuery) loadBlocks(ctx context.Context, query *BlocksQuery, nodes 
 		node, ok := nodeids[fk]
 		if !ok {
 			return fmt.Errorf(`unexpected referenced foreign-key "site_id" returned %v for node %v`, fk, n.ID)
+		}
+		assign(node, n)
+	}
+	return nil
+}
+func (_q *SitesQuery) loadSitesuggestions(ctx context.Context, query *SiteSuggestionsQuery, nodes []*Sites, init func(*Sites), assign func(*Sites, *SiteSuggestions)) error {
+	fks := make([]driver.Value, 0, len(nodes))
+	nodeids := make(map[int]*Sites)
+	for i := range nodes {
+		fks = append(fks, nodes[i].ID)
+		nodeids[nodes[i].ID] = nodes[i]
+		if init != nil {
+			init(nodes[i])
+		}
+	}
+	if len(query.ctx.Fields) > 0 {
+		query.ctx.AppendFieldOnce(sitesuggestions.FieldLinkedSite)
+	}
+	query.Where(predicate.SiteSuggestions(func(s *sql.Selector) {
+		s.Where(sql.InValues(s.C(sites.SitesuggestionsColumn), fks...))
+	}))
+	neighbors, err := query.All(ctx)
+	if err != nil {
+		return err
+	}
+	for _, n := range neighbors {
+		fk := n.LinkedSite
+		node, ok := nodeids[fk]
+		if !ok {
+			return fmt.Errorf(`unexpected referenced foreign-key "linked_site" returned %v for node %v`, fk, n.ID)
 		}
 		assign(node, n)
 	}

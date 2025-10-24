@@ -14,6 +14,7 @@ import (
 	"github.com/gnulinuxindia/internet-chowkidar/ent/categories"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sitescategories"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/sitesuggestions"
 )
 
 // SitesCreate is the builder for creating a Sites entity.
@@ -76,6 +77,21 @@ func (_c *SitesCreate) AddBlocks(v ...*Blocks) *SitesCreate {
 		ids[i] = v[i].ID
 	}
 	return _c.AddBlockIDs(ids...)
+}
+
+// AddSitesuggestionIDs adds the "sitesuggestions" edge to the SiteSuggestions entity by IDs.
+func (_c *SitesCreate) AddSitesuggestionIDs(ids ...int) *SitesCreate {
+	_c.mutation.AddSitesuggestionIDs(ids...)
+	return _c
+}
+
+// AddSitesuggestions adds the "sitesuggestions" edges to the SiteSuggestions entity.
+func (_c *SitesCreate) AddSitesuggestions(v ...*SiteSuggestions) *SitesCreate {
+	ids := make([]int, len(v))
+	for i := range v {
+		ids[i] = v[i].ID
+	}
+	return _c.AddSitesuggestionIDs(ids...)
 }
 
 // AddCategoryIDs adds the "categories" edge to the Categories entity by IDs.
@@ -218,6 +234,22 @@ func (_c *SitesCreate) createSpec() (*Sites, *sqlgraph.CreateSpec) {
 			Bidi:    false,
 			Target: &sqlgraph.EdgeTarget{
 				IDSpec: sqlgraph.NewFieldSpec(blocks.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges = append(_spec.Edges, edge)
+	}
+	if nodes := _c.mutation.SitesuggestionsIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.O2M,
+			Inverse: false,
+			Table:   sites.SitesuggestionsTable,
+			Columns: []string{sites.SitesuggestionsColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sitesuggestions.FieldID, field.TypeInt),
 			},
 		}
 		for _, k := range nodes {

@@ -1882,17 +1882,24 @@ func (s *ResolveSiteSuggestionInput) encodeFields(e *jx.Encoder) {
 		e.Str(s.ResolveReason)
 	}
 	{
+		if s.LinkedSite.Set {
+			e.FieldStart("linked_site")
+			s.LinkedSite.Encode(e)
+		}
+	}
+	{
 		e.FieldStart("status")
 		s.Status.Encode(e)
 	}
 }
 
-var jsonFieldsNameOfResolveSiteSuggestionInput = [5]string{
+var jsonFieldsNameOfResolveSiteSuggestionInput = [6]string{
 	0: "domain",
 	1: "ping_url",
 	2: "categories",
 	3: "resolve_reason",
-	4: "status",
+	4: "linked_site",
+	5: "status",
 }
 
 // Decode decodes ResolveSiteSuggestionInput from json.
@@ -1955,8 +1962,18 @@ func (s *ResolveSiteSuggestionInput) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"resolve_reason\"")
 			}
+		case "linked_site":
+			if err := func() error {
+				s.LinkedSite.Reset()
+				if err := s.LinkedSite.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"linked_site\"")
+			}
 		case "status":
-			requiredBitSet[0] |= 1 << 4
+			requiredBitSet[0] |= 1 << 5
 			if err := func() error {
 				if err := s.Status.Decode(d); err != nil {
 					return err
@@ -1975,7 +1992,7 @@ func (s *ResolveSiteSuggestionInput) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00011000,
+		0b00101000,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -2929,6 +2946,10 @@ func (s *SiteSuggestion) encodeFields(e *jx.Encoder) {
 		e.Str(s.ResolveReason)
 	}
 	{
+		e.FieldStart("linked_site")
+		e.Int(s.LinkedSite)
+	}
+	{
 		e.FieldStart("resolved_at")
 		json.EncodeDateTime(e, s.ResolvedAt)
 	}
@@ -2942,17 +2963,18 @@ func (s *SiteSuggestion) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfSiteSuggestion = [10]string{
-	0: "id",
-	1: "domain",
-	2: "ping_url",
-	3: "categories",
-	4: "reason",
-	5: "status",
-	6: "resolve_reason",
-	7: "resolved_at",
-	8: "created_at",
-	9: "updated_at",
+var jsonFieldsNameOfSiteSuggestion = [11]string{
+	0:  "id",
+	1:  "domain",
+	2:  "ping_url",
+	3:  "categories",
+	4:  "reason",
+	5:  "status",
+	6:  "resolve_reason",
+	7:  "linked_site",
+	8:  "resolved_at",
+	9:  "created_at",
+	10: "updated_at",
 }
 
 // Decode decodes SiteSuggestion from json.
@@ -3054,8 +3076,20 @@ func (s *SiteSuggestion) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"resolve_reason\"")
 			}
-		case "resolved_at":
+		case "linked_site":
 			requiredBitSet[0] |= 1 << 7
+			if err := func() error {
+				v, err := d.Int()
+				s.LinkedSite = int(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"linked_site\"")
+			}
+		case "resolved_at":
+			requiredBitSet[1] |= 1 << 0
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.ResolvedAt = v
@@ -3067,7 +3101,7 @@ func (s *SiteSuggestion) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"resolved_at\"")
 			}
 		case "created_at":
-			requiredBitSet[1] |= 1 << 0
+			requiredBitSet[1] |= 1 << 1
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.CreatedAt = v
@@ -3079,7 +3113,7 @@ func (s *SiteSuggestion) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"created_at\"")
 			}
 		case "updated_at":
-			requiredBitSet[1] |= 1 << 1
+			requiredBitSet[1] |= 1 << 2
 			if err := func() error {
 				v, err := json.DecodeDateTime(d)
 				s.UpdatedAt = v
@@ -3101,7 +3135,7 @@ func (s *SiteSuggestion) Decode(d *jx.Decoder) error {
 	var failures []validate.FieldError
 	for i, mask := range [2]uint8{
 		0b11111111,
-		0b00000011,
+		0b00000111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

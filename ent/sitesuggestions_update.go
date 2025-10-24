@@ -12,6 +12,7 @@ import (
 	"entgo.io/ent/dialect/sql/sqlgraph"
 	"entgo.io/ent/schema/field"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/predicate"
+	"github.com/gnulinuxindia/internet-chowkidar/ent/sites"
 	"github.com/gnulinuxindia/internet-chowkidar/ent/sitesuggestions"
 )
 
@@ -130,6 +131,26 @@ func (_u *SiteSuggestionsUpdate) ClearResolveReason() *SiteSuggestionsUpdate {
 	return _u
 }
 
+// SetLinkedSite sets the "linked_site" field.
+func (_u *SiteSuggestionsUpdate) SetLinkedSite(v int) *SiteSuggestionsUpdate {
+	_u.mutation.SetLinkedSite(v)
+	return _u
+}
+
+// SetNillableLinkedSite sets the "linked_site" field if the given value is not nil.
+func (_u *SiteSuggestionsUpdate) SetNillableLinkedSite(v *int) *SiteSuggestionsUpdate {
+	if v != nil {
+		_u.SetLinkedSite(*v)
+	}
+	return _u
+}
+
+// ClearLinkedSite clears the value of the "linked_site" field.
+func (_u *SiteSuggestionsUpdate) ClearLinkedSite() *SiteSuggestionsUpdate {
+	_u.mutation.ClearLinkedSite()
+	return _u
+}
+
 // SetResolvedAt sets the "resolved_at" field.
 func (_u *SiteSuggestionsUpdate) SetResolvedAt(v time.Time) *SiteSuggestionsUpdate {
 	_u.mutation.SetResolvedAt(v)
@@ -150,9 +171,34 @@ func (_u *SiteSuggestionsUpdate) ClearResolvedAt() *SiteSuggestionsUpdate {
 	return _u
 }
 
+// SetSiteID sets the "site" edge to the Sites entity by ID.
+func (_u *SiteSuggestionsUpdate) SetSiteID(id int) *SiteSuggestionsUpdate {
+	_u.mutation.SetSiteID(id)
+	return _u
+}
+
+// SetNillableSiteID sets the "site" edge to the Sites entity by ID if the given value is not nil.
+func (_u *SiteSuggestionsUpdate) SetNillableSiteID(id *int) *SiteSuggestionsUpdate {
+	if id != nil {
+		_u = _u.SetSiteID(*id)
+	}
+	return _u
+}
+
+// SetSite sets the "site" edge to the Sites entity.
+func (_u *SiteSuggestionsUpdate) SetSite(v *Sites) *SiteSuggestionsUpdate {
+	return _u.SetSiteID(v.ID)
+}
+
 // Mutation returns the SiteSuggestionsMutation object of the builder.
 func (_u *SiteSuggestionsUpdate) Mutation() *SiteSuggestionsMutation {
 	return _u.mutation
+}
+
+// ClearSite clears the "site" edge to the Sites entity.
+func (_u *SiteSuggestionsUpdate) ClearSite() *SiteSuggestionsUpdate {
+	_u.mutation.ClearSite()
+	return _u
 }
 
 // Save executes the query and returns the number of nodes affected by the update operation.
@@ -245,6 +291,35 @@ func (_u *SiteSuggestionsUpdate) sqlSave(ctx context.Context) (_node int, err er
 	}
 	if _u.mutation.ResolvedAtCleared() {
 		_spec.ClearField(sitesuggestions.FieldResolvedAt, field.TypeTime)
+	}
+	if _u.mutation.SiteCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   sitesuggestions.SiteTable,
+			Columns: []string{sitesuggestions.SiteColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sites.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SiteIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   sitesuggestions.SiteTable,
+			Columns: []string{sitesuggestions.SiteColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sites.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	if _node, err = sqlgraph.UpdateNodes(ctx, _u.driver, _spec); err != nil {
 		if _, ok := err.(*sqlgraph.NotFoundError); ok {
@@ -368,6 +443,26 @@ func (_u *SiteSuggestionsUpdateOne) ClearResolveReason() *SiteSuggestionsUpdateO
 	return _u
 }
 
+// SetLinkedSite sets the "linked_site" field.
+func (_u *SiteSuggestionsUpdateOne) SetLinkedSite(v int) *SiteSuggestionsUpdateOne {
+	_u.mutation.SetLinkedSite(v)
+	return _u
+}
+
+// SetNillableLinkedSite sets the "linked_site" field if the given value is not nil.
+func (_u *SiteSuggestionsUpdateOne) SetNillableLinkedSite(v *int) *SiteSuggestionsUpdateOne {
+	if v != nil {
+		_u.SetLinkedSite(*v)
+	}
+	return _u
+}
+
+// ClearLinkedSite clears the value of the "linked_site" field.
+func (_u *SiteSuggestionsUpdateOne) ClearLinkedSite() *SiteSuggestionsUpdateOne {
+	_u.mutation.ClearLinkedSite()
+	return _u
+}
+
 // SetResolvedAt sets the "resolved_at" field.
 func (_u *SiteSuggestionsUpdateOne) SetResolvedAt(v time.Time) *SiteSuggestionsUpdateOne {
 	_u.mutation.SetResolvedAt(v)
@@ -388,9 +483,34 @@ func (_u *SiteSuggestionsUpdateOne) ClearResolvedAt() *SiteSuggestionsUpdateOne 
 	return _u
 }
 
+// SetSiteID sets the "site" edge to the Sites entity by ID.
+func (_u *SiteSuggestionsUpdateOne) SetSiteID(id int) *SiteSuggestionsUpdateOne {
+	_u.mutation.SetSiteID(id)
+	return _u
+}
+
+// SetNillableSiteID sets the "site" edge to the Sites entity by ID if the given value is not nil.
+func (_u *SiteSuggestionsUpdateOne) SetNillableSiteID(id *int) *SiteSuggestionsUpdateOne {
+	if id != nil {
+		_u = _u.SetSiteID(*id)
+	}
+	return _u
+}
+
+// SetSite sets the "site" edge to the Sites entity.
+func (_u *SiteSuggestionsUpdateOne) SetSite(v *Sites) *SiteSuggestionsUpdateOne {
+	return _u.SetSiteID(v.ID)
+}
+
 // Mutation returns the SiteSuggestionsMutation object of the builder.
 func (_u *SiteSuggestionsUpdateOne) Mutation() *SiteSuggestionsMutation {
 	return _u.mutation
+}
+
+// ClearSite clears the "site" edge to the Sites entity.
+func (_u *SiteSuggestionsUpdateOne) ClearSite() *SiteSuggestionsUpdateOne {
+	_u.mutation.ClearSite()
+	return _u
 }
 
 // Where appends a list predicates to the SiteSuggestionsUpdate builder.
@@ -513,6 +633,35 @@ func (_u *SiteSuggestionsUpdateOne) sqlSave(ctx context.Context) (_node *SiteSug
 	}
 	if _u.mutation.ResolvedAtCleared() {
 		_spec.ClearField(sitesuggestions.FieldResolvedAt, field.TypeTime)
+	}
+	if _u.mutation.SiteCleared() {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   sitesuggestions.SiteTable,
+			Columns: []string{sitesuggestions.SiteColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sites.FieldID, field.TypeInt),
+			},
+		}
+		_spec.Edges.Clear = append(_spec.Edges.Clear, edge)
+	}
+	if nodes := _u.mutation.SiteIDs(); len(nodes) > 0 {
+		edge := &sqlgraph.EdgeSpec{
+			Rel:     sqlgraph.M2O,
+			Inverse: true,
+			Table:   sitesuggestions.SiteTable,
+			Columns: []string{sitesuggestions.SiteColumn},
+			Bidi:    false,
+			Target: &sqlgraph.EdgeTarget{
+				IDSpec: sqlgraph.NewFieldSpec(sites.FieldID, field.TypeInt),
+			},
+		}
+		for _, k := range nodes {
+			edge.Target.Nodes = append(edge.Target.Nodes, k)
+		}
+		_spec.Edges.Add = append(_spec.Edges.Add, edge)
 	}
 	_node = &SiteSuggestions{config: _u.config}
 	_spec.Assign = _node.assignValues

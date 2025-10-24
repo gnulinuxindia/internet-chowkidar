@@ -104,12 +104,21 @@ var (
 		{Name: "status", Type: field.TypeEnum, Enums: []string{"pending", "accepted", "rejected"}, Default: "pending"},
 		{Name: "resolve_reason", Type: field.TypeString, Nullable: true},
 		{Name: "resolved_at", Type: field.TypeTime, Nullable: true},
+		{Name: "linked_site", Type: field.TypeInt, Nullable: true},
 	}
 	// SiteSuggestionsTable holds the schema information for the "site_suggestions" table.
 	SiteSuggestionsTable = &schema.Table{
 		Name:       "site_suggestions",
 		Columns:    SiteSuggestionsColumns,
 		PrimaryKey: []*schema.Column{SiteSuggestionsColumns[0]},
+		ForeignKeys: []*schema.ForeignKey{
+			{
+				Symbol:     "site_suggestions_sites_sitesuggestions",
+				Columns:    []*schema.Column{SiteSuggestionsColumns[10]},
+				RefColumns: []*schema.Column{SitesColumns[0]},
+				OnDelete:   schema.SetNull,
+			},
+		},
 		Indexes: []*schema.Index{
 			{
 				Name:    "sitesuggestions_domain",
@@ -187,6 +196,7 @@ var (
 func init() {
 	BlocksTable.ForeignKeys[0].RefTable = IspsTable
 	BlocksTable.ForeignKeys[1].RefTable = SitesTable
+	SiteSuggestionsTable.ForeignKeys[0].RefTable = SitesTable
 	SitesCategoriesTable.ForeignKeys[0].RefTable = SitesTable
 	SitesCategoriesTable.ForeignKeys[1].RefTable = CategoriesTable
 }

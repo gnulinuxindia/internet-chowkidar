@@ -975,6 +975,22 @@ func (c *SiteSuggestionsClient) GetX(ctx context.Context, id int) *SiteSuggestio
 	return obj
 }
 
+// QuerySite queries the site edge of a SiteSuggestions.
+func (c *SiteSuggestionsClient) QuerySite(_m *SiteSuggestions) *SitesQuery {
+	query := (&SitesClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(sitesuggestions.Table, sitesuggestions.FieldID, id),
+			sqlgraph.To(sites.Table, sites.FieldID),
+			sqlgraph.Edge(sqlgraph.M2O, true, sitesuggestions.SiteTable, sitesuggestions.SiteColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
 // Hooks returns the client hooks.
 func (c *SiteSuggestionsClient) Hooks() []Hook {
 	return c.hooks.SiteSuggestions
@@ -1117,6 +1133,22 @@ func (c *SitesClient) QueryBlocks(_m *Sites) *BlocksQuery {
 			sqlgraph.From(sites.Table, sites.FieldID, id),
 			sqlgraph.To(blocks.Table, blocks.FieldID),
 			sqlgraph.Edge(sqlgraph.O2M, false, sites.BlocksTable, sites.BlocksColumn),
+		)
+		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
+		return fromV, nil
+	}
+	return query
+}
+
+// QuerySitesuggestions queries the sitesuggestions edge of a Sites.
+func (c *SitesClient) QuerySitesuggestions(_m *Sites) *SiteSuggestionsQuery {
+	query := (&SiteSuggestionsClient{config: c.config}).Query()
+	query.path = func(context.Context) (fromV *sql.Selector, _ error) {
+		id := _m.ID
+		step := sqlgraph.NewStep(
+			sqlgraph.From(sites.Table, sites.FieldID, id),
+			sqlgraph.To(sitesuggestions.Table, sitesuggestions.FieldID),
+			sqlgraph.Edge(sqlgraph.O2M, false, sites.SitesuggestionsTable, sites.SitesuggestionsColumn),
 		)
 		fromV = sqlgraph.Neighbors(_m.driver.Dialect(), step)
 		return fromV, nil
