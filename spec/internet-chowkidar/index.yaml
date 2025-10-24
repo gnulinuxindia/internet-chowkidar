@@ -710,6 +710,7 @@ components:
         - reason
         - status
         - resolve_reason
+        - linked_site
         - resolved_at
         - created_at
         - updated_at
@@ -731,6 +732,8 @@ components:
           enum: [pending, accepted, rejected]
         resolve_reason:
           type: string
+        linked_site:
+          type: integer
         resolved_at:
           type: string
           format: date-time
@@ -757,6 +760,8 @@ components:
             type: string
         resolve_reason:
           type: string
+        linked_site:
+          type: integer
         status:
           type: string
           enum: [pending, accepted, rejected]

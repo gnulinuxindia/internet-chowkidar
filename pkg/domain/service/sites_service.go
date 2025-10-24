@@ -64,10 +64,11 @@ func (s *sitesServiceImpl) ResolveSiteSuggestion(ctx context.Context, req *genap
 		if len(req.Categories) > 0 {
 			data.Categories = req.Categories
 		}
-		_, err := s.CreateSite(ctx, data)
+		created, err := s.CreateSite(ctx, data)
 		if err != nil {
 			return nil, err
 		}
+		req.LinkedSite.SetTo(created.ID)
 	}
 	site2, err := s.sitesRepository.ResolveSiteSuggestion(ctx, req, params)
 	if err != nil {
@@ -81,6 +82,7 @@ func (s *sitesServiceImpl) ResolveSiteSuggestion(ctx context.Context, req *genap
 		Reason:        site2.Reason,
 		Status:        genapi.SiteSuggestionStatus(site2.Status),
 		ResolveReason: site2.ResolveReason,
+		LinkedSite:    site2.LinkedSite,
 		ResolvedAt:    site2.ResolvedAt,
 		CreatedAt:     site2.CreatedAt,
 		UpdatedAt:     site2.UpdatedAt,
@@ -101,6 +103,7 @@ func (s *sitesServiceImpl) CreateSiteSuggestion(ctx context.Context, req *genapi
 		Reason:        suggestion.Reason,
 		Status:        genapi.SiteSuggestionStatus(suggestion.Status),
 		ResolveReason: suggestion.ResolveReason,
+		LinkedSite:    suggestion.LinkedSite,
 		CreatedAt:     suggestion.CreatedAt,
 		UpdatedAt:     suggestion.UpdatedAt,
 	}, nil
@@ -204,6 +207,7 @@ func (s *sitesServiceImpl) GetSiteSuggestion(ctx context.Context, params genapi.
 		Reason:        ds.Reason,
 		Status:        genapi.SiteSuggestionStatus(ds.Status),
 		ResolveReason: ds.ResolveReason,
+		LinkedSite:    ds.LinkedSite,
 		ResolvedAt:    ds.ResolvedAt,
 		CreatedAt:     ds.CreatedAt,
 		UpdatedAt:     ds.UpdatedAt,

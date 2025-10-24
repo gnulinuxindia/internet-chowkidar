@@ -140,11 +140,16 @@ func (s *sitesRepositoryImpl) ResolveSiteSuggestion(ctx context.Context, req *ge
 		return nil, errors.Wrap(err, 0)
 	}
 
-	suggestion, err := tx.SiteSuggestions.UpdateOneID(params.ID).
+	builder := tx.SiteSuggestions.UpdateOneID(params.ID).
 		SetStatus(sitesuggestions.Status(req.Status)).
 		SetResolveReason(req.ResolveReason).
-		SetResolvedAt(resolvedAt).
-		Save(ctx)
+		SetResolvedAt(resolvedAt)
+
+	if req.Status == "approved" {
+		builder.SetLinkedSite(req.LinkedSite.Value)
+	}
+
+	suggestion, err := builder.Save(ctx)
 	if err != nil {
 		slog.Error("failed to update site suggestion", "error", err)
 		return nil, rollback(tx, errors.Wrap(err, 0))
@@ -321,6 +326,7 @@ func (s *sitesRepositoryImpl) GetAllSiteSuggestions(ctx context.Context, params 
 			Reason:        suggestion.Reason,
 			Status:        genapi.SiteSuggestionStatus(suggestion.Status),
 			ResolveReason: suggestion.ResolveReason,
+			LinkedSite:    suggestion.LinkedSite,
 			ResolvedAt:    suggestion.ResolvedAt,
 			CreatedAt:     suggestion.CreatedAt,
 			UpdatedAt:     suggestion.UpdatedAt,

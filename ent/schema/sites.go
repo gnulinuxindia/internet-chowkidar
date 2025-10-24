@@ -23,6 +23,7 @@ func (Sites) Fields() []ent.Field {
 func (Sites) Edges() []ent.Edge {
 	return []ent.Edge{
 		edge.To("blocks", Blocks.Type),
+		edge.To("sitesuggestions", SiteSuggestions.Type),
 		edge.To("categories", Categories.Type).
 			Through("sites_categories", SitesCategories.Type),
 	}

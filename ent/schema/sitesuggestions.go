@@ -2,6 +2,7 @@ package schema
 
 import (
 	"entgo.io/ent"
+	"entgo.io/ent/schema/edge"
 	"entgo.io/ent/schema/field"
 	"entgo.io/ent/schema/index"
 )
@@ -20,13 +21,18 @@ func (SiteSuggestions) Fields() []ent.Field {
 		field.String("reason"),
 		field.Enum("status").Values("pending", "accepted", "rejected").Default("pending"),
 		field.String("resolve_reason").Optional(),
+		field.Int("linked_site").Optional(),
 		field.Time("resolved_at").Optional(),
 	}
 }
 
 // Edges of the SiteSuggestions.
 func (SiteSuggestions) Edges() []ent.Edge {
-	return nil
+	return []ent.Edge{
+		edge.From("site", Sites.Type).
+			Ref("sitesuggestions").
+			Field("linked_site").Unique(),
+	}
 }
 
 func (SiteSuggestions) Mixin() []ent.Mixin {
