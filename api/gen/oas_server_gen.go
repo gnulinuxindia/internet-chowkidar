@@ -110,6 +110,12 @@ type Handler interface {
 	//
 	// GET /sites
 	ListSites(ctx context.Context, params ListSitesParams) ([]Site, error)
+	// ResolveSiteSuggestion implements resolveSiteSuggestion operation.
+	//
+	// Resolve a site suggestion.
+	//
+	// POST /sites/suggestions/{id}/resolve
+	ResolveSiteSuggestion(ctx context.Context, req *ResolveSiteSuggestionInput, params ResolveSiteSuggestionParams) (*SiteSuggestion, error)
 }
 
 // Server implements http server based on OpenAPI v3 specification and

@@ -1202,6 +1202,113 @@ func (o OptString) Or(d string) string {
 	return d
 }
 
+// Ref: #/components/schemas/ResolveSiteSuggestionInput
+type ResolveSiteSuggestionInput struct {
+	Domain        OptString                        `json:"domain"`
+	PingURL       OptString                        `json:"ping_url"`
+	Categories    []string                         `json:"categories"`
+	ResolveReason string                           `json:"resolve_reason"`
+	Status        ResolveSiteSuggestionInputStatus `json:"status"`
+}
+
+// GetDomain returns the value of Domain.
+func (s *ResolveSiteSuggestionInput) GetDomain() OptString {
+	return s.Domain
+}
+
+// GetPingURL returns the value of PingURL.
+func (s *ResolveSiteSuggestionInput) GetPingURL() OptString {
+	return s.PingURL
+}
+
+// GetCategories returns the value of Categories.
+func (s *ResolveSiteSuggestionInput) GetCategories() []string {
+	return s.Categories
+}
+
+// GetResolveReason returns the value of ResolveReason.
+func (s *ResolveSiteSuggestionInput) GetResolveReason() string {
+	return s.ResolveReason
+}
+
+// GetStatus returns the value of Status.
+func (s *ResolveSiteSuggestionInput) GetStatus() ResolveSiteSuggestionInputStatus {
+	return s.Status
+}
+
+// SetDomain sets the value of Domain.
+func (s *ResolveSiteSuggestionInput) SetDomain(val OptString) {
+	s.Domain = val
+}
+
+// SetPingURL sets the value of PingURL.
+func (s *ResolveSiteSuggestionInput) SetPingURL(val OptString) {
+	s.PingURL = val
+}
+
+// SetCategories sets the value of Categories.
+func (s *ResolveSiteSuggestionInput) SetCategories(val []string) {
+	s.Categories = val
+}
+
+// SetResolveReason sets the value of ResolveReason.
+func (s *ResolveSiteSuggestionInput) SetResolveReason(val string) {
+	s.ResolveReason = val
+}
+
+// SetStatus sets the value of Status.
+func (s *ResolveSiteSuggestionInput) SetStatus(val ResolveSiteSuggestionInputStatus) {
+	s.Status = val
+}
+
+type ResolveSiteSuggestionInputStatus string
+
+const (
+	ResolveSiteSuggestionInputStatusPending  ResolveSiteSuggestionInputStatus = "pending"
+	ResolveSiteSuggestionInputStatusAccepted ResolveSiteSuggestionInputStatus = "accepted"
+	ResolveSiteSuggestionInputStatusRejected ResolveSiteSuggestionInputStatus = "rejected"
+)
+
+// AllValues returns all ResolveSiteSuggestionInputStatus values.
+func (ResolveSiteSuggestionInputStatus) AllValues() []ResolveSiteSuggestionInputStatus {
+	return []ResolveSiteSuggestionInputStatus{
+		ResolveSiteSuggestionInputStatusPending,
+		ResolveSiteSuggestionInputStatusAccepted,
+		ResolveSiteSuggestionInputStatusRejected,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s ResolveSiteSuggestionInputStatus) MarshalText() ([]byte, error) {
+	switch s {
+	case ResolveSiteSuggestionInputStatusPending:
+		return []byte(s), nil
+	case ResolveSiteSuggestionInputStatusAccepted:
+		return []byte(s), nil
+	case ResolveSiteSuggestionInputStatusRejected:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *ResolveSiteSuggestionInputStatus) UnmarshalText(data []byte) error {
+	switch ResolveSiteSuggestionInputStatus(data) {
+	case ResolveSiteSuggestionInputStatusPending:
+		*s = ResolveSiteSuggestionInputStatusPending
+		return nil
+	case ResolveSiteSuggestionInputStatusAccepted:
+		*s = ResolveSiteSuggestionInputStatusAccepted
+		return nil
+	case ResolveSiteSuggestionInputStatusRejected:
+		*s = ResolveSiteSuggestionInputStatusRejected
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
 // Ref: #/components/schemas/Site
 type Site struct {
 	ID             int       `json:"id"`

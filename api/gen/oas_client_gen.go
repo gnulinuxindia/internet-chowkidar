@@ -131,6 +131,12 @@ type Invoker interface {
 	//
 	// GET /sites
 	ListSites(ctx context.Context, params ListSitesParams) ([]Site, error)
+	// ResolveSiteSuggestion invokes resolveSiteSuggestion operation.
+	//
+	// Resolve a site suggestion.
+	//
+	// POST /sites/suggestions/{id}/resolve
+	ResolveSiteSuggestion(ctx context.Context, request *ResolveSiteSuggestionInput, params ResolveSiteSuggestionParams) (*SiteSuggestion, error)
 }
 
 // Client implements OAS client.
@@ -1783,6 +1789,133 @@ func (c *Client) sendListSites(ctx context.Context, params ListSitesParams) (res
 
 	stage = "DecodeResponse"
 	result, err := decodeListSitesResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
+}
+
+// ResolveSiteSuggestion invokes resolveSiteSuggestion operation.
+//
+// Resolve a site suggestion.
+//
+// POST /sites/suggestions/{id}/resolve
+func (c *Client) ResolveSiteSuggestion(ctx context.Context, request *ResolveSiteSuggestionInput, params ResolveSiteSuggestionParams) (*SiteSuggestion, error) {
+	res, err := c.sendResolveSiteSuggestion(ctx, request, params)
+	return res, err
+}
+
+func (c *Client) sendResolveSiteSuggestion(ctx context.Context, request *ResolveSiteSuggestionInput, params ResolveSiteSuggestionParams) (res *SiteSuggestion, err error) {
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("resolveSiteSuggestion"),
+		semconv.HTTPRequestMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/sites/suggestions/{id}/resolve"),
+	}
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, ResolveSiteSuggestionOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [3]string
+	pathParts[0] = "/sites/suggestions/"
+	{
+		// Encode "id" parameter.
+		e := uri.NewPathEncoder(uri.PathEncoderConfig{
+			Param:   "id",
+			Style:   uri.PathStyleSimple,
+			Explode: false,
+		})
+		if err := func() error {
+			return e.EncodeValue(conv.IntToString(params.ID))
+		}(); err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		encoded, err := e.Result()
+		if err != nil {
+			return res, errors.Wrap(err, "encode path")
+		}
+		pathParts[1] = encoded
+	}
+	pathParts[2] = "/resolve"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "POST", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+	if err := encodeResolveSiteSuggestionRequest(request, r); err != nil {
+		return res, errors.Wrap(err, "encode request")
+	}
+
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			stage = "Security:ApiKeyAuth"
+			switch err := c.securityApiKeyAuth(ctx, ResolveSiteSuggestionOperation, r); {
+			case err == nil: // if NO error
+				satisfied[0] |= 1 << 0
+			case errors.Is(err, ogenerrors.ErrSkipClientSecurity):
+				// Skip this security.
+			default:
+				return res, errors.Wrap(err, "security \"ApiKeyAuth\"")
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			return res, ogenerrors.ErrSecurityRequirementIsNotSatisfied
+		}
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeResolveSiteSuggestionResponse(resp)
 	if err != nil {
 		return res, errors.Wrap(err, "decode response")
 	}

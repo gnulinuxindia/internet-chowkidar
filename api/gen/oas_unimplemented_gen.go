@@ -165,3 +165,12 @@ func (UnimplementedHandler) ListSiteSuggestions(ctx context.Context, params List
 func (UnimplementedHandler) ListSites(ctx context.Context, params ListSitesParams) (r []Site, _ error) {
 	return r, ht.ErrNotImplemented
 }
+
+// ResolveSiteSuggestion implements resolveSiteSuggestion operation.
+//
+// Resolve a site suggestion.
+//
+// POST /sites/suggestions/{id}/resolve
+func (UnimplementedHandler) ResolveSiteSuggestion(ctx context.Context, req *ResolveSiteSuggestionInput, params ResolveSiteSuggestionParams) (r *SiteSuggestion, _ error) {
+	return r, ht.ErrNotImplemented
+}
