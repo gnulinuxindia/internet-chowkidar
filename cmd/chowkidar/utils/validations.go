@@ -1,4 +1,4 @@
-package main
+package utils
 
 import (
 	"net/url"
@@ -7,8 +7,8 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func validateServer(server string) bool {
-	healthcheck, err := getRequest(server + "/health")
+func ValidateServer(server string) bool {
+	healthcheck, err := GetRequest(server + "/health")
 	if err != nil {
 		return false
 	}
@@ -18,8 +18,8 @@ func validateServer(server string) bool {
 	}
 	return false
 }
-func validateConfig(config Config) bool {
-	if config.ID < 0 {
+func ValidateConfig(config Config) bool {
+	if config.ISPID < 0 {
 		return false
 	}
 
@@ -27,7 +27,7 @@ func validateConfig(config Config) bool {
 		return false
 	}
 
-	_, _, _, cityValid := validateCity(config.City)
+	_, _, _, cityValid := ValidateCity(config.City)
 	if cityValid == false {
 		return false
 	}
@@ -44,8 +44,8 @@ func validateConfig(config Config) bool {
 	}
 	return true
 }
-func validateCity(city string) (newCity string, lat float64, lon float64, valid bool) {
-	osmOut, err := getRequest("https://nominatim.openstreetmap.org/search?q=" + url.QueryEscape(city) + "&format=json&polygon=1&addressdetails=1&limit=1")
+func ValidateCity(city string) (newCity string, lat float64, lon float64, valid bool) {
+	osmOut, err := GetRequest("https://nominatim.openstreetmap.org/search?q=" + url.QueryEscape(city) + "&format=json&polygon=1&addressdetails=1&limit=1")
 	if err != nil {
 		return "", 0.0, 0.0, false
 	}
@@ -54,7 +54,7 @@ func validateCity(city string) (newCity string, lat float64, lon float64, valid 
 	}
 
 	gjsonArr := gjson.Get(osmOut, "0.address.city").String()
-	newCityOut, err := getRequest("https://nominatim.openstreetmap.org/search?q=" + url.QueryEscape(gjsonArr) + "&format=json&polygon=1&addressdetails=1&limit=1")
+	newCityOut, err := GetRequest("https://nominatim.openstreetmap.org/search?q=" + url.QueryEscape(gjsonArr) + "&format=json&polygon=1&addressdetails=1&limit=1")
 	latStr := gjson.Get(newCityOut, "0.lat").String()
 	lonStr := gjson.Get(newCityOut, "0.lon").String()
 	lat, err = strconv.ParseFloat(latStr, 64)
