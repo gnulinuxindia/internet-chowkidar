@@ -9,22 +9,33 @@ import (
 	"log"
 	"time"
 
+	"github.com/getlantern/systray"
 	"github.com/gnulinuxindia/internet-chowkidar/cmd/chowkidar/utils"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v2"
 	"go.mills.io/bitcask/v2"
 )
 
+var updateConf bool
+
 func Run(cCtx *cli.Context) error {
-	config, err := utils.FindConfigData(cCtx)
+	config, err := utils.FindConfigData(cCtx.String("config"))
 	if err != nil {
 		cli.Exit(err.Error(), 1)
 	}
+
+	db, err := utils.FindDatabase(cCtx.String("database"))
+	if err != nil {
+		cli.Exit(err.Error(), 1)
+	}
+	defer db.Close()
+
+	go func() {
+		systray.Run(func() { createSystray(cCtx.String("config"), db) }, nil)
+	}()
+
 	// Figure out frequency based on the mode numbers
 	duration := time.Duration(config.TestFrequency) * time.Hour
-
-	db, _ := bitcask.Open(cCtx.String("database"))
-	defer db.Close()
 
 	// If it wasn't run before acc to DB, run it now
 	val, err := db.Get([]byte("lastRun"))
@@ -65,8 +76,16 @@ func Run(cCtx *cli.Context) error {
 			}
 		}
 	}
+
 	// Do the periodic ones based on the determined duration
 	for range time.Tick(duration) {
+		if updateConf {
+			config, err = utils.FindConfigData(cCtx.String("config"))
+			if err != nil {
+				cli.Exit(err.Error(), 1)
+			}
+			updateConf = false
+		}
 		runErr := fetchAndRun(config, db)
 		if runErr != nil {
 			cli.Exit(runErr.Error(), 1)

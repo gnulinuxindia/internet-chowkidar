@@ -6,7 +6,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/urfave/cli/v2"
+	"go.mills.io/bitcask/v2"
 )
 
 type Config struct {
@@ -37,25 +37,24 @@ func DefaultStoragePath() (config, data string) {
 	return config, data
 }
 
-func FindConfigData(cCtx *cli.Context) (Config, error) {
-	configFile, err := os.ReadFile(cCtx.String("config"))
+func FindConfigData(configPath string) (Config, error) {
+	configFile, err := os.ReadFile(configPath)
 	if err != nil {
-		return Config{}, errors.New("Config " + cCtx.String("config") + " does not exist. Please run `setup` or create the config manually")
+		return Config{}, errors.New("Config " + configPath + " does not exist. Please run `setup` or create the config manually")
 	}
-
-	Debug("Config file confirmed to exist.", cCtx)
 
 	var config Config
 	err = json.Unmarshal(configFile, &config)
 	if err != nil {
-		return Config{}, errors.New("Config " + cCtx.String("config") + " is invalid, please run `setup` or fix the config manually")
+		return Config{}, errors.New("Config " + configPath + " is invalid, please run `setup` or fix the config manually")
 	}
-	Debug("Config file is JSON and has been unmarshalled", cCtx)
 
 	if ValidateConfig(config) == false {
-		return Config{}, errors.New("Config " + cCtx.String("config") + " is incomplete, please run `setup` or fix the config manually")
+		return Config{}, errors.New("Config " + configPath + " is incomplete, please run `setup` or fix the config manually")
 	}
-	Debug("Config file has been validated", cCtx)
 
 	return config, nil
+}
+func FindDatabase(databasePath string) (*bitcask.Bitcask, error) {
+	return bitcask.Open(databasePath)
 }
