@@ -17,6 +17,7 @@ import (
 )
 
 var updateConf bool
+var stopSync bool
 
 func Run(cCtx *cli.Context) error {
 	config, err := utils.FindConfigData(cCtx.String("config"))
@@ -79,16 +80,18 @@ func Run(cCtx *cli.Context) error {
 
 	// Do the periodic ones based on the determined duration
 	for range time.Tick(duration) {
-		if updateConf {
-			config, err = utils.FindConfigData(cCtx.String("config"))
-			if err != nil {
-				cli.Exit(err.Error(), 1)
+		if !stopSync {
+			if updateConf {
+				config, err = utils.FindConfigData(cCtx.String("config"))
+				if err != nil {
+					cli.Exit(err.Error(), 1)
+				}
+				updateConf = false
 			}
-			updateConf = false
-		}
-		runErr := fetchAndRun(config, db)
-		if runErr != nil {
-			cli.Exit(runErr.Error(), 1)
+			runErr := fetchAndRun(config, db)
+			if runErr != nil {
+				cli.Exit(runErr.Error(), 1)
+			}
 		}
 	}
 	return nil

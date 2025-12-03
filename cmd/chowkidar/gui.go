@@ -20,14 +20,10 @@ func createSystray(configPath string, db *bitcask.Bitcask) {
 		cli.Exit(err.Error(), 1)
 	}
 
-	// systray.SetIcon()
 	systray.SetTemplateIcon(icon.Data, icon.Data)
 	systray.SetTitle("Internet Chowkidar")
 	systray.SetTooltip("Internet Chowkidar")
-	mQuit := systray.AddMenuItem("Quit", "Quit the whole app")
 	mRun := systray.AddMenuItem("Run manual check", "Force-run a internet-chowkidar check")
-	mSetup := systray.AddMenuItem("Re-run Setup", "Setup internet-chowkidar again")
-	mCategories := systray.AddMenuItem("Categories", "Change categories of sites selected")
 	mFrequency := systray.AddMenuItem("Frequency", "Change frequency of the checks")
 	menuNames := [6]string{"Hourly", "4 times a day", "2 times a day", "Daily", "Weekly", "Custom"}
 	// 0 is for custom frequency
@@ -54,6 +50,11 @@ func createSystray(configPath string, db *bitcask.Bitcask) {
 		}(fi)
 	}
 
+	mStop := systray.AddMenuItem("Stop automated checks", "Stops internet chowkidar checks")
+	mSetup := systray.AddMenuItem("Re-run Setup", "Setup internet-chowkidar again")
+	systray.AddSeparator()
+	mQuit := systray.AddMenuItem("Quit", "Quit the whole app")
+
 	go func() {
 		for {
 			select {
@@ -65,8 +66,18 @@ func createSystray(configPath string, db *bitcask.Bitcask) {
 				notify.Notify("Internet Chowkidar", "Finished manual check", "Internet Chowkidar has finished a manual check based on your request", "")
 			case <-mSetup.ClickedCh:
 				log.Println("Not IMplemented  Yet")
-			case <-mCategories.ClickedCh:
-				log.Println("Not Implemented Yet")
+			case <-mStop.ClickedCh:
+				if stopSync {
+					stopSync = false
+					notify.Notify("Internet Chowkidar", "Restarted sync", "Internet chowkidar has restarted syncing, click to disable again", "")
+					mStop.SetTitle("Stop automated checks")
+					mStop.SetTooltip("Stops internet chowkidar checks")
+				} else {
+					stopSync = true
+					notify.Notify("Internet Chowkidar", "Stopped sync", "Internet chowkidar has stopped syncing, click to enable again", "")
+					mStop.SetTitle("Restart automated checks")
+					mStop.SetTooltip("Restart internet chowkidar checks")
+				}
 			case selected := <-freqCh:
 				for i, item := range menuItems {
 					if item == selected {
