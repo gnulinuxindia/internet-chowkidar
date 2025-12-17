@@ -22,7 +22,7 @@ jobs:
         uses: docker/login-action@v2
         with:
           username: gi-yt
-          password: ${{ secrets.GITHUB_PUSH_SECRET }}
+          password: ${{ secrets.PUSH_SECRET }}
           registry: ghcr.io
 
       - name: Build and push Docker image
