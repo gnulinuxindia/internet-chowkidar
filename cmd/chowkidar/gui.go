@@ -65,6 +65,7 @@ func createSystray(configPath string, db *bitcask.Bitcask) {
 				fetchAndRun(config, db)
 				notify.Notify("Internet Chowkidar", "Finished manual check", "Internet Chowkidar has finished a manual check based on your request", "")
 			case <-mSetup.ClickedCh:
+				notify.Notify("Internet Chowkidar", "Not implemented yet", "Run chowkidar setup manually", "")
 				log.Println("Not IMplemented  Yet")
 			case <-mStop.ClickedCh:
 				if stopSync {
