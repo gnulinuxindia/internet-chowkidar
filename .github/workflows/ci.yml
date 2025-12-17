@@ -15,8 +15,8 @@ jobs:
           username: gi-yt
           password: ${{ secrets.PUSH_SECRET }}
           registry: ghcr.io
-      - name: 'Build Inventory Image'
-          run: |
-            docker build . --tag ghcr.io/gnulinuxindia/internet-chowkidar:latest -f docker/Dockerfile
-            docker push ghcr.io/gnulinuxindia/internet-chowkidar:latest
+      - name: Build Inventory Image
+        run: |
+          docker build . --tag ghcr.io/gnulinuxindia/internet-chowkidar:latest -f docker/Dockerfile
+          docker push ghcr.io/gnulinuxindia/internet-chowkidar:latest
 
