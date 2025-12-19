@@ -7,7 +7,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/gnulinuxindia/internet-chowkidar/cmd/chowkidar/utils"
+	utils "github.com/gnulinuxindia/internet-chowkidar/clientutils"
 	"github.com/koki-develop/go-fzf"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v2"
@@ -145,9 +145,9 @@ func Setup(cCtx *cli.Context) error {
 	if err != nil {
 		return cli.Exit("Unable to retrieve ISP details from IPInfo.io", 1)
 	}
-	
+
 	fmt.Println(ipInfoOut)
-	
+
 	if !gjson.Valid(ipInfoOut) {
 		return cli.Exit("Unable to parse ISP details from IPInfo.io", 1)
 	}
@@ -162,6 +162,9 @@ func Setup(cCtx *cli.Context) error {
 	}
 	ispStruct := ISPStruct{Latitude: vars.Latitude, Longitude: vars.Longitude, Name: vars.ISP, City: vars.City}
 	data, err := json.Marshal(ispStruct)
+	if err != nil {
+		return cli.Exit("Unable to unmarshal data from server", 1)
+	}
 	ISPOut, err := utils.PostRequest(vars.Server+"/isps", []byte(data), "application/json")
 	if err != nil {
 		return cli.Exit("Unable to receive unique node ID from server", 1)

@@ -1,38 +1,49 @@
-package main
+package utils
 
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
+	"runtime/debug"
 	"strconv"
 	"strings"
 	"time"
 
-	"github.com/getlantern/systray"
-	"github.com/gnulinuxindia/internet-chowkidar/cmd/chowkidar/utils"
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v2"
 	"go.mills.io/bitcask/v2"
 )
 
-var updateConf bool
-var stopSync bool
+func Version() string {
+	if info, ok := debug.ReadBuildInfo(); ok {
+		for _, setting := range info.Settings {
+			if setting.Key == "vcs.revision" {
+				return setting.Value[:8]
+			}
+		}
+	}
+	return "unknown, please build with Go 1.13+ or use Git"
+}
 
-func Run(cCtx *cli.Context) error {
-	config, err := utils.FindConfigData(cCtx.String("config"))
+func Debug(text string, cCtx *cli.Context) {
+	if cCtx.Bool("debug") {
+		log.Println("[DEBUG]: " + text)
+	}
+}
+
+// UpdateConf and StopSync are optional since only GUI makes use of them
+func Run(cCtx *cli.Context, updateConf *bool, stopSync *bool) error {
+	config, err := FindConfigData(cCtx.String("config"))
 	if err != nil {
 		return cli.Exit(err.Error(), 1)
 	}
 
-	db, err := utils.FindDatabase(cCtx.String("database"))
+	db, err := FindDatabase(cCtx.String("database"))
 	if err != nil {
 		return cli.Exit(err.Error(), 1)
 	}
 	defer db.Close()
-
-	go func() {
-		systray.Run(func() { createSystray(cCtx.String("config"), db) }, nil)
-	}()
 
 	// Figure out frequency based on the mode numbers
 	duration := time.Duration(config.TestFrequency) * time.Hour
@@ -46,7 +57,7 @@ func Run(cCtx *cli.Context) error {
 	val, err := db.Get([]byte("lastRun"))
 	if err != nil {
 		if strings.Contains(err.Error(), "key not found") {
-			runErr := fetchAndRun(config, db)
+			runErr := FetchAndRun(config, db)
 			if runErr != nil {
 				return cli.Exit(runErr.Error(), 1)
 			}
@@ -54,7 +65,7 @@ func Run(cCtx *cli.Context) error {
 			return err
 		}
 	} else if string(val) == "" {
-		runErr := fetchAndRun(config, db)
+		runErr := FetchAndRun(config, db)
 		if runErr != nil {
 			return cli.Exit(runErr.Error(), 1)
 		}
@@ -68,14 +79,14 @@ func Run(cCtx *cli.Context) error {
 		timeLast := time.Unix(timeInt, 0)
 		durationRemain := time.Since(timeLast)
 		if durationRemain >= duration {
-			runErr := fetchAndRun(config, db)
+			runErr := FetchAndRun(config, db)
 			if runErr != nil {
 				return cli.Exit(runErr.Error(), 1)
 			}
 		} else {
 			// Wait till duration is complete and then run
 			time.Sleep(durationRemain)
-			runErr := fetchAndRun(config, db)
+			runErr := FetchAndRun(config, db)
 			if runErr != nil {
 				return cli.Exit(runErr.Error(), 1)
 			}
@@ -83,25 +94,31 @@ func Run(cCtx *cli.Context) error {
 	}
 
 	// Do the periodic ones based on the determined duration
-	for range time.Tick(duration) {
-		if !stopSync {
-			if updateConf {
-				config, err = utils.FindConfigData(cCtx.String("config"))
-				if err != nil {
-					return cli.Exit(err.Error(), 1)
+	for {
+		for range time.Tick(duration) {
+			if !*stopSync {
+				if *updateConf {
+					config, err = FindConfigData(cCtx.String("config"))
+					if err != nil {
+						return cli.Exit(err.Error(), 1)
+					}
+					// If frequency got changed, reset the clock
+					duration2 := time.Duration(config.TestFrequency) * time.Hour
+					if duration != duration2 {
+						duration = duration2
+						break
+					}
+					*updateConf = false
 				}
-				updateConf = false
-			}
-			runErr := fetchAndRun(config, db)
-			if runErr != nil {
-				return cli.Exit(runErr.Error(), 1)
+				runErr := FetchAndRun(config, db)
+				if runErr != nil {
+					return cli.Exit(runErr.Error(), 1)
+				}
 			}
 		}
 	}
-	return nil
 }
-
-func fetchAndRun(config utils.Config, db *bitcask.Bitcask) error {
+func FetchAndRun(config Config, db *bitcask.Bitcask) error {
 	fmt.Println("Running a check cycle")
 	err := db.Put([]byte("lastRun"), []byte(strconv.Itoa(int(time.Now().Unix()))))
 	if err != nil {
@@ -109,7 +126,7 @@ func fetchAndRun(config utils.Config, db *bitcask.Bitcask) error {
 	}
 
 	catStr := strings.Join(config.CheckCategories, ",")
-	sitesList, err := utils.GetRequest(config.Server + "/sites?category=" + catStr)
+	sitesList, err := GetRequest(config.Server + "/sites?category=" + catStr)
 	if err != nil {
 		return err
 	}
@@ -119,7 +136,7 @@ func fetchAndRun(config utils.Config, db *bitcask.Bitcask) error {
 	domains := gjson.Get(sitesList, "#.ping_url").Array()
 
 	for i, domain := range domains {
-		_, err := utils.GetRequest(domain.String())
+		_, err := GetRequest(domain.String())
 		//fmt.Println(domain.String())
 		//fmt.Println(siteData)
 
@@ -161,7 +178,7 @@ func fetchAndRun(config utils.Config, db *bitcask.Bitcask) error {
 			if err != nil {
 				return err
 			}
-			_, err = utils.PostRequest(config.Server+"/blocks", []byte(data), "application/json")
+			_, err = PostRequest(config.Server+"/blocks", []byte(data), "application/json")
 			if err != nil {
 				return err
 			}

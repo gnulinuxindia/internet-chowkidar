@@ -1,12 +1,13 @@
 package main
 
 import (
-	"github.com/gnulinuxindia/internet-chowkidar/cmd/chowkidar/utils"
+	utils "github.com/gnulinuxindia/internet-chowkidar/clientutils"
 	"github.com/urfave/cli/v2"
 )
 
 func cliInit(conf, data string) *cli.App {
-
+	updateConf := false
+	stopSync := false
 	app := &cli.App{
 		Name:    "Internet Chowkidar",
 		Usage:   "Run the chowkidar daemon to report blocked sites",
@@ -30,7 +31,10 @@ func cliInit(conf, data string) *cli.App {
 				Usage: "Change verbosity of the application",
 			},
 		},
-		Action: Run,
+		Action: func(cCtx *cli.Context) error {
+			err := utils.Run(cCtx, &updateConf, &stopSync)
+			return err
+		},
 		Commands: []*cli.Command{
 			{
 				Name:   "setup",

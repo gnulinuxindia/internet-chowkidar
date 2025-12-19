@@ -4,7 +4,7 @@ import (
 	"log"
 	"os"
 
-	"github.com/gnulinuxindia/internet-chowkidar/cmd/chowkidar/utils"
+	utils "github.com/gnulinuxindia/internet-chowkidar/clientutils"
 )
 
 func main() {
