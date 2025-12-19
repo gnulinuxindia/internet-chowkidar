@@ -3,8 +3,6 @@
 
   inputs.nixpkgs.url = "github:nixos/nixpkgs?ref=nixos-unstable";
 
-  inputs.systems.url = "sourcehut:~sphericalkat/flake-systems";
-
   inputs.devshell.url = "github:numtide/devshell";
   inputs.devshell.inputs.nixpkgs.follows = "nixpkgs";
 
@@ -13,13 +11,14 @@
 
   outputs =
     {
-      systems,
+      self,
       nixpkgs,
       devshell,
       ...
     }:
     let
-      eachSystem = nixpkgs.lib.genAttrs (import systems);
+      systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
+      eachSystem = nixpkgs.lib.genAttrs systems;
     in
     {
       devShells = eachSystem (
@@ -52,6 +51,38 @@
               gotools
             ];
           };
+        }
+      );
+      packages = eachSystem (
+        system:
+        let
+          pkgs = import nixpkgs { inherit system; };
+        in
+        {
+          default = pkgs.buildGoModule (finalAttrs: {
+            pname = "chowkidar";
+            version = "0.1.0";
+            src = ./.;
+            env.CGO_ENABLED = 1;
+            
+            ldflags = [
+              "-X main.version=${finalAttrs.version}"
+              "-X main.date=1970-01-01"
+              "-X main.commit=${self.shortRev or "unknown"}"
+            ];
+            
+            subPackages = [
+              "cmd/chowkidar"
+            ];
+            
+            vendorHash = "sha256-7KA64EdoDgwYqz2p72cEAouzhV9SInLmIF4JXd4fcuQ=";
+            
+            meta = {
+              description = "A tool for detecting internet blocks by various ISPs";
+              homepage = "https://inet.watch";
+              license = pkgs.lib.licenses.mit;
+            };
+          });
         }
       );
     };

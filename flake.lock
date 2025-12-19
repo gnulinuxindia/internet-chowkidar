@@ -56,23 +56,7 @@
       "inputs": {
         "devshell": "devshell",
         "flake-compat": "flake-compat",
-        "nixpkgs": "nixpkgs",
-        "systems": "systems"
-      }
-    },
-    "systems": {
-      "locked": {
-        "lastModified": 1761555495,
-        "narHash": "sha256-TXoiKe+BazkF3wPMI/vPDtknPc930pxw+4FGteYY0FQ=",
-        "owner": "~sphericalkat",
-        "repo": "flake-systems",
-        "rev": "0d7054e802a528f3d78b620e27bb13f8af2be588",
-        "type": "sourcehut"
-      },
-      "original": {
-        "owner": "~sphericalkat",
-        "repo": "flake-systems",
-        "type": "sourcehut"
+        "nixpkgs": "nixpkgs"
       }
     }
   },
