@@ -14,10 +14,10 @@ import (
 	"github.com/urfave/cli/v2"
 )
 
-func createSystray(configPath string, db *bitcask.Bitcask) {
+func createSystray(configPath string, db *bitcask.Bitcask) error {
 	config, err := utils.FindConfigData(configPath)
 	if err != nil {
-		cli.Exit(err.Error(), 1)
+		return cli.Exit(err.Error(), 1)
 	}
 
 	systray.SetTemplateIcon(icon.Data, icon.Data)
@@ -55,7 +55,7 @@ func createSystray(configPath string, db *bitcask.Bitcask) {
 	systray.AddSeparator()
 	mQuit := systray.AddMenuItem("Quit", "Quit the whole app")
 
-	go func() {
+	go func() error {
 		for {
 			select {
 			case <-mQuit.ClickedCh:
@@ -85,12 +85,12 @@ func createSystray(configPath string, db *bitcask.Bitcask) {
 						config.TestFrequency = frequencies[i]
 						data, err := json.Marshal(config)
 						if err != nil {
-							cli.Exit("Unable to marshal into json: "+err.Error(), 1)
+							return cli.Exit("Unable to marshal into json: "+err.Error(), 1)
 						}
 
 						err = os.WriteFile(configPath, data, 0644)
 						if err != nil {
-							cli.Exit("Unable to write config: "+err.Error(), 1)
+							return cli.Exit("Unable to write config: "+err.Error(), 1)
 						}
 						updateConf = true
 						notify.Notify("Internet Chowkidar", "Check frequency has been changed", "Internet chowkidar has changed testing frequency", "")
@@ -100,5 +100,7 @@ func createSystray(configPath string, db *bitcask.Bitcask) {
 				}
 			}
 		}
+		return nil
 	}()
+	return nil
 }

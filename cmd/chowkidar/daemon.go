@@ -22,12 +22,12 @@ var stopSync bool
 func Run(cCtx *cli.Context) error {
 	config, err := utils.FindConfigData(cCtx.String("config"))
 	if err != nil {
-		cli.Exit(err.Error(), 1)
+		return cli.Exit(err.Error(), 1)
 	}
 
 	db, err := utils.FindDatabase(cCtx.String("database"))
 	if err != nil {
-		cli.Exit(err.Error(), 1)
+		return cli.Exit(err.Error(), 1)
 	}
 	defer db.Close()
 
@@ -37,6 +37,8 @@ func Run(cCtx *cli.Context) error {
 
 	// Figure out frequency based on the mode numbers
 	duration := time.Duration(config.TestFrequency) * time.Hour
+	fmt.Println("EXITING")
+	return cli.Exit("abc", 1)
 
 	// If it wasn't run before acc to DB, run it now
 	val, err := db.Get([]byte("lastRun"))
@@ -44,7 +46,7 @@ func Run(cCtx *cli.Context) error {
 		if strings.Contains(err.Error(), "key not found") {
 			runErr := fetchAndRun(config, db)
 			if runErr != nil {
-				cli.Exit(runErr.Error(), 1)
+				return cli.Exit(runErr.Error(), 1)
 			}
 		} else {
 			return err
@@ -52,7 +54,7 @@ func Run(cCtx *cli.Context) error {
 	} else if string(val) == "" {
 		runErr := fetchAndRun(config, db)
 		if runErr != nil {
-			cli.Exit(runErr.Error(), 1)
+			return cli.Exit(runErr.Error(), 1)
 		}
 	} else {
 		// If it was run before, check if it has been more than `duration` since it happened
@@ -66,14 +68,14 @@ func Run(cCtx *cli.Context) error {
 		if durationRemain >= duration {
 			runErr := fetchAndRun(config, db)
 			if runErr != nil {
-				cli.Exit(runErr.Error(), 1)
+				return cli.Exit(runErr.Error(), 1)
 			}
 		} else {
 			// Wait till duration is complete and then run
 			time.Sleep(durationRemain)
 			runErr := fetchAndRun(config, db)
 			if runErr != nil {
-				cli.Exit(runErr.Error(), 1)
+				return cli.Exit(runErr.Error(), 1)
 			}
 		}
 	}
@@ -84,13 +86,13 @@ func Run(cCtx *cli.Context) error {
 			if updateConf {
 				config, err = utils.FindConfigData(cCtx.String("config"))
 				if err != nil {
-					cli.Exit(err.Error(), 1)
+					return cli.Exit(err.Error(), 1)
 				}
 				updateConf = false
 			}
 			runErr := fetchAndRun(config, db)
 			if runErr != nil {
-				cli.Exit(runErr.Error(), 1)
+				return cli.Exit(runErr.Error(), 1)
 			}
 		}
 	}
