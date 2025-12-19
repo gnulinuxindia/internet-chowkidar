@@ -32,7 +32,7 @@ func cliInit(conf, data string) *cli.App {
 			},
 		},
 		Action: func(cCtx *cli.Context) error {
-			err := utils.Run(cCtx, &updateConf, &stopSync)
+			err := utils.Run(cCtx.String("config"), cCtx.String("database"), &updateConf, &stopSync)
 			return err
 		},
 		Commands: []*cli.Command{

@@ -3,7 +3,6 @@ package utils
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"os"
 	"runtime/debug"
 	"strconv"
@@ -26,20 +25,14 @@ func Version() string {
 	return "unknown, please build with Go 1.13+ or use Git"
 }
 
-func Debug(text string, cCtx *cli.Context) {
-	if cCtx.Bool("debug") {
-		log.Println("[DEBUG]: " + text)
-	}
-}
-
 // UpdateConf and StopSync are optional since only GUI makes use of them
-func Run(cCtx *cli.Context, updateConf *bool, stopSync *bool) error {
-	config, err := FindConfigData(cCtx.String("config"))
+func Run(configPath string, databasePath string, updateConf *bool, stopSync *bool) error {
+	config, err := FindConfigData(configPath)
 	if err != nil {
 		return cli.Exit(err.Error(), 1)
 	}
 
-	db, err := FindDatabase(cCtx.String("database"))
+	db, err := FindDatabase(databasePath)
 	if err != nil {
 		return cli.Exit(err.Error(), 1)
 	}
@@ -98,7 +91,7 @@ func Run(cCtx *cli.Context, updateConf *bool, stopSync *bool) error {
 		for range time.Tick(duration) {
 			if !*stopSync {
 				if *updateConf {
-					config, err = FindConfigData(cCtx.String("config"))
+					config, err = FindConfigData(configPath)
 					if err != nil {
 						return cli.Exit(err.Error(), 1)
 					}
