@@ -27,7 +27,7 @@ func DefaultStoragePath() (config, data string) {
 		config = "./config.json"
 		data = "./chowkidar.db"
 	} else {
-		err := os.Mkdir(confDir+"/chowkidar", 0600)
+		err := os.Mkdir(confDir+"/chowkidar", 0700)
 		if err != nil && !os.IsExist(err) {
 			log.Fatal(err)
 		}
