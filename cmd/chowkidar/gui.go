@@ -2,7 +2,6 @@ package main
 
 import (
 	"encoding/json"
-	"log"
 	"os"
 
 	"github.com/getlantern/systray/example/icon"
@@ -66,7 +65,6 @@ func createSystray(configPath string, db *bitcask.Bitcask) error {
 				notify.Notify("Internet Chowkidar", "Finished manual check", "Internet Chowkidar has finished a manual check based on your request", "")
 			case <-mSetup.ClickedCh:
 				notify.Notify("Internet Chowkidar", "Not implemented yet", "Run chowkidar setup manually", "")
-				log.Println("Not IMplemented  Yet")
 			case <-mStop.ClickedCh:
 				if stopSync {
 					stopSync = false

@@ -1,6 +1,7 @@
 package utils
 
 import (
+	"fmt"
 	"strconv"
 
 	"github.com/tidwall/gjson"
@@ -44,18 +45,18 @@ func ValidateConfig(config Config) bool {
 	return true
 }
 func ValidateCity(city string) (newCity string, lat float64, lon float64, valid bool) {
-	osmOut, err := GetRequest("https://nominatim.openstreetmap.org/search?q=" + city + "&format=json&polygon=1&addressdetails=1&limit=1")
+	osmOut, err := GetRequest("https://nominatim.openstreetmap.org/search?q=" + city + "&format=json&featureType=city&polygon=1&addressdetails=1&limit=1")
 	if err != nil {
+		fmt.Println(err)
 		return "", 0.0, 0.0, false
 	}
 	if !gjson.Valid(osmOut) {
 		return "", 0.0, 0.0, false
 	}
 
-	gjsonArr := gjson.Get(osmOut, "0.address.city").String()
-	newCityOut, err := GetRequest("https://nominatim.openstreetmap.org/search?q=" + gjsonArr + "&format=json&polygon=1&addressdetails=1&limit=1")
-	latStr := gjson.Get(newCityOut, "0.lat").String()
-	lonStr := gjson.Get(newCityOut, "0.lon").String()
+	cityStr := gjson.Get(osmOut, "0.address.city").String()
+	latStr := gjson.Get(osmOut, "0.lat").String()
+	lonStr := gjson.Get(osmOut, "0.lon").String()
 	lat, err = strconv.ParseFloat(latStr, 64)
 	if err != nil {
 		return "", 0.0, 0.0, false
@@ -64,8 +65,8 @@ func ValidateCity(city string) (newCity string, lat float64, lon float64, valid 
 	if err != nil {
 		return "", 0.0, 0.0, false
 	}
-	if gjsonArr != "" {
-		return gjsonArr, lat, lon, true
+	if cityStr != "" {
+		return cityStr, lat, lon, true
 	}
 	return "", 0.0, 0.0, false
 }

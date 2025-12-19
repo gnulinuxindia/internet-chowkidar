@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"math/rand/v2"
 	"os"
 	"strings"
@@ -42,7 +41,7 @@ func Setup(cCtx *cli.Context) error {
 		fmt.Scanln(&vars.City)
 		vars.City, vars.Latitude, vars.Longitude, cityValid = utils.ValidateCity(vars.City)
 		if !cityValid {
-			log.Println("Invalid city, try again")
+			fmt.Println("Invalid city, try again")
 		}
 	}
 
@@ -60,8 +59,9 @@ func Setup(cCtx *cli.Context) error {
 	if err != nil {
 		fmt.Println("Unable to initialize go-fzf, printing all categories as is:")
 		for i := range gjsonArr {
-			fmt.Printf(gjsonArr[i].String() + ", ")
+			fmt.Print(gjsonArr[i].String() + ", ")
 		}
+		fmt.Println()
 		var catStr string
 		fmt.Println("Input the categories you want to select, separated by spaces: ")
 		fmt.Scanln(&catStr)
@@ -70,7 +70,7 @@ func Setup(cCtx *cli.Context) error {
 	} else {
 		catInt, err := f.Find(gjsonArr, func(i int) string { return gjsonArr[i].String() })
 		if err != nil {
-			log.Fatal(err)
+			return cli.Exit("Failed to select categories: "+err.Error(), 1)
 		}
 		for _, i := range catInt {
 			vars.CheckCategories = append(vars.CheckCategories, gjsonArr[i].String())
@@ -80,35 +80,63 @@ func Setup(cCtx *cli.Context) error {
 		vars.CheckCategories = []string{"all"}
 	}
 
-	freqValid := false
-	for !freqValid {
-		var freq string
-		fmt.Println("Enter frequency you want to check for blocked sites:")
-		fmt.Println("1: hourly")
-		fmt.Println("2: 4 times a day (every 6 hours)")
-		fmt.Println("3: 2 times a day (every 12 hours)")
-		fmt.Println("4: once a day")
-		fmt.Println("5: once a week")
-		fmt.Println("6: Custom")
+	freqOptions := []string{
+		"Hourly",
+		"4 times a day (every 6 hours)",
+		"2 times a day (every 12 hours)",
+		"Once a day",
+		"Once a week",
+		"Custom",
+	}
+	freqValues := []int{1, 6, 12, 24, 24 * 7, 0}
 
-		fmt.Scanln(&freq)
-		freqValid = true
-		switch freq {
-		case "1":
-			vars.TestFrequency = 1
-		case "2":
-			vars.TestFrequency = 6
-		case "3":
-			vars.TestFrequency = 12
-		case "4":
-			vars.TestFrequency = 24
-		case "5":
-			vars.TestFrequency = 24 * 7
-		case "6":
+	f2, err := fzf.New(fzf.WithPrompt("Select frequency for checking blocked sites: "))
+	if err != nil {
+		fmt.Println("Unable to initialize go-fzf, falling back to manual input")
+		fmt.Println("Enter frequency you want to check for blocked sites:")
+		for i, opt := range freqOptions {
+			fmt.Printf("%d: %s\n", i+1, opt)
+		}
+
+		freqValid := false
+		for !freqValid {
+			var freq string
+			fmt.Scanln(&freq)
+			freqValid = true
+			switch freq {
+			case "1":
+				vars.TestFrequency = 1
+			case "2":
+				vars.TestFrequency = 6
+			case "3":
+				vars.TestFrequency = 12
+			case "4":
+				vars.TestFrequency = 24
+			case "5":
+				vars.TestFrequency = 24 * 7
+			case "6":
+				fmt.Println("Input the duration between each check (in hours): ")
+				fmt.Scanln(&vars.TestFrequency)
+			default:
+				fmt.Println("Invalid choice, try again")
+				freqValid = false
+			}
+		}
+	} else {
+		idxs, err := f2.Find(freqOptions, func(i int) string { return freqOptions[i] })
+		if err != nil {
+			return cli.Exit("Failed to select frequency: "+err.Error(), 1)
+		}
+		if len(idxs) == 0 {
+			return cli.Exit("No frequency selected", 1)
+		}
+
+		selectedIdx := idxs[0]
+		if freqValues[selectedIdx] == 0 {
 			fmt.Println("Input the duration between each check (in hours): ")
 			fmt.Scanln(&vars.TestFrequency)
-		default:
-			freqValid = false
+		} else {
+			vars.TestFrequency = freqValues[selectedIdx]
 		}
 	}
 
@@ -117,6 +145,9 @@ func Setup(cCtx *cli.Context) error {
 	if err != nil {
 		return cli.Exit("Unable to retrieve ISP details from IPInfo.io", 1)
 	}
+	
+	fmt.Println(ipInfoOut)
+	
 	if !gjson.Valid(ipInfoOut) {
 		return cli.Exit("Unable to parse ISP details from IPInfo.io", 1)
 	}

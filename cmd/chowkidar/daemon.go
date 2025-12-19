@@ -3,10 +3,9 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"os"
 	"strconv"
 	"strings"
-
-	"log"
 	"time"
 
 	"github.com/getlantern/systray"
@@ -37,8 +36,11 @@ func Run(cCtx *cli.Context) error {
 
 	// Figure out frequency based on the mode numbers
 	duration := time.Duration(config.TestFrequency) * time.Hour
-	fmt.Println("EXITING")
-	return cli.Exit("abc", 1)
+
+	if db == nil {
+		fmt.Println("Database not found.")
+		os.Exit(1)
+	}
 
 	// If it wasn't run before acc to DB, run it now
 	val, err := db.Get([]byte("lastRun"))
@@ -100,7 +102,7 @@ func Run(cCtx *cli.Context) error {
 }
 
 func fetchAndRun(config utils.Config, db *bitcask.Bitcask) error {
-	log.Println("Running a check cycle")
+	fmt.Println("Running a check cycle")
 	err := db.Put([]byte("lastRun"), []byte(strconv.Itoa(int(time.Now().Unix()))))
 	if err != nil {
 		return err

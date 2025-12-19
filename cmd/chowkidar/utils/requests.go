@@ -45,9 +45,9 @@ func GetRequest(url string) (string, error) {
 		return "", err
 	}
 
-	//UserAgent := "Mozilla/5.0 (X11; Linux x86_64; rv:109.0) Gecko/20100101 Firefox/115.0"
-	// r.Header.Set("Content-Type", "application/json")
-	//r.Header.Set("User-Agent", UserAgent)
+	userAgent := "Internet-Chowkidar/1.0 (contact@kat.bio)"
+	r.Header.Set("Content-Type", "application/json")
+	r.Header.Set("User-Agent", userAgent)
 
 	client := &http.Client{}
 	res, err0 := client.Do(r)
