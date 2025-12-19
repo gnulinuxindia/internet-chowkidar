@@ -44,7 +44,7 @@ func runSetupWizard(a fyne.App, confPath, dataPath string) error {
 
 	// Helper to create section title
 	makeTitle := func(text string) fyne.CanvasObject {
-		title := canvas.NewText(text, theme.ForegroundColor())
+		title := canvas.NewText(text, theme.Color(theme.ColorNameForeground))
 		title.TextSize = 20
 		title.TextStyle = fyne.TextStyle{Bold: true}
 		title.Alignment = fyne.TextAlignCenter

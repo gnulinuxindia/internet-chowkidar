@@ -32,9 +32,16 @@ func setupSystray(desk desktop.App, configPath, dbPath string) {
 
 	desk.SetSystemTrayMenu(menu)
 
+	db, err := utils.FindDatabase(dbPath)
+	if err != nil {
+		log.Printf("Failed to open database: %v", err)
+		return
+	}
+	defer db.Close()
+
 	// Start background daemon
 	go func() {
-		err := utils.Run(configPath, dbPath, &updateConf, &stopSync)
+		err := utils.Run(configPath, db, &updateConf, &stopSync)
 		if err != nil {
 			log.Printf("Daemon error: %v", err)
 		}
