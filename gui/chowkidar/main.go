@@ -12,6 +12,9 @@ func main() {
 	// Create Fyne app
 	a := app.NewWithID("watch.inet.gui")
 
+	// Apply custom theme
+	a.Settings().SetTheme(&CustomTheme{})
+
 	// Get default paths
 	conf, data := utils.DefaultStoragePath()
 

@@ -7,8 +7,11 @@ import (
 	"os"
 
 	"fyne.io/fyne/v2"
+	"fyne.io/fyne/v2/canvas"
 	"fyne.io/fyne/v2/container"
 	"fyne.io/fyne/v2/dialog"
+	"fyne.io/fyne/v2/layout"
+	"fyne.io/fyne/v2/theme"
 	"fyne.io/fyne/v2/widget"
 	utils "github.com/gnulinuxindia/internet-chowkidar/clientutils"
 	"github.com/tidwall/gjson"
@@ -16,59 +19,105 @@ import (
 
 func runSetupWizard(a fyne.App, confPath, dataPath string) error {
 	w := a.NewWindow("Internet Chowkidar Setup")
-	w.Resize(fyne.NewSize(600, 400))
+	w.Resize(fyne.NewSize(700, 500))
+	w.CenterOnScreen()
 
 	vars := utils.Config{}
 	currentStep := 0
+	totalSteps := 5
 
-	// Step containers
-	var steps []fyne.CanvasObject
+	stepLabel := widget.NewLabelWithStyle("Step 1 of 5", fyne.TextAlignCenter, fyne.TextStyle{})
 
 	// Navigation buttons
-	backBtn := widget.NewButton("Back", nil)
-	nextBtn := widget.NewButton("Next", nil)
+	backBtn := widget.NewButtonWithIcon("Back", theme.NavigateBackIcon(), nil)
+	nextBtn := widget.NewButtonWithIcon("Next", theme.NavigateNextIcon(), nil)
+	backBtn.Importance = widget.LowImportance
+	nextBtn.Importance = widget.HighImportance
 	backBtn.Disable()
 
 	statusLabel := widget.NewLabel("")
+
+	// Helper to create card-like container
+	makeCard := func(content fyne.CanvasObject) fyne.CanvasObject {
+		return container.NewPadded(content)
+	}
+
+	// Helper to create section title
+	makeTitle := func(text string) fyne.CanvasObject {
+		title := canvas.NewText(text, theme.ForegroundColor())
+		title.TextSize = 20
+		title.TextStyle = fyne.TextStyle{Bold: true}
+		title.Alignment = fyne.TextAlignCenter
+		return title
+	}
+
+	// Helper to create subtitle
+	makeSubtitle := func(text string) fyne.CanvasObject {
+		subtitle := widget.NewLabelWithStyle(text, fyne.TextAlignCenter, fyne.TextStyle{})
+		return subtitle
+	}
 
 	// Step 1: Server configuration
 	serverEntry := widget.NewEntry()
 	serverEntry.SetPlaceHolder("https://api.inet.watch")
 	serverEntry.Text = "https://api.inet.watch"
 
-	step1 := container.NewVBox(
-		widget.NewLabelWithStyle("Step 1: Server Configuration", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		widget.NewSeparator(),
-		widget.NewLabel("Enter the Internet Chowkidar server URL:"),
+	step1 := makeCard(container.NewVBox(
+		makeTitle("Server Configuration"),
+		makeSubtitle("Configure the Internet Chowkidar server to connect to"),
+		layout.NewSpacer(),
+		widget.NewLabel("Server URL:"),
 		serverEntry,
-		widget.NewLabel(""),
+		widget.NewLabel("The default server is https://api.inet.watch"),
+		layout.NewSpacer(),
 		statusLabel,
-	)
+	))
 
 	// Step 2: Location
 	cityEntry := widget.NewEntry()
-	cityEntry.SetPlaceHolder("Enter your city name")
+	cityEntry.SetPlaceHolder("e.g., Mumbai, London, New York")
 
-	step2 := container.NewVBox(
-		widget.NewLabelWithStyle("Step 2: Location", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		widget.NewSeparator(),
-		widget.NewLabel("Enter your city:"),
+	step2 := makeCard(container.NewVBox(
+		makeTitle("Location"),
+		makeSubtitle("Help us identify your location for ISP reporting"),
+		layout.NewSpacer(),
+		widget.NewLabel("Your City:"),
 		cityEntry,
-		widget.NewLabel("This helps identify your location for ISP reporting."),
-	)
+		widget.NewLabel("We use OpenStreetMap to validate city names."),
+		widget.NewLabel("This information helps correlate blocking with geographic regions."),
+		layout.NewSpacer(),
+	))
 
-	// Step 3: Categories (will be populated after server validation)
+	// Step 3: Categories
 	var categoryChecks []*widget.Check
 	categoryContainer := container.NewVBox()
 	categoryScroll := container.NewScroll(categoryContainer)
-	categoryScroll.SetMinSize(fyne.NewSize(0, 200))
+	categoryScroll.SetMinSize(fyne.NewSize(0, 250))
 
-	step3 := container.NewVBox(
-		widget.NewLabelWithStyle("Step 3: Select Categories", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		widget.NewSeparator(),
-		widget.NewLabel("Choose which categories of sites to monitor:"),
+	selectAllBtn := widget.NewButton("Select All", func() {
+		for _, check := range categoryChecks {
+			check.Checked = true
+			check.Refresh()
+		}
+	})
+	selectAllBtn.Importance = widget.LowImportance
+
+	deselectAllBtn := widget.NewButton("Deselect All", func() {
+		for _, check := range categoryChecks {
+			check.Checked = false
+			check.Refresh()
+		}
+	})
+	deselectAllBtn.Importance = widget.LowImportance
+
+	step3 := makeCard(container.NewVBox(
+		makeTitle("Select Categories"),
+		makeSubtitle("Choose which types of websites to monitor for blocking"),
+		layout.NewSpacer(),
+		container.NewHBox(selectAllBtn, deselectAllBtn),
 		categoryScroll,
-	)
+		layout.NewSpacer(),
+	))
 
 	// Step 4: Frequency
 	freqSelect := widget.NewSelect([]string{
@@ -88,42 +137,59 @@ func runSetupWizard(a fyne.App, confPath, dataPath string) error {
 		"Once a week":                      24 * 7,
 	}
 
-	step4 := container.NewVBox(
-		widget.NewLabelWithStyle("Step 4: Check Frequency", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		widget.NewSeparator(),
-		widget.NewLabel("How often should Internet Chowkidar check for blocks?"),
+	step4 := makeCard(container.NewVBox(
+		makeTitle("Check Frequency"),
+		makeSubtitle("Choose how often to check for website blocks"),
+		layout.NewSpacer(),
+		widget.NewLabel("Frequency:"),
 		freqSelect,
-		widget.NewLabel(""),
-		widget.NewLabel("More frequent checks provide better data but use more resources."),
-	)
+		layout.NewSpacer(),
+		widget.NewCard("", "", widget.NewLabel(
+			"More frequent checks provide better data but use more bandwidth and resources.",
+		)),
+		layout.NewSpacer(),
+	))
 
-	// Step 5: Review and Complete
-	reviewLabel := widget.NewLabel("")
+	// Step 5: Review
+	reviewCard := widget.NewCard("Configuration Summary", "", container.NewVBox())
 
-	step5 := container.NewVBox(
-		widget.NewLabelWithStyle("Step 5: Review & Complete", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		widget.NewSeparator(),
-		widget.NewLabel("Review your configuration:"),
-		reviewLabel,
-		widget.NewLabel(""),
+	step5 := makeCard(container.NewVBox(
+		makeTitle("Review & Complete"),
+		makeSubtitle("Review your settings before completing setup"),
+		layout.NewSpacer(),
+		reviewCard,
+		layout.NewSpacer(),
 		statusLabel,
+	))
+
+	steps := []fyne.CanvasObject{step1, step2, step3, step4, step5}
+
+	// Main content area
+	contentArea := container.NewStack(steps[0])
+
+	// Footer with buttons
+	footer := container.NewBorder(
+		nil, nil,
+		backBtn,
+		nextBtn,
+		stepLabel,
+		layout.NewSpacer(),
 	)
 
-	steps = []fyne.CanvasObject{step1, step2, step3, step4, step5}
-
-	// Content container
+	// Main layout
 	content := container.NewBorder(
 		nil,
-		container.NewHBox(backBtn, nextBtn),
-		nil,
-		nil,
-		steps[0],
+		container.NewPadded(footer),
+		nil, nil,
+		contentArea,
 	)
 
 	// Update step display
 	updateStep := func() {
-		content.Objects[0] = steps[currentStep]
-		content.Refresh()
+		contentArea.Objects = []fyne.CanvasObject{steps[currentStep]}
+		contentArea.Refresh()
+
+		stepLabel.SetText(fmt.Sprintf("Step %d of %d", currentStep+1, totalSteps))
 
 		backBtn.Enable()
 		if currentStep == 0 {
@@ -132,8 +198,10 @@ func runSetupWizard(a fyne.App, confPath, dataPath string) error {
 
 		if currentStep == len(steps)-1 {
 			nextBtn.SetText("Finish")
+			nextBtn.Icon = theme.ConfirmIcon()
 		} else {
 			nextBtn.SetText("Next")
+			nextBtn.Icon = theme.NavigateNextIcon()
 		}
 
 		statusLabel.SetText("")
@@ -157,10 +225,10 @@ func runSetupWizard(a fyne.App, confPath, dataPath string) error {
 				serverURL = "https://api.inet.watch"
 			}
 
-			statusLabel.SetText("Validating server...")
+			statusLabel.SetText("⏳ Validating server...")
 			if !utils.ValidateServer(serverURL) {
 				statusLabel.SetText("❌ Invalid server URL")
-				dialog.ShowError(fmt.Errorf("invalid server URL"), w)
+				dialog.ShowError(fmt.Errorf("cannot connect to server"), w)
 				return
 			}
 
@@ -176,7 +244,7 @@ func runSetupWizard(a fyne.App, confPath, dataPath string) error {
 			}
 
 			if !gjson.Valid(categoriesOut) {
-				statusLabel.SetText("❌ Invalid categories response")
+				statusLabel.SetText("❌ Invalid response from server")
 				dialog.ShowError(fmt.Errorf("invalid categories response"), w)
 				return
 			}
@@ -189,31 +257,32 @@ func runSetupWizard(a fyne.App, confPath, dataPath string) error {
 			for _, cat := range gjsonArr {
 				catName := cat.String()
 				check := widget.NewCheck(catName, nil)
+				check.Checked = true // Select all by default
 				categoryChecks = append(categoryChecks, check)
 				categoryContainer.Add(check)
 			}
 
 			categoryContainer.Refresh()
-			statusLabel.SetText("✅ Ready to continue")
+			statusLabel.SetText("✅ Server validated successfully")
 
 		case 1: // City validation
 			if cityEntry.Text == "" {
-				dialog.ShowError(fmt.Errorf("please enter your city"), w)
+				dialog.ShowError(fmt.Errorf("please enter your city name"), w)
 				return
 			}
 
-			statusLabel.SetText("Validating city...")
+			statusLabel.SetText("⏳ Validating city...")
 			city, lat, lon, valid := utils.ValidateCity(cityEntry.Text)
 			if !valid {
-				statusLabel.SetText("❌ Invalid city")
-				dialog.ShowError(fmt.Errorf("invalid city name"), w)
+				statusLabel.SetText("❌ City not found")
+				dialog.ShowError(fmt.Errorf("could not find city, please check spelling"), w)
 				return
 			}
 
 			vars.City = city
 			vars.Latitude = lat
 			vars.Longitude = lon
-			statusLabel.SetText("✅ City validated")
+			statusLabel.SetText(fmt.Sprintf("✅ City validated: %s", city))
 
 		case 2: // Categories
 			vars.CheckCategories = []string{}
@@ -224,30 +293,42 @@ func runSetupWizard(a fyne.App, confPath, dataPath string) error {
 			}
 
 			if len(vars.CheckCategories) == 0 {
+				dialog.ShowInformation("No categories selected",
+					"No categories were selected. All categories will be monitored by default.", w)
 				vars.CheckCategories = []string{"all"}
 			}
 
 		case 3: // Frequency
 			vars.TestFrequency = freqValues[freqSelect.Selected]
 
-			// Update review
+			// Build review summary
 			categoriesStr := ""
-			if len(vars.CheckCategories) > 3 {
+			if len(vars.CheckCategories) == 1 && vars.CheckCategories[0] == "all" {
+				categoriesStr = "All categories"
+			} else if len(vars.CheckCategories) > 4 {
 				categoriesStr = fmt.Sprintf("%d categories selected", len(vars.CheckCategories))
 			} else {
 				categoriesStr = fmt.Sprintf("%v", vars.CheckCategories)
 			}
 
-			reviewLabel.SetText(fmt.Sprintf(
-				"Server: %s\nCity: %s\nCategories: %s\nFrequency: %s",
-				vars.Server,
-				vars.City,
-				categoriesStr,
-				freqSelect.Selected,
-			))
+			reviewContent := container.NewVBox(
+				widget.NewLabelWithStyle("Server:", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
+				widget.NewLabel(vars.Server),
+				widget.NewLabel(""),
+				widget.NewLabelWithStyle("Location:", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
+				widget.NewLabel(fmt.Sprintf("%s (%.4f, %.4f)", vars.City, vars.Latitude, vars.Longitude)),
+				widget.NewLabel(""),
+				widget.NewLabelWithStyle("Categories:", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
+				widget.NewLabel(categoriesStr),
+				widget.NewLabel(""),
+				widget.NewLabelWithStyle("Frequency:", fyne.TextAlignLeading, fyne.TextStyle{Bold: true}),
+				widget.NewLabel(freqSelect.Selected),
+			)
+
+			reviewCard.SetContent(reviewContent)
 
 		case 4: // Final step - complete setup
-			statusLabel.SetText("Fetching ISP information...")
+			statusLabel.SetText("⏳ Fetching ISP information...")
 
 			ipInfoOut, err := utils.GetRequest("https://ipinfo.io")
 			if err != nil {
@@ -261,8 +342,7 @@ func runSetupWizard(a fyne.App, confPath, dataPath string) error {
 			}
 
 			vars.ISP = gjson.Get(ipInfoOut, "org").String()
-
-			statusLabel.SetText("Registering with server...")
+			statusLabel.SetText("⏳ Registering with server...")
 
 			type ISPStruct struct {
 				Latitude  float64 `json:"latitude"`
@@ -280,7 +360,7 @@ func runSetupWizard(a fyne.App, confPath, dataPath string) error {
 
 			data, err := json.Marshal(ispStruct)
 			if err != nil {
-				dialog.ShowError(fmt.Errorf("failed to marshal ISP data: %v", err), w)
+				dialog.ShowError(fmt.Errorf("failed to prepare registration data: %v", err), w)
 				return
 			}
 
@@ -301,18 +381,19 @@ func runSetupWizard(a fyne.App, confPath, dataPath string) error {
 			// Save config
 			configData, err := json.Marshal(vars)
 			if err != nil {
-				dialog.ShowError(fmt.Errorf("failed to save config: %v", err), w)
+				dialog.ShowError(fmt.Errorf("failed to save configuration: %v", err), w)
 				return
 			}
 
 			err = os.WriteFile(confPath, configData, 0644)
 			if err != nil {
-				dialog.ShowError(fmt.Errorf("failed to write config: %v", err), w)
+				dialog.ShowError(fmt.Errorf("failed to write configuration file: %v", err), w)
 				return
 			}
 
 			statusLabel.SetText("✅ Setup complete!")
-			dialog.ShowInformation("Setup Complete", "Internet Chowkidar is now configured and will start monitoring.", w)
+			dialog.ShowInformation("Setup Complete",
+				"Internet Chowkidar is now configured and will begin monitoring.\n\nCheck the system tray for options.", w)
 			w.Close()
 			return
 		}
@@ -332,22 +413,40 @@ func runSetupWizard(a fyne.App, confPath, dataPath string) error {
 
 func runSetupDone(a fyne.App, confPath, dataPath string) error {
 	w := a.NewWindow("Internet Chowkidar")
-	w.Resize(fyne.NewSize(400, 200))
-
-	w.SetContent(container.NewVBox(
-		widget.NewLabelWithStyle("Setup Complete", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-		widget.NewSeparator(),
-		widget.NewLabel("Internet Chowkidar is configured and running."),
-		widget.NewLabel("The application is now monitoring in the background."),
-		widget.NewLabel(""),
-		widget.NewLabel("Check the system tray icon for options."),
-		widget.NewLabel(""),
-		widget.NewButton("Close", func() {
-			w.Close()
-		}),
-	))
-
+	w.Resize(fyne.NewSize(450, 250))
 	w.CenterOnScreen()
+
+	icon := canvas.NewText("✓", theme.SuccessColor())
+	icon.TextSize = 48
+	icon.Alignment = fyne.TextAlignCenter
+
+	title := canvas.NewText("Setup Complete", theme.ForegroundColor())
+	title.TextSize = 24
+	title.TextStyle = fyne.TextStyle{Bold: true}
+	title.Alignment = fyne.TextAlignCenter
+
+	closeBtn := widget.NewButtonWithIcon("Close", theme.CancelIcon(), func() {
+		w.Close()
+	})
+	closeBtn.Importance = widget.HighImportance
+
+	content := container.NewVBox(
+		layout.NewSpacer(),
+		icon,
+		title,
+		widget.NewLabel("Internet Chowkidar is configured and running."),
+		widget.NewLabel("The application is monitoring in the background."),
+		layout.NewSpacer(),
+		widget.NewCard("", "", container.NewVBox(
+			widget.NewLabelWithStyle("System Tray", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
+			widget.NewLabel("Check the system tray icon in your menu bar for options."),
+		)),
+		layout.NewSpacer(),
+		closeBtn,
+		layout.NewSpacer(),
+	)
+
+	w.SetContent(container.NewPadded(content))
 	w.Show()
 
 	return nil
