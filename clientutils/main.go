@@ -26,17 +26,11 @@ func Version() string {
 }
 
 // UpdateConf and StopSync are optional since only GUI makes use of them
-func Run(configPath string, databasePath string, updateConf *bool, stopSync *bool) error {
+func Run(configPath string, db *bitcask.Bitcask, updateConf *bool, stopSync *bool) error {
 	config, err := FindConfigData(configPath)
 	if err != nil {
 		return cli.Exit(err.Error(), 1)
 	}
-
-	db, err := FindDatabase(databasePath)
-	if err != nil {
-		return cli.Exit(err.Error(), 1)
-	}
-	defer db.Close()
 
 	// Figure out frequency based on the mode numbers
 	duration := time.Duration(config.TestFrequency) * time.Hour

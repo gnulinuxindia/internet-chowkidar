@@ -3,6 +3,8 @@ package main
 import (
 	utils "github.com/gnulinuxindia/internet-chowkidar/clientutils"
 	"github.com/urfave/cli/v2"
+	"os"
+	"os/signal"
 )
 
 func cliInit(conf, data string) *cli.App {
@@ -32,7 +34,19 @@ func cliInit(conf, data string) *cli.App {
 			},
 		},
 		Action: func(cCtx *cli.Context) error {
-			err := utils.Run(cCtx.String("config"), cCtx.String("database"), &updateConf, &stopSync)
+			db, err := utils.FindDatabase(cCtx.String("database"))
+			if err != nil {
+				return cli.Exit(err.Error(), 1)
+			}
+			defer db.Close()
+			done := make(chan os.Signal, 1)
+			signal.Notify(done, os.Interrupt)
+			go func() {
+				<-done
+				db.Close()
+				os.Exit(0)
+			}()
+			err = utils.Run(cCtx.String("config"), db, &updateConf, &stopSync)
 			return err
 		},
 		Commands: []*cli.Command{
