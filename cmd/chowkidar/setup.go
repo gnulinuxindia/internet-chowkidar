@@ -22,10 +22,10 @@ func Setup(cCtx *cli.Context) error {
 
 	serverValid := false
 	for !serverValid {
-		fmt.Println("Enter which server you want to use (defaults to https://inetc.kat.directory): ")
+		fmt.Println("Enter which server you want to use (defaults to https://api.inet.watch): ")
 		fmt.Scanln(&vars.Server)
 		if vars.Server == "" {
-			vars.Server = "https://inetc.kat.directory"
+			vars.Server = "https://api.inet.watch"
 		}
 
 		if utils.ValidateServer(vars.Server) {
