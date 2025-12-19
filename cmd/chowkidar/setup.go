@@ -141,12 +141,10 @@ func Setup(cCtx *cli.Context) error {
 	}
 
 	// TODO: Find a better alternative to using ipinfo.io
-	ipInfoOut, err := utils.GetRequest("http://ipinfo.io")
+	ipInfoOut, err := utils.GetRequest("https://ipinfo.io")
 	if err != nil {
 		return cli.Exit("Unable to retrieve ISP details from IPInfo.io", 1)
 	}
-
-	fmt.Println(ipInfoOut)
 
 	if !gjson.Valid(ipInfoOut) {
 		return cli.Exit("Unable to parse ISP details from IPInfo.io", 1)

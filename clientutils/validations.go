@@ -45,7 +45,11 @@ func ValidateConfig(config Config) bool {
 	return true
 }
 func ValidateCity(city string) (newCity string, lat float64, lon float64, valid bool) {
-	osmOut, err := GetRequest("https://nominatim.openstreetmap.org/search?q=" + city + "&format=json&featureType=city&polygon=1&addressdetails=1&limit=1")
+	// Nominatim requires a custom User-Agent to identify the application
+	osmOut, err := GetRequestWithUserAgent(
+		"https://nominatim.openstreetmap.org/search?q="+city+"&format=json&featureType=city&polygon=1&addressdetails=1&limit=1",
+		"Internet-Chowkidar/1.0 (contact@kat.bio)",
+	)
 	if err != nil {
 		fmt.Println(err)
 		return "", 0.0, 0.0, false

@@ -38,6 +38,10 @@ func PostRequest(url string, data []byte, contenttype string) (string, error) {
 }
 
 func GetRequest(url string) (string, error) {
+	return GetRequestWithUserAgent(url, "")
+}
+
+func GetRequestWithUserAgent(url string, userAgent string) (string, error) {
 	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
 	defer cancel()
 	r, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
@@ -45,9 +49,15 @@ func GetRequest(url string) (string, error) {
 		return "", err
 	}
 
-	userAgent := "Internet-Chowkidar/1.0 (contact@kat.bio)"
-	r.Header.Set("Content-Type", "application/json")
-	r.Header.Set("User-Agent", userAgent)
+	// Note: Content-Type header should not be set on GET requests
+	// Some servers (like ipinfo.io) may return HTML instead of JSON if they detect certain User-Agents
+	// Using the default Go HTTP client User-Agent works best for most API requests
+	r.Header.Set("Accept", "application/json")
+
+	// Only set User-Agent if explicitly provided (required for some APIs like Nominatim)
+	if userAgent != "" {
+		r.Header.Set("User-Agent", userAgent)
+	}
 
 	client := &http.Client{}
 	res, err0 := client.Do(r)
