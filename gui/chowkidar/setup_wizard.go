@@ -17,7 +17,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func runSetupWizard(a fyne.App, confPath, dataPath string) error {
+func runSetupWizard(a fyne.App, confPath string) error {
 	w := a.NewWindow("Internet Chowkidar Setup")
 	w.Resize(fyne.NewSize(700, 500))
 	w.CenterOnScreen()
@@ -130,11 +130,11 @@ func runSetupWizard(a fyne.App, confPath, dataPath string) error {
 	freqSelect.SetSelected("Once a day")
 
 	freqValues := map[string]int{
-		"Hourly":                           1,
-		"4 times a day (every 6 hours)":    6,
-		"2 times a day (every 12 hours)":   12,
-		"Once a day":                       24,
-		"Once a week":                      24 * 7,
+		"Hourly":                         1,
+		"4 times a day (every 6 hours)":  6,
+		"2 times a day (every 12 hours)": 12,
+		"Once a day":                     24,
+		"Once a week":                    24 * 7,
 	}
 
 	step4 := makeCard(container.NewVBox(
@@ -155,7 +155,7 @@ func runSetupWizard(a fyne.App, confPath, dataPath string) error {
 
 	step5 := makeCard(container.NewVBox(
 		makeTitle("Review & Complete"),
-		makeSubtitle("Review your settings before completing setup"),
+		makeSubtitle("Review your settings before completing setup\n You have to restart application to start using Internet Chowkidar"),
 		layout.NewSpacer(),
 		reviewCard,
 		layout.NewSpacer(),
@@ -257,7 +257,9 @@ func runSetupWizard(a fyne.App, confPath, dataPath string) error {
 			for _, cat := range gjsonArr {
 				catName := cat.String()
 				check := widget.NewCheck(catName, nil)
-				check.Checked = true // Select all by default
+				if catName == "all" {
+					check.Checked = true // Select only ALL category by default
+				}
 				categoryChecks = append(categoryChecks, check)
 				categoryContainer.Add(check)
 			}
@@ -406,47 +408,6 @@ func runSetupWizard(a fyne.App, confPath, dataPath string) error {
 	}
 
 	w.SetContent(content)
-	w.Show()
-
-	return nil
-}
-
-func runSetupDone(a fyne.App, confPath, dataPath string) error {
-	w := a.NewWindow("Internet Chowkidar")
-	w.Resize(fyne.NewSize(450, 250))
-	w.CenterOnScreen()
-
-	icon := canvas.NewText("✓", theme.SuccessColor())
-	icon.TextSize = 48
-	icon.Alignment = fyne.TextAlignCenter
-
-	title := canvas.NewText("Setup Complete", theme.ForegroundColor())
-	title.TextSize = 24
-	title.TextStyle = fyne.TextStyle{Bold: true}
-	title.Alignment = fyne.TextAlignCenter
-
-	closeBtn := widget.NewButtonWithIcon("Close", theme.CancelIcon(), func() {
-		w.Close()
-	})
-	closeBtn.Importance = widget.HighImportance
-
-	content := container.NewVBox(
-		layout.NewSpacer(),
-		icon,
-		title,
-		widget.NewLabel("Internet Chowkidar is configured and running."),
-		widget.NewLabel("The application is monitoring in the background."),
-		layout.NewSpacer(),
-		widget.NewCard("", "", container.NewVBox(
-			widget.NewLabelWithStyle("System Tray", fyne.TextAlignCenter, fyne.TextStyle{Bold: true}),
-			widget.NewLabel("Check the system tray icon in your menu bar for options."),
-		)),
-		layout.NewSpacer(),
-		closeBtn,
-		layout.NewSpacer(),
-	)
-
-	w.SetContent(container.NewPadded(content))
 	w.Show()
 
 	return nil

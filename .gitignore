@@ -6,6 +6,7 @@ sqlite.db
 
 internet-chowkidar
 cmd/chowkidar/chowkidar
+gui/chowkidar/chowkidar
 .direnv
 result
 dist
