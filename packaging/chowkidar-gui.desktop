@@ -1,0 +1,11 @@
+[Desktop Entry]
+Type=Application
+Version=1.0
+Name=Internet Chowkidar
+Comment=Monitor Internet Censorship in India
+Exec=chowkidar-gui
+Icon=chowkidar-gui
+Terminal=false
+Categories=Network;Utility;
+Keywords=censorship;monitoring;internet;blocking;
+StartupNotify=true

@@ -1,0 +1,135 @@
+# GoReleaser configuration for Internet Chowkidar GUI (Linux packages only)
+# macOS and Windows GUI builds are handled separately via scripts
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  # GUI Build - Linux only (CGO required for Fyne)
+  - id: gui-linux
+    main: ./gui/chowkidar
+    binary: chowkidar-gui
+    env:
+      - CGO_ENABLED=1
+    goos:
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
+
+# Archives for GUI
+archives:
+  - id: gui-archive
+    format_overrides:
+      - goos: linux
+        formats: [tar.gz]
+    name_template: "{{ .ProjectName }}-gui_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+# Linux packages (deb, rpm, apk) for GUI
+nfpms:
+  - id: gui-packages
+    package_name: chowkidar-gui
+    vendor: GNU/Linux India
+    homepage: https://github.com/gnulinuxindia/internet-chowkidar
+    maintainer: Internet Chowkidar Team <team@gnulinuxindia.org>
+    description: |
+      Internet Chowkidar GUI - Monitor internet censorship in India
+      A graphical tool with system tray interface to detect and report
+      blocked websites to help track internet censorship patterns.
+    license: MIT
+
+    formats:
+      - deb
+      - rpm
+      - apk
+      - archlinux
+
+    # Common dependencies
+    dependencies:
+      - ca-certificates
+
+    deb:
+      lintian_overrides:
+        - statically-linked-binary
+        - changelog-file-missing-in-native-package
+
+    # Format-specific dependencies using overrides
+    overrides:
+      deb:
+        dependencies:
+          - ca-certificates
+          - libgl1
+          - libx11-6
+          - libxcursor1
+          - libxrandr2
+          - libxinerama1
+          - libxi6
+      rpm:
+        dependencies:
+          - ca-certificates
+          - mesa-libGL
+          - libX11
+          - libXcursor
+          - libXrandr
+          - libXinerama
+          - libXi
+      apk:
+        dependencies:
+          - ca-certificates
+          - mesa-gl
+          - libx11
+          - libxcursor
+          - libxrandr
+          - libxinerama
+          - libxi
+
+    # Desktop file and documentation
+    contents:
+      - src: packaging/chowkidar-gui.desktop
+        dst: /usr/share/applications/chowkidar-gui.desktop
+        type: config
+        file_info:
+          mode: 0644
+      - src: LICENSE
+        dst: /usr/share/doc/chowkidar-gui/LICENSE
+        file_info:
+          mode: 0644
+      - src: README.md
+        dst: /usr/share/doc/chowkidar-gui/README.md
+        file_info:
+          mode: 0644
+
+    # Package lifecycle scripts
+    scripts:
+      postinstall: packaging/scripts/gui-postinstall.sh
+
+    # Package metadata
+    file_name_template: "{{ .ProjectName }}-gui_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    section: utils
+    priority: optional
+
+# Release configuration
+release:
+  github:
+    owner: gnulinuxindia
+    name: internet-chowkidar
+  draft: false
+  prerelease: auto
+  mode: append
+  disable: false
+
+checksum:
+  name_template: "checksums-gui.txt"
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  disable: true  # Use main goreleaser changelog

@@ -1,0 +1,187 @@
+# GoReleaser configuration for Internet Chowkidar CLI
+version: 2
+
+before:
+  hooks:
+    - go mod tidy
+
+builds:
+  # CLI Build
+  - id: cli
+    main: ./cmd/chowkidar
+    binary: chowkidar
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+      - freebsd
+    goarch:
+      - amd64
+      - arm64
+      - arm
+      - 386
+    goarm:
+      - "6"
+      - "7"
+    ignore:
+      - goos: windows
+        goarch: arm
+      - goos: windows
+        goarch: arm64
+      - goos: darwin
+        goarch: 386
+    ldflags:
+      - -s -w
+      - -X main.version={{.Version}}
+      - -X main.commit={{.Commit}}
+      - -X main.date={{.Date}}
+    tags:
+      - netgo
+
+archives:
+  - id: cli-archive
+    name_template: "{{ .ProjectName }}-cli_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+    format_overrides:
+      - goos: windows
+        formats: [zip]
+      - goos: linux
+        formats: [tar.gz]
+      - goos: darwin
+        formats: [tar.gz]
+      - goos: freebsd
+        formats: [tar.gz]
+    files:
+      - LICENSE
+      - README.md
+      - cmd/chowkidar/chowkidar.service
+
+checksum:
+  name_template: "checksums.txt"
+
+snapshot:
+  version_template: "{{ incpatch .Version }}-next"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"
+      - "^chore:"
+      - "^ci:"
+
+# Linux packages (deb, rpm, apk)
+nfpms:
+  - id: cli-packages
+    vendor: GNU/Linux India
+    homepage: https://github.com/gnulinuxindia/internet-chowkidar
+    maintainer: Internet Chowkidar Team <team@gnulinuxindia.org>
+    description: |
+      Internet Chowkidar - Monitor internet censorship in India
+      A tool to detect and report blocked websites to help track
+      internet censorship patterns across different ISPs.
+    license: MIT
+
+    formats:
+      - deb
+      - rpm
+      - apk
+      - archlinux
+
+    # Package dependencies
+    dependencies:
+      - ca-certificates
+
+    # Recommends (deb only)
+    recommends:
+      - systemd
+
+    # Service file
+    contents:
+      - src: cmd/chowkidar/chowkidar.service
+        dst: /usr/lib/systemd/system/chowkidar.service
+        type: config
+        file_info:
+          mode: 0644
+      - src: LICENSE
+        dst: /usr/share/doc/chowkidar/LICENSE
+        file_info:
+          mode: 0644
+      - src: README.md
+        dst: /usr/share/doc/chowkidar/README.md
+        file_info:
+          mode: 0644
+
+    # Package lifecycle scripts
+    scripts:
+      postinstall: packaging/scripts/cli-postinstall.sh
+      preremove: packaging/scripts/cli-preremove.sh
+
+    # Package names
+    file_name_template: "{{ .ProjectName }}-cli_{{ .Version }}_{{ .Os }}_{{ .Arch }}{{ if .Arm }}v{{ .Arm }}{{ end }}"
+
+    # Metadata
+    section: utils
+    priority: optional
+
+    # Deb specific
+    deb:
+      lintian_overrides:
+        - statically-linked-binary
+        - changelog-file-missing-in-native-package
+
+# Release configuration
+release:
+  github:
+    owner: gnulinuxindia
+    name: internet-chowkidar
+  draft: false
+  prerelease: auto
+  mode: append
+  header: |
+    ## Internet Chowkidar {{ .Tag }}
+
+    ### Downloads
+
+    **CLI Version:**
+    - Linux: `.deb`, `.rpm`, `.apk`, or `.tar.gz`
+    - macOS: `.tar.gz`
+    - Windows: `.zip`
+
+    **GUI Version (manual builds):**
+    - See build instructions below or download from artifacts
+
+    ### What's Changed
+  footer: |
+    ---
+
+    ### Installation
+
+    **Debian/Ubuntu:**
+    ```bash
+    wget https://github.com/gnulinuxindia/internet-chowkidar/releases/download/{{ .Tag }}/chowkidar-cli_{{ .Version }}_linux_amd64.deb
+    sudo dpkg -i chowkidar-cli_{{ .Version }}_linux_amd64.deb
+    ```
+
+    **Fedora/RHEL:**
+    ```bash
+    wget https://github.com/gnulinuxindia/internet-chowkidar/releases/download/{{ .Tag }}/chowkidar-cli_{{ .Version }}_linux_amd64.rpm
+    sudo rpm -i chowkidar-cli_{{ .Version }}_linux_amd64.rpm
+    ```
+
+    **Alpine:**
+    ```bash
+    wget https://github.com/gnulinuxindia/internet-chowkidar/releases/download/{{ .Tag }}/chowkidar-cli_{{ .Version }}_linux_amd64.apk
+    sudo apk add --allow-untrusted chowkidar-cli_{{ .Version }}_linux_amd64.apk
+    ```
+
+    **Full Changelog**: https://github.com/gnulinuxindia/internet-chowkidar/compare/{{ .PreviousTag }}...{{ .Tag }}
+
+# Announce (optional - configure if you want)
+# announce:
+#   twitter:
+#     enabled: false
+#   discord:
+#     enabled: false

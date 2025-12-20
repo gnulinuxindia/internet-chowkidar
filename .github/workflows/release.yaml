@@ -1,0 +1,135 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+
+jobs:
+  # Build CLI for all platforms (Linux, macOS, Windows)
+  goreleaser-cli:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Run GoReleaser for CLI
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: "~> v2"
+          args: release --clean
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Build GUI Linux packages (deb, rpm, apk)
+  goreleaser-gui:
+    runs-on: ubuntu-latest
+    needs: goreleaser-cli
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Install Linux dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libgl1-mesa-dev xorg-dev
+
+      - name: Run GoReleaser for GUI (Linux packages)
+        uses: goreleaser/goreleaser-action@v6
+        with:
+          distribution: goreleaser
+          version: "~> v2"
+          args: release --clean --config .goreleaser-gui.yaml
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Build GUI binaries for macOS and Windows
+  build-gui-desktop:
+    runs-on: ${{ matrix.os }}
+    needs: goreleaser-cli
+    strategy:
+      matrix:
+        include:
+          # macOS builds
+          - os: macos-latest
+            goos: darwin
+            goarch: amd64
+            output: chowkidar-gui-darwin-amd64
+          - os: macos-latest
+            goos: darwin
+            goarch: arm64
+            output: chowkidar-gui-darwin-arm64
+
+          # Windows builds
+          - os: windows-latest
+            goos: windows
+            goarch: amd64
+            output: chowkidar-gui-windows-amd64.exe
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: stable
+
+      - name: Build GUI
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: 1
+        run: |
+          go build -o ${{ matrix.output }} -ldflags="-s -w" ./gui/chowkidar
+
+      - name: Create archive (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          tar -czf ${{ matrix.output }}.tar.gz ${{ matrix.output }} LICENSE README.md
+
+      - name: Create archive (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          7z a ${{ matrix.output }}.zip ${{ matrix.output }} LICENSE README.md
+
+      - name: Upload to release (macOS)
+        if: matrix.os == 'macos-latest'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.output }}.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload to release (Windows)
+        if: matrix.os == 'windows-latest'
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.output }}.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: gui-${{ matrix.goos }}-${{ matrix.goarch }}
+          path: |
+            ${{ matrix.output }}*

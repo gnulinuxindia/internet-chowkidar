@@ -8,3 +8,6 @@ internet-chowkidar
 cmd/chowkidar/chowkidar
 .direnv
 result
+dist
+bin/chowkidar
+bin/chowkidar-gui
