@@ -82,12 +82,16 @@ func runManualCheck(configPath string, db *bitcask.Bitcask) error {
 
 func rerunSetup(desk desktop.App, configPath string) {
 	log.Println("Re-running setup wizard...")
+	config, err := utils.FindConfigData(configPath)
+	if err != nil {
+		log.Printf("Failed to load config: %v", err)
+	}
 
 	// Stop daemon temporarily
-	wasRunning := !stopSync
+	initialState := stopSync
 	stopSync = true
 
-	err := runSetupWizard(desk.(fyne.App), configPath)
+	err = runSetupWizard(desk.(fyne.App), configPath, config.ClientID)
 	if err != nil {
 		log.Printf("Setup failed: %v", err)
 	} else {
@@ -96,7 +100,5 @@ func rerunSetup(desk desktop.App, configPath string) {
 	}
 
 	// Resume daemon if it was running
-	if wasRunning {
-		stopSync = false
-	}
+	stopSync = initialState
 }

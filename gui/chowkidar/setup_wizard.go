@@ -17,7 +17,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-func runSetupWizard(a fyne.App, confPath string) error {
+func runSetupWizard(a fyne.App, confPath string, clientID int) error {
 	w := a.NewWindow("Internet Chowkidar Setup")
 	w.Resize(fyne.NewSize(700, 500))
 	w.CenterOnScreen()
@@ -378,7 +378,11 @@ func runSetupWizard(a fyne.App, confPath string) error {
 			}
 
 			vars.ISPID = int(gjson.Get(ISPOut, "id").Int())
-			vars.ClientID = rand.IntN(999999999)
+			if clientID == 0 {
+				vars.ClientID = rand.IntN(999999999)
+			} else {
+				vars.ClientID = clientID
+			}
 
 			// Save config
 			configData, err := json.Marshal(vars)

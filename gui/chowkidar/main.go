@@ -41,7 +41,7 @@ func main() {
 	// If setup is needed, show GUI setup wizard
 	if needsSetup {
 		log.Println("No configuration found, starting setup wizard...")
-		err := runSetupWizard(a, conf)
+		err := runSetupWizard(a, conf, 0)
 		if err != nil {
 			log.Fatalf("Setup failed: %v", err)
 		}
