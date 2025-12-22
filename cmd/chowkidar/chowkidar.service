@@ -1,12 +1,38 @@
 [Unit]
-Description=Internet Chowkidar
-Documentation=https://gnulinuxindia.sh/blog/plans-for-june-24/
-After=network.target network-online.target
-Requires=network-online.target
+Description=Internet Chowkidar - Monitor Internet Censorship
+Documentation=https://github.com/gnulinuxindia/internet-chowkidar
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/internet-chowkidar run
+ExecStart=/usr/bin/chowkidar run
+Restart=on-failure
+RestartSec=10s
+
+# Run as dynamic user for security
+DynamicUser=yes
+StateDirectory=chowkidar
+ConfigurationDirectory=chowkidar
+
+# Override config paths for dynamic user
+Environment="HOME=%S/chowkidar"
+
+# Security hardening
+NoNewPrivileges=yes
+PrivateTmp=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictAddressFamilies=AF_INET AF_INET6
+RestrictNamespaces=yes
+LockPersonality=yes
+RestrictRealtime=yes
+RestrictSUIDSGID=yes
+RemoveIPC=yes
+PrivateMounts=yes
 
 [Install]
-WantedBy=default.target
+WantedBy=multi-user.target
