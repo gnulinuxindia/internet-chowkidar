@@ -97,6 +97,39 @@ nfpms:
         type: config
         file_info:
           mode: 0644
+      # Application icons
+      - src: packaging/icons/hicolor/16x16/apps/chowkidar-gui.png
+        dst: /usr/share/icons/hicolor/16x16/apps/chowkidar-gui.png
+        file_info:
+          mode: 0644
+      - src: packaging/icons/hicolor/32x32/apps/chowkidar-gui.png
+        dst: /usr/share/icons/hicolor/32x32/apps/chowkidar-gui.png
+        file_info:
+          mode: 0644
+      - src: packaging/icons/hicolor/48x48/apps/chowkidar-gui.png
+        dst: /usr/share/icons/hicolor/48x48/apps/chowkidar-gui.png
+        file_info:
+          mode: 0644
+      - src: packaging/icons/hicolor/64x64/apps/chowkidar-gui.png
+        dst: /usr/share/icons/hicolor/64x64/apps/chowkidar-gui.png
+        file_info:
+          mode: 0644
+      - src: packaging/icons/hicolor/128x128/apps/chowkidar-gui.png
+        dst: /usr/share/icons/hicolor/128x128/apps/chowkidar-gui.png
+        file_info:
+          mode: 0644
+      - src: packaging/icons/hicolor/256x256/apps/chowkidar-gui.png
+        dst: /usr/share/icons/hicolor/256x256/apps/chowkidar-gui.png
+        file_info:
+          mode: 0644
+      - src: packaging/icons/hicolor/512x512/apps/chowkidar-gui.png
+        dst: /usr/share/icons/hicolor/512x512/apps/chowkidar-gui.png
+        file_info:
+          mode: 0644
+      - src: packaging/pixmaps/chowkidar-gui.png
+        dst: /usr/share/pixmaps/chowkidar-gui.png
+        file_info:
+          mode: 0644
       - src: LICENSE
         dst: /usr/share/doc/chowkidar-gui/LICENSE
         file_info:

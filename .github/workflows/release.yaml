@@ -91,6 +91,12 @@ jobs:
         with:
           go-version: stable
 
+      - name: Embed Windows icon
+        if: matrix.os == 'windows-latest'
+        run: |
+          go install github.com/tc-hib/go-winres@latest
+          go-winres make --in packaging/assets/chowkidar.ico --out gui/chowkidar/rsrc_windows_amd64.syso --arch amd64 --product-version ${{ github.ref_name }}
+
       - name: Build GUI
         env:
           GOOS: ${{ matrix.goos }}

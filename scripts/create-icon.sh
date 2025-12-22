@@ -80,6 +80,23 @@ done
 # Fallback icon for /usr/share/pixmaps
 sips -z 48 48 "$SOURCE_IMAGE" --out "packaging/pixmaps/chowkidar-gui.png" > /dev/null 2>&1
 
+# Create Windows .ico
+echo ""
+echo "Creating Windows .ico..."
+if command -v magick >/dev/null 2>&1; then
+    magick packaging/icons/hicolor/16x16/apps/chowkidar-gui.png \
+           packaging/icons/hicolor/32x32/apps/chowkidar-gui.png \
+           packaging/icons/hicolor/48x48/apps/chowkidar-gui.png \
+           packaging/icons/hicolor/64x64/apps/chowkidar-gui.png \
+           packaging/icons/hicolor/128x128/apps/chowkidar-gui.png \
+           packaging/icons/hicolor/256x256/apps/chowkidar-gui.png \
+           packaging/assets/chowkidar.ico
+    echo "  - packaging/assets/chowkidar.ico (created with ImageMagick)"
+else
+    echo "⚠️  ImageMagick not found - Windows .ico not created"
+    echo "   Install with: brew install imagemagick"
+fi
+
 # Move macOS icon to assets directory
 mkdir -p packaging/assets
 mv "$OUTPUT_ICON" "packaging/assets/$OUTPUT_ICON"
@@ -100,6 +117,13 @@ echo ""
 echo "Linux:"
 echo "  - packaging/icons/hicolor/{16-512}x{16-512}/apps/chowkidar-gui.png"
 echo "  - packaging/pixmaps/chowkidar-gui.png"
+echo ""
+echo "Windows:"
+if command -v magick >/dev/null 2>&1; then
+    echo "  - packaging/assets/chowkidar.ico"
+else
+    echo "  - Not created (ImageMagick not available)"
+fi
 echo ""
 echo "All icons ready for packaging. Rebuild to include them:"
 echo "  - macOS: make package-dmg"
