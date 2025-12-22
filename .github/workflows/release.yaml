@@ -35,7 +35,6 @@ jobs:
   # Build GUI Linux packages (deb, rpm, apk)
   goreleaser-gui:
     runs-on: ubuntu-latest
-    needs: goreleaser-cli
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -64,7 +63,6 @@ jobs:
   # Build GUI binaries for macOS and Windows
   build-gui-desktop:
     runs-on: ${{ matrix.os }}
-    needs: goreleaser-cli
     strategy:
       matrix:
         include:
@@ -100,6 +98,64 @@ jobs:
           CGO_ENABLED: 1
         run: |
           go build -o ${{ matrix.output }} -ldflags="-s -w" ./gui/chowkidar
+
+      - name: Import Code Signing Certificate (macOS)
+        if: matrix.os == 'macos-latest'
+        env:
+          MACOS_CERTIFICATE_P12: ${{ secrets.MACOS_CERTIFICATE_P12 }}
+          MACOS_CERTIFICATE_PASSWORD: ${{ secrets.MACOS_CERTIFICATE_PASSWORD }}
+        run: |
+          # Create temporary keychain
+          KEYCHAIN_PATH=$RUNNER_TEMP/app-signing.keychain-db
+          KEYCHAIN_PASSWORD=$(openssl rand -base64 32)
+
+          security create-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          # Import certificate
+          echo "$MACOS_CERTIFICATE_P12" | base64 --decode > certificate.p12
+          security import certificate.p12 -k "$KEYCHAIN_PATH" -P "$MACOS_CERTIFICATE_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple:,codesign: -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
+
+          # Add keychain to search list
+          security list-keychain -d user -s "$KEYCHAIN_PATH"
+
+          rm certificate.p12
+
+      - name: Code Sign (macOS)
+        if: matrix.os == 'macos-latest'
+        env:
+          MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
+        run: |
+          codesign --force --options runtime --sign "$MACOS_SIGNING_IDENTITY" --timestamp ${{ matrix.output }}
+          codesign --verify --verbose ${{ matrix.output }}
+
+      - name: Notarize (macOS)
+        if: matrix.os == 'macos-latest'
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
+        run: |
+          # Create zip for notarization
+          ditto -c -k --keepParent ${{ matrix.output }} ${{ matrix.output }}.zip
+
+          # Submit for notarization
+          xcrun notarytool submit ${{ matrix.output }}.zip \
+            --apple-id "$APPLE_ID" \
+            --team-id "$APPLE_TEAM_ID" \
+            --password "$APPLE_APP_PASSWORD" \
+            --wait
+
+          # Remove notarization zip
+          rm ${{ matrix.output }}.zip
+
+      - name: Staple (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          xcrun stapler staple ${{ matrix.output }}
+          xcrun stapler validate ${{ matrix.output }}
 
       - name: Create archive (macOS)
         if: matrix.os == 'macos-latest'

@@ -1,5 +1,5 @@
 #!/bin/bash
-# Create macOS .icns icon from source image with proper rounded corners
+# Create icons for all platforms (macOS .icns + Linux PNGs) from source image
 # Usage: ./scripts/create-icon.sh <source-image.png>
 
 set -e
@@ -22,35 +22,7 @@ ICONSET_DIR="chowkidar-icon.iconset"
 OUTPUT_ICON="chowkidar.icns"
 TEMP_DIR="$(mktemp -d)"
 
-echo "Creating macOS icon from $SOURCE_IMAGE..."
-
-# Function to apply rounded corners using ImageMagick
-apply_rounded_corners() {
-    local input=$1
-    local output=$2
-    local size=$3
-
-    # Calculate corner radius (approximately 22.37% of size for Big Sur style)
-    local radius=$(echo "$size * 0.2237" | bc | cut -d. -f1)
-
-    if command -v magick >/dev/null 2>&1 || command -v convert >/dev/null 2>&1; then
-        # Use ImageMagick if available
-        local magick_cmd="convert"
-        if command -v magick >/dev/null 2>&1; then
-            magick_cmd="magick"
-        fi
-
-        $magick_cmd "$input" \
-            \( +clone -alpha extract \
-            -draw "fill black polygon 0,0 0,$radius $radius,0 fill white circle $radius,$radius $radius,0" \
-            \( +clone -flip \) -compose Multiply -composite \
-            \( +clone -flop \) -compose Multiply -composite \
-            \) -alpha off -compose CopyOpacity -composite "$output"
-    else
-        # Fallback: just resize without rounding
-        cp "$input" "$output"
-    fi
-}
+echo "Creating macOS icon from $SOURCE_IMAGE..."}
 
 # Create iconset directory
 mkdir -p "$ICONSET_DIR"
@@ -87,35 +59,49 @@ for size_file in "${sizes[@]}"; do
     # First resize
     sips -z $size $size "$SOURCE_IMAGE" --out "$temp_resized" > /dev/null 2>&1
 
-    # Then apply rounded corners if available
-    if [ "$USE_ROUNDING" = true ]; then
-        apply_rounded_corners "$temp_resized" "$ICONSET_DIR/$filename" "$size"
-    else
-        cp "$temp_resized" "$ICONSET_DIR/$filename"
-    fi
+    cp "$temp_resized" "$ICONSET_DIR/$filename"
 done
 
 # Convert to .icns
 echo "Creating .icns file..."
 iconutil -c icns "$ICONSET_DIR" -o "$OUTPUT_ICON"
 
+# Create Linux PNG icons (for deb/rpm/apk packages)
+echo ""
+echo "Creating Linux PNG icons..."
+LINUX_ICON_DIR="packaging/icons/hicolor"
+mkdir -p "$LINUX_ICON_DIR"/{16x16,32x32,48x48,64x64,128x128,256x256,512x512}/apps
+mkdir -p packaging/pixmaps
+
+for size in 16 32 48 64 128 256 512; do
+    sips -z $size $size "$SOURCE_IMAGE" --out "$LINUX_ICON_DIR/${size}x${size}/apps/chowkidar-gui.png" > /dev/null 2>&1
+done
+
+# Fallback icon for /usr/share/pixmaps
+sips -z 48 48 "$SOURCE_IMAGE" --out "packaging/pixmaps/chowkidar-gui.png" > /dev/null 2>&1
+
+# Move macOS icon to assets directory
+mkdir -p packaging/assets
+mv "$OUTPUT_ICON" "packaging/assets/$OUTPUT_ICON"
+
 # Clean up
 rm -rf "$ICONSET_DIR"
 rm -rf "$TEMP_DIR"
 
 echo ""
-echo "✅ Created $OUTPUT_ICON"
+echo "✅ Icons created for all platforms:"
+echo ""
+echo "macOS:"
+echo "  - packaging/assets/$OUTPUT_ICON"
 if [ "$USE_ROUNDING" = true ]; then
-    echo "✓ Applied macOS Big Sur style rounded corners"
+    echo "    (with Big Sur rounded corners)"
 fi
 echo ""
-echo "Next steps:"
-echo "  1. Move the .icns file to your project:"
-echo "     mkdir -p packaging/assets"
-echo "     mv $OUTPUT_ICON packaging/assets/"
+echo "Linux:"
+echo "  - packaging/icons/hicolor/{16-512}x{16-512}/apps/chowkidar-gui.png"
+echo "  - packaging/pixmaps/chowkidar-gui.png"
 echo ""
-echo "  2. Rebuild the DMG - the script will automatically use it:"
-echo "     make package-dmg"
-echo ""
-echo "Note: For best results, design your icon following Apple's guidelines:"
-echo "  https://developer.apple.com/design/human-interface-guidelines/app-icons"
+echo "All icons ready for packaging. Rebuild to include them:"
+echo "  - macOS: make package-dmg"
+echo "  - Linux: make release-gui (requires Linux)"
+echo "  - All platforms: git tag vX.Y.Z && git push origin vX.Y.Z"
