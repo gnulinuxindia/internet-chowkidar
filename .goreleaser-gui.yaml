@@ -17,7 +17,7 @@ builds:
       - linux
     goarch:
       - amd64
-      - arm64
+      # arm64 requires cross-compilation toolchain, disabled for now
     ldflags:
       - -s -w
       - -X main.version={{.Version}}

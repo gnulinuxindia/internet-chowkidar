@@ -35,6 +35,7 @@ jobs:
   # Build GUI Linux packages (deb, rpm, apk)
   goreleaser-gui:
     runs-on: ubuntu-latest
+    needs: goreleaser-cli
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -63,7 +64,9 @@ jobs:
   # Build GUI binaries for macOS and Windows
   build-gui-desktop:
     runs-on: ${{ matrix.os }}
+    needs: goreleaser-cli
     strategy:
+      fail-fast: false
       matrix:
         include:
           # macOS builds
@@ -93,9 +96,10 @@ jobs:
 
       - name: Embed Windows icon
         if: matrix.os == 'windows-latest'
+        working-directory: gui/chowkidar
         run: |
           go install github.com/tc-hib/go-winres@latest
-          go-winres make --in packaging/assets/chowkidar.ico --out gui/chowkidar/rsrc_windows_amd64.syso --arch amd64 --product-version ${{ github.ref_name }}
+          go-winres simply --icon ../../packaging/assets/chowkidar.ico --arch amd64
 
       - name: Build GUI
         env:
