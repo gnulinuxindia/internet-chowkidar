@@ -39,9 +39,20 @@ func ValidateConfig(config Config) bool {
 	if config.Latitude > 90 || config.Latitude < -90 {
 		return false
 	}
-	if config.TestFrequency > 5 || config.TestFrequency < 1 {
+
+	// Valid frequencies: 1 (hourly), 6 (4x/day), 12 (2x/day), 24 (daily), 168 (weekly)
+	validFreqs := []int{1, 6, 12, 24, 168}
+	validFreq := false
+	for _, f := range validFreqs {
+		if config.TestFrequency == f {
+			validFreq = true
+			break
+		}
+	}
+	if !validFreq {
 		return false
 	}
+
 	return true
 }
 func ValidateCity(city string) (newCity string, lat float64, lon float64, valid bool) {
