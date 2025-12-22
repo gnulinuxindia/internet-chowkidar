@@ -1,5 +1,7 @@
 package main
 
+//go:generate fyne bundle -o bundled.go resources/systray.png
+
 import (
 	"log"
 
@@ -51,6 +53,7 @@ func setupSystray(desk desktop.App, configPath string, db *bitcask.Bitcask) {
 		menu.Refresh()
 	}
 	desk.SetSystemTrayMenu(menu)
+	desk.SetSystemTrayIcon(resourceSystrayPng)
 
 	// Start background daemon
 	go func() {

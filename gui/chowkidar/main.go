@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"fmt"
 	"os"
 	"os/signal"
 
@@ -22,7 +22,7 @@ func main() {
 
 	db, err := utils.FindDatabase(data)
 	if err != nil {
-		log.Printf("Failed to open database: %v", err)
+		fmt.Printf("Failed to open database: %v\n", err)
 		return
 	}
 	defer db.Close()
@@ -40,10 +40,11 @@ func main() {
 
 	// If setup is needed, show GUI setup wizard
 	if needsSetup {
-		log.Println("No configuration found, starting setup wizard...")
+		fmt.Println("No configuration found, starting setup wizard...")
 		err := runSetupWizard(a, conf, 0)
 		if err != nil {
-			log.Fatalf("Setup failed: %v", err)
+			fmt.Printf("Setup failed: %v\n", err)
+			os.Exit(1)
 		}
 	}
 
