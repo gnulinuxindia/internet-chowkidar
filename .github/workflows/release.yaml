@@ -69,17 +69,12 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          # macOS builds
+          # macOS universal binary (creates DMG with both arm64 and amd64)
           - os: macos-latest
             goos: darwin
-            goarch: amd64
-            output: chowkidar-gui-darwin-amd64
-          - os: macos-latest
-            goos: darwin
-            goarch: arm64
-            output: chowkidar-gui-darwin-arm64
+            goarch: universal
 
-          # Windows builds
+          # Windows build
           - os: windows-latest
             goos: windows
             goarch: amd64
@@ -100,14 +95,6 @@ jobs:
         run: |
           go install github.com/tc-hib/go-winres@latest
           go-winres simply --icon ../../packaging/assets/chowkidar.ico --arch amd64
-
-      - name: Build GUI
-        env:
-          GOOS: ${{ matrix.goos }}
-          GOARCH: ${{ matrix.goarch }}
-          CGO_ENABLED: 1
-        run: |
-          go build -o ${{ matrix.output }} -ldflags="-s -w" ./gui/chowkidar
 
       - name: Import Code Signing Certificate (macOS)
         if: matrix.os == 'macos-latest'
@@ -133,55 +120,90 @@ jobs:
 
           rm certificate.p12
 
-      - name: Code Sign (macOS)
+      - name: Build universal binary (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          mkdir -p bin
+
+          # Build for arm64
+          echo "Building for arm64..."
+          CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 \
+            go build -ldflags="-s -w" -o bin/chowkidar-gui-arm64 ./gui/chowkidar
+
+          # Build for amd64
+          echo "Building for amd64..."
+          CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 \
+            SDKROOT=$(xcrun --sdk macosx --show-sdk-path) \
+            go build -ldflags="-s -w" -o bin/chowkidar-gui-amd64 ./gui/chowkidar
+
+          # Create universal binary
+          echo "Creating universal binary..."
+          lipo -create -output bin/chowkidar-gui \
+            bin/chowkidar-gui-arm64 \
+            bin/chowkidar-gui-amd64
+
+          # Verify
+          echo "Verifying universal binary..."
+          lipo -info bin/chowkidar-gui
+          file bin/chowkidar-gui
+
+      - name: Install create-dmg (macOS)
+        if: matrix.os == 'macos-latest'
+        run: brew install create-dmg
+
+      - name: Build and sign DMG (macOS)
         if: matrix.os == 'macos-latest'
         env:
           MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
         run: |
-          codesign --force --options runtime --sign "$MACOS_SIGNING_IDENTITY" --timestamp ${{ matrix.output }}
-          codesign --verify --verbose ${{ matrix.output }}
+          VERSION=${{ github.ref_name }}
+          ./scripts/build-dmg.sh "$VERSION" "$MACOS_SIGNING_IDENTITY"
 
-      - name: Notarize (macOS)
+      - name: Notarize DMG (macOS)
         if: matrix.os == 'macos-latest'
         env:
           APPLE_ID: ${{ secrets.APPLE_ID }}
           APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
           APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
         run: |
-          # Create zip for notarization
-          ditto -c -k --keepParent ${{ matrix.output }} ${{ matrix.output }}.zip
+          VERSION=${{ github.ref_name }}
+          DMG_NAME="chowkidar-gui-${VERSION}-macos.dmg"
 
           # Submit for notarization
-          xcrun notarytool submit ${{ matrix.output }}.zip \
+          xcrun notarytool submit "dist/${DMG_NAME}" \
             --apple-id "$APPLE_ID" \
             --team-id "$APPLE_TEAM_ID" \
             --password "$APPLE_APP_PASSWORD" \
             --wait
 
-          # Remove notarization zip
-          rm ${{ matrix.output }}.zip
-
-      - name: Staple (macOS)
+      - name: Staple DMG (macOS)
         if: matrix.os == 'macos-latest'
         run: |
-          xcrun stapler staple ${{ matrix.output }}
-          xcrun stapler validate ${{ matrix.output }}
+          VERSION=${{ github.ref_name }}
+          DMG_NAME="chowkidar-gui-${VERSION}-macos.dmg"
 
-      - name: Create archive (macOS)
-        if: matrix.os == 'macos-latest'
+          xcrun stapler staple "dist/${DMG_NAME}"
+          xcrun stapler validate "dist/${DMG_NAME}"
+
+      - name: Build GUI (Windows)
+        if: matrix.os == 'windows-latest'
+        env:
+          GOOS: ${{ matrix.goos }}
+          GOARCH: ${{ matrix.goarch }}
+          CGO_ENABLED: 1
         run: |
-          tar -czf ${{ matrix.output }}.tar.gz ${{ matrix.output }} LICENSE README.md
+          go build -o ${{ matrix.output }} -ldflags="-s -w" ./gui/chowkidar
 
       - name: Create archive (Windows)
         if: matrix.os == 'windows-latest'
         run: |
           7z a ${{ matrix.output }}.zip ${{ matrix.output }} LICENSE README.md
 
-      - name: Upload to release (macOS)
+      - name: Upload DMG to release (macOS)
         if: matrix.os == 'macos-latest'
         uses: softprops/action-gh-release@v2
         with:
-          files: ${{ matrix.output }}.tar.gz
+          files: dist/chowkidar-gui-${{ github.ref_name }}-macos.dmg
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -193,9 +215,19 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Upload artifacts
+      - name: Upload artifacts (Windows)
+        if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@v4
         with:
           name: gui-${{ matrix.goos }}-${{ matrix.goarch }}
           path: |
             ${{ matrix.output }}*
+
+      - name: Upload artifacts (macOS)
+        if: matrix.os == 'macos-latest'
+        uses: actions/upload-artifact@v4
+        with:
+          name: gui-darwin-universal
+          path: |
+            dist/*.dmg
+            dist/*.app
