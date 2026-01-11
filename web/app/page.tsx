@@ -26,7 +26,7 @@ export default function HomePage() {
 
           {/* Title */}
           <h1 className="hero-title font-extrabold tracking-tight mb-6 animate-slide-up opacity-0 delay-200">
-            <span className="gradient-text glitch-hover">Internet</span>
+            <span className="text-primary">Internet</span>
             <br />
             <span className="text-foreground">Chowkidar</span>
           </h1>
@@ -89,30 +89,6 @@ export default function HomePage() {
             </Button>
           </div>
 
-          {/* Tech Stack */}
-          <div className="mt-20 animate-slide-up opacity-0 delay-600">
-            <p className="text-xs uppercase tracking-widest text-muted-foreground mb-4">
-              Built With
-            </p>
-            <div className="flex flex-wrap justify-center gap-4">
-              {[
-                { name: "Next.js", url: "https://nextjs.org" },
-                { name: "Tailwind", url: "https://tailwindcss.com" },
-                { name: "Go", url: "https://go.dev" },
-                { name: "PostgreSQL", url: "https://postgresql.org" },
-              ].map((tech) => (
-                <a
-                  key={tech.name}
-                  href={tech.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="px-4 py-2 rounded-lg bg-card border border-border text-sm text-muted-foreground hover:text-primary hover:border-primary/50 transition-all duration-200"
-                >
-                  {tech.name}
-                </a>
-              ))}
-            </div>
-          </div>
         </div>
 
         {/* Scroll indicator */}
@@ -134,7 +110,7 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              <span className="gradient-text">Why This Matters</span>
+              <span className="text-primary">Why This Matters</span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Internet censorship affects millions. We provide transparency.

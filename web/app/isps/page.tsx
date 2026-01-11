@@ -31,7 +31,7 @@ export default async function ISPsPage() {
             </div>
             <div>
               <h1 className="text-3xl md:text-4xl font-bold">
-                <span className="gradient-text">Internet Service Providers</span>
+                <span className="text-primary">Internet Service Providers</span>
               </h1>
               <p className="text-muted-foreground mt-1">
                 ISPs across India and their blocking patterns

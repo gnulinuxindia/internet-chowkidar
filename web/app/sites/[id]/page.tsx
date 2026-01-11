@@ -72,7 +72,7 @@ export default async function SiteDetailPage({ params }: PageProps) {
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-6">
             <div>
               <h1 className="text-3xl md:text-4xl font-bold mb-4 font-mono">
-                <span className="gradient-text">{site.domain}</span>
+                <span className="text-primary">{site.domain}</span>
               </h1>
 
               {/* Categories */}

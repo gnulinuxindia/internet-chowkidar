@@ -73,7 +73,7 @@ export default async function ISPDetailPage({ params }: PageProps) {
             </div>
             <div>
               <h1 className="text-3xl md:text-4xl font-bold mb-2">
-                <span className="gradient-text">{isp.name}</span>
+                <span className="text-primary">{isp.name}</span>
               </h1>
 
               <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">

@@ -6,7 +6,7 @@ export default function NotFound() {
     <div className="min-h-screen flex items-center justify-center">
       <div className="text-center px-4">
         <div className="mb-8">
-          <h1 className="text-8xl font-bold gradient-text mb-4">404</h1>
+          <h1 className="text-8xl font-bold text-primary mb-4">404</h1>
           <div className="h-1 w-24 mx-auto bg-gradient-to-r from-primary via-accent to-primary rounded-full" />
         </div>
 

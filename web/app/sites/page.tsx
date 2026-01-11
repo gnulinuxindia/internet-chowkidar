@@ -31,7 +31,7 @@ export default async function SitesPage() {
             </div>
             <div>
               <h1 className="text-3xl md:text-4xl font-bold">
-                <span className="gradient-text">Blocked Sites</span>
+                <span className="text-primary">Blocked Sites</span>
               </h1>
               <p className="text-muted-foreground mt-1">
                 Websites blocked by ISPs across India

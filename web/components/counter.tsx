@@ -74,7 +74,7 @@ export function Counter({
     >
       <span
         className={`text-4xl md:text-5xl font-bold tabular-nums font-mono ${variantClasses[variant]} animate-count-up`}
-        style={{ fontFamily: "var(--font-jetbrains)" }}
+        style={{ fontFamily: "var(--font-mono)" }}
       >
         {count.toLocaleString()}
       </span>
