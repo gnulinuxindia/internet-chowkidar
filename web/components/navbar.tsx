@@ -10,6 +10,7 @@ const navLinks = [
   { href: "/", label: "Home" },
   { href: "/sites", label: "Sites" },
   { href: "/isps", label: "ISPs" },
+  { href: "/suggest", label: "Suggest" },
 ];
 
 export function Navbar() {

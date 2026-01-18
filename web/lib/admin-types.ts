@@ -5,6 +5,18 @@ export interface Category {
   updated_at: string;
 }
 
+export interface Site {
+  id: number;
+  domain: string;
+  ping_url: string;
+  categories: string[];
+  block_reports: number;
+  unblock_reports: number;
+  last_reported_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface SiteSuggestion {
   id: number;
   domain: string;

@@ -1,5 +1,5 @@
 import { config } from "./config";
-import type { Category, SiteSuggestion, SiteInput, ResolveSuggestionInput } from "./admin-types";
+import type { Category, Site, SiteSuggestion, SiteInput, ResolveSuggestionInput } from "./admin-types";
 
 const API_URL = config.apiUrl;
 
@@ -24,6 +24,43 @@ export async function createCategory(apiKey: string, name: string): Promise<Cate
     throw new Error(error || "Failed to create category");
   }
   return res.json();
+}
+
+export async function deleteCategory(apiKey: string, id: number): Promise<void> {
+  const res = await fetch(`${API_URL}/categories/${id}`, {
+    method: "DELETE",
+    headers: {
+      "X-Api-Key": apiKey,
+    },
+  });
+  if (!res.ok) {
+    if (res.status === 404) {
+      throw new Error("Category not found");
+    }
+    throw new Error("Failed to delete category");
+  }
+}
+
+// Sites
+export async function getSites(limit = 100): Promise<Site[]> {
+  const res = await fetch(`${API_URL}/sites?limit=${limit}`);
+  if (!res.ok) throw new Error("Failed to fetch sites");
+  return res.json();
+}
+
+export async function deleteSite(apiKey: string, id: number): Promise<void> {
+  const res = await fetch(`${API_URL}/sites/${id}`, {
+    method: "DELETE",
+    headers: {
+      "X-Api-Key": apiKey,
+    },
+  });
+  if (!res.ok) {
+    if (res.status === 404) {
+      throw new Error("Site not found");
+    }
+    throw new Error("Failed to delete site");
+  }
 }
 
 // Site Suggestions
@@ -72,6 +109,26 @@ export async function createSite(apiKey: string, input: SiteInput): Promise<unkn
   if (!res.ok) {
     const error = await res.text();
     throw new Error(error || "Failed to create site");
+  }
+  return res.json();
+}
+
+export async function createSuggestion(input: {
+  domain: string;
+  reason: string;
+  ping_url?: string;
+  categories?: string[];
+}): Promise<SiteSuggestion> {
+  const res = await fetch(`${API_URL}/sites/suggestions`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(input),
+  });
+  if (!res.ok) {
+    const error = await res.text();
+    throw new Error(error || "Failed to create suggestion");
   }
   return res.json();
 }

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useAdminAuth } from "@/components/admin-auth-provider";
-import { getCategories, createCategory } from "@/lib/admin-api";
+import { getCategories, createCategory, deleteCategory } from "@/lib/admin-api";
 import type { Category } from "@/lib/admin-types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -13,6 +13,7 @@ export default function CategoriesPage() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
+  const [deletingId, setDeletingId] = useState<number | null>(null);
   const [error, setError] = useState("");
   const [newCategory, setNewCategory] = useState("");
 
@@ -45,6 +46,22 @@ export default function CategoriesPage() {
       setError(err instanceof Error ? err.message : "Failed to create category");
     } finally {
       setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!apiKey) return;
+    if (!confirm("Are you sure you want to delete this category?")) return;
+
+    try {
+      setDeletingId(id);
+      setError("");
+      await deleteCategory(apiKey, id);
+      await loadCategories();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to delete category");
+    } finally {
+      setDeletingId(null);
     }
   };
 
@@ -108,7 +125,7 @@ export default function CategoriesPage() {
                 {categories.map((cat) => (
                   <div
                     key={cat.id}
-                    className="px-3 py-1.5 rounded-md bg-secondary text-sm flex items-center gap-2"
+                    className="px-3 py-1.5 rounded-md bg-secondary text-sm flex items-center gap-2 group"
                   >
                     <svg
                       viewBox="0 0 24 24"
@@ -119,7 +136,22 @@ export default function CategoriesPage() {
                     >
                       <path d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                     </svg>
-                    {cat.name}
+                    <span>{cat.name}</span>
+                    <span className="text-xs text-muted-foreground">#{cat.id}</span>
+                    <button
+                      onClick={() => handleDelete(cat.id)}
+                      disabled={deletingId === cat.id}
+                      className="ml-1 p-0.5 rounded hover:bg-destructive/20 text-muted-foreground hover:text-destructive transition-colors disabled:opacity-50"
+                      title="Delete category"
+                    >
+                      {deletingId === cat.id ? (
+                        <div className="h-3 w-3 rounded-full border border-current border-t-transparent animate-spin" />
+                      ) : (
+                        <svg viewBox="0 0 24 24" className="h-3 w-3" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M18 6L6 18M6 6l12 12" />
+                        </svg>
+                      )}
+                    </button>
                   </div>
                 ))}
               </div>
