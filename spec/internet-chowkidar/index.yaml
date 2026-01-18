@@ -103,7 +103,23 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SiteDetails'
-  
+    delete:
+      summary: Delete a site
+      operationId: deleteSite
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          description: Not found
+
   /isps/{id}:
     get:
       summary: Get an ISP by ID
@@ -381,6 +397,25 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Category'
+        '409':
+          description: Category already exists
+  /categories/{id}:
+    delete:
+      summary: Delete a category
+      operationId: deleteCategory
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '204':
+          description: Deleted
+        '404':
+          description: Not found
   
   /health:
     get:

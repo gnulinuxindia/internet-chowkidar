@@ -27,6 +27,7 @@ type SitesRepository interface {
 	GetSiteBlocksByID(ctx context.Context, id int) (map[int][]*ent.Blocks, error)
 	GetSiteByID(ctx context.Context, id int) (*ent.Sites, error)
 	GetSiteSuggestionByID(ctx context.Context, id int) (*ent.SiteSuggestions, error)
+	DeleteSite(ctx context.Context, id int) error
 }
 
 type sitesRepositoryImpl struct {
@@ -393,4 +394,8 @@ func (s *sitesRepositoryImpl) getDb(ctx context.Context) *ent.Client {
 		return s.db
 	}
 	return db
+}
+
+func (s *sitesRepositoryImpl) DeleteSite(ctx context.Context, id int) error {
+	return s.db.Sites.DeleteOneID(id).Exec(ctx)
 }

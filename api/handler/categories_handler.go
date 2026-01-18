@@ -10,7 +10,8 @@ import (
 
 type CategoryHandler interface {
 	ListCategories(ctx context.Context) ([]genapi.Category, error)
-	CreateCategory(ctx context.Context, req *genapi.CreateCategoryReq) (*genapi.Category, error)
+	CreateCategory(ctx context.Context, req *genapi.CreateCategoryReq) (genapi.CreateCategoryRes, error)
+	DeleteCategory(ctx context.Context, params genapi.DeleteCategoryParams) (genapi.DeleteCategoryRes, error)
 }
 
 type categoryHandlerImpl struct {
@@ -26,7 +27,7 @@ func (c *categoryHandlerImpl) ListCategories(ctx context.Context) ([]genapi.Cate
 	return categories, nil
 }
 
-func (c *categoryHandlerImpl) CreateCategory(ctx context.Context, req *genapi.CreateCategoryReq) (*genapi.Category, error) {
+func (c *categoryHandlerImpl) CreateCategory(ctx context.Context, req *genapi.CreateCategoryReq) (genapi.CreateCategoryRes, error) {
 	if req == nil {
 		return nil, errors.New("request is nil")
 	}
@@ -37,4 +38,13 @@ func (c *categoryHandlerImpl) CreateCategory(ctx context.Context, req *genapi.Cr
 	}
 
 	return category, nil
+}
+
+func (c *categoryHandlerImpl) DeleteCategory(ctx context.Context, params genapi.DeleteCategoryParams) (genapi.DeleteCategoryRes, error) {
+	err := c.categoriesService.DeleteCategory(ctx, params.ID)
+	if err != nil {
+		return &genapi.DeleteCategoryNotFound{}, nil
+	}
+
+	return &genapi.DeleteCategoryNoContent{}, nil
 }

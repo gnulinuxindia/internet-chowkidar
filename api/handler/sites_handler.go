@@ -15,6 +15,7 @@ type SitesHandler interface {
 	ResolveSiteSuggestion(ctx context.Context, req *genapi.ResolveSiteSuggestionInput, params genapi.ResolveSiteSuggestionParams) (*genapi.SiteSuggestion, error)
 	GetSite(ctx context.Context, params genapi.GetSiteParams) (*genapi.SiteDetails, error)
 	GetSiteSuggestion(ctx context.Context, params genapi.GetSiteSuggestionParams) (*genapi.SiteSuggestion, error)
+	DeleteSite(ctx context.Context, params genapi.DeleteSiteParams) (genapi.DeleteSiteRes, error)
 }
 
 type sitesHandlerImpl struct {
@@ -62,4 +63,12 @@ func (s *sitesHandlerImpl) ResolveSiteSuggestion(ctx context.Context, req *genap
 
 func (s *sitesHandlerImpl) CreateSiteSuggestion(ctx context.Context, req *genapi.SiteSuggestionInput) (*genapi.SiteSuggestion, error) {
 	return s.sitesService.CreateSiteSuggestion(ctx, req)
+}
+
+func (s *sitesHandlerImpl) DeleteSite(ctx context.Context, params genapi.DeleteSiteParams) (genapi.DeleteSiteRes, error) {
+	err := s.sitesService.DeleteSite(ctx, params.ID)
+	if err != nil {
+		return &genapi.DeleteSiteNotFound{}, nil
+	}
+	return &genapi.DeleteSiteNoContent{}, nil
 }

@@ -10,6 +10,7 @@ import (
 type CategoriesService interface {
 	GetAllCategories(ctx context.Context) ([]genapi.Category, error)
 	CreateCategory(ctx context.Context, req *genapi.CreateCategoryReq) (*genapi.Category, error)
+	DeleteCategory(ctx context.Context, id int) error
 }
 
 type categoriesServiceImpl struct {
@@ -36,6 +37,18 @@ func (c *categoriesServiceImpl) GetAllCategories(ctx context.Context) ([]genapi.
 }
 
 func (c *categoriesServiceImpl) CreateCategory(ctx context.Context, req *genapi.CreateCategoryReq) (*genapi.Category, error) {
+	// Check if category already exists
+	existing, err := c.categoriesRepository.GetCategoryByName(ctx, req.Name)
+	if err == nil && existing != nil {
+		// Return existing category instead of creating a duplicate
+		return &genapi.Category{
+			ID:        existing.ID,
+			Name:      existing.Name,
+			CreatedAt: existing.CreatedAt,
+			UpdatedAt: existing.UpdatedAt,
+		}, nil
+	}
+
 	category, err := c.categoriesRepository.CreateCategory(ctx, req)
 	if err != nil {
 		return nil, err
@@ -47,4 +60,8 @@ func (c *categoriesServiceImpl) CreateCategory(ctx context.Context, req *genapi.
 		CreatedAt: category.CreatedAt,
 		UpdatedAt: category.UpdatedAt,
 	}, nil
+}
+
+func (c *categoriesServiceImpl) DeleteCategory(ctx context.Context, id int) error {
+	return c.categoriesRepository.DeleteCategory(ctx, id)
 }

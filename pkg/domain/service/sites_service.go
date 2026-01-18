@@ -18,6 +18,7 @@ type SitesService interface {
 	GetAllSiteSuggestions(ctx context.Context, params genapi.ListSiteSuggestionsParams) ([]genapi.SiteSuggestion, error)
 	GetSite(ctx context.Context, params genapi.GetSiteParams) (*genapi.SiteDetails, error)
 	GetSiteSuggestion(ctx context.Context, params genapi.GetSiteSuggestionParams) (*genapi.SiteSuggestion, error)
+	DeleteSite(ctx context.Context, id int) error
 }
 
 type sitesServiceImpl struct {
@@ -214,4 +215,8 @@ func (s *sitesServiceImpl) GetSiteSuggestion(ctx context.Context, params genapi.
 	}
 
 	return site, tx.Commit()
+}
+
+func (s *sitesServiceImpl) DeleteSite(ctx context.Context, id int) error {
+	return s.sitesRepository.DeleteSite(ctx, id)
 }
