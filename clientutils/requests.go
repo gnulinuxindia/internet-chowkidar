@@ -10,7 +10,7 @@ import (
 
 func PostRequest(url string, data []byte, contenttype string) (string, error) {
 	bodyReader := bytes.NewReader(data)
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
 	r, err := http.NewRequestWithContext(ctx, http.MethodPost, url, bodyReader)
 	if err != nil {
@@ -42,7 +42,7 @@ func GetRequest(url string) (string, error) {
 }
 
 func GetRequestWithUserAgent(url string, userAgent string) (string, error) {
-	ctx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
 	r, err := http.NewRequestWithContext(ctx, http.MethodGet, url, nil)
 	if err != nil {
