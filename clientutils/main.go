@@ -8,10 +8,17 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"path/filepath"
+	"context"
 
 	"github.com/tidwall/gjson"
 	"github.com/urfave/cli/v2"
 	"go.mills.io/bitcask/v2"
+	"github.com/ooni/probe-engine/pkg/engine"
+	"github.com/ooni/probe-engine/pkg/experiment/webconnectivity"
+	"github.com/ooni/probe-engine/pkg/kvstore"
+	"github.com/ooni/probe-engine/pkg/model"
+	"errors"
 )
 
 func Version() string {
@@ -122,20 +129,79 @@ func FetchAndRun(config Config, db *bitcask.Bitcask) error {
 	}
 	domains := gjson.Get(sitesList, "#.ping_url").Array()
 
-	for i, domain := range domains {
-		_, err := GetRequest(domain.String())
-		//fmt.Println(domain.String())
-		//fmt.Println(siteData)
+	// create tempdir for KVStore shit
+	stateDir, err := os.MkdirTemp("", "internet-chowkidar")
+	if err != nil {
+		return err
+	}
+	defer os.RemoveAll(stateDir)
 
-		var blocked bool
-		// If it times out or has part of the government boilerplate
-		//if err != nil || (strings.Contains(siteData, "blocked") && (strings.Contains(siteData, "directions") || strings.Contains(siteData, "order"))) {
+	kvStore, err := kvstore.NewFS(filepath.Join(stateDir, "kvstore"))
+	if err != nil {
+		return err
+	}
+
+	// Create OONI Session
+	ctx := context.Background()
+	sess, err := engine.NewSession(ctx, engine.SessionConfig{
+		KVStore:         kvStore,
+		Logger:          model.DiscardLogger,
+		SoftwareName:    "InternetChowkidar",
+		SoftwareVersion: "1.0.0",
+		TempDir:         stateDir,
+	})
+	if err != nil {
+		return err
+	}
+	defer sess.Close()
+
+	// Bootstrap: discover probe services and fetch the test-helper list.
+	if err := sess.MaybeLookupBackendsContext(ctx); err != nil {
+		return err
+	}
+	if err := sess.MaybeLookupLocationContext(ctx); err != nil {
+		return err
+	}
+
+	if sess.ProbeASNString() != strings.Split(config.ISP, " ")[0]{
+		return errors.New("Test is being run from an ISP different from the ISP configured. It will start running when you go back home")
+	}
+
+	measurer := webconnectivity.NewExperimentMeasurer(webconnectivity.Config{})
+
+	for i, domain := range domains {
+		fmt.Println(domain.String())
+		measurement, err := testWebsite(domain.String(), ctx, sess, measurer)
 		if err != nil {
-			blocked = true
-			fmt.Println("Site " + domain.String() + " reported as blocked")
-		} else {
+			return err
+		}
+
+		// perform type assertion on TestKeys
+		tk, asserted := measurement.TestKeys.(*webconnectivity.TestKeys)
+		if !asserted {
+			return errors.New("Unable to type assert TestKeys")
+		}
+		var blocked bool
+		if tk.Blocking == nil {
 			blocked = false
 			fmt.Println("Site " + domain.String() + " reported as not blocked")
+		}
+		switch t := tk.Blocking.(type) {
+		case bool:
+			if t {
+				blocked = true
+				fmt.Println("Site " + domain.String() + " reported as blocked")
+				fmt.Println(*tk.BlockingReason)
+			} else {
+				blocked = false
+				fmt.Println("Site " + domain.String() + " reported as not blocked")
+			}
+		case *string:
+			blocked = true
+			fmt.Println("Site " + domain.String() + " reported as blocked")
+			fmt.Println(*tk.BlockingReason)
+		default:
+			return errors.New("Could not parse block status")
 		}
 		type BlockStruct struct {
 			SiteID    int  `json:"site_id"`
@@ -175,6 +241,34 @@ func FetchAndRun(config Config, db *bitcask.Bitcask) error {
 			return err
 		}
 	}
-
+	fmt.Println("done!")
 	return nil
+}
+
+func testWebsite(url string, ctx context.Context, sess *engine.Session, measurer model.ExperimentMeasurer) (*model.Measurement, error){
+	measurement := &model.Measurement{
+		DataFormatVersion:    "0.2.0",
+		Input:                model.MeasurementInput(url),
+		MeasurementStartTime: time.Now().UTC().Format("2006-01-02 15:04:05"),
+		ProbeASN:             sess.ProbeASNString(),
+		ProbeCC:              sess.ProbeCC(),
+		ProbeIP:              "127.0.0.1", // never store the real IP
+		ReportID:             "", // We aren't uploading
+		SoftwareName:    "InternetChowkidar",
+		SoftwareVersion: "1.0.0",
+		TestName:             measurer.ExperimentName(),
+		TestVersion:          measurer.ExperimentVersion(),
+		TestStartTime:        time.Now().UTC().Format("2006-01-02 15:04:05"),
+	}
+
+	args := &model.ExperimentArgs{
+		Callbacks:   model.NewPrinterCallbacks(model.DiscardLogger),
+		Measurement: measurement,
+		Session:     sess,
+	}
+
+	if err := measurer.Run(ctx, args); err != nil {
+		return &model.Measurement{}, err
+	}
+	return measurement, nil
 }
