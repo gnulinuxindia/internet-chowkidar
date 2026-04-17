@@ -210,7 +210,7 @@ func (s *sitesRepositoryImpl) GetAllSites(ctx context.Context, params genapi.Lis
 				slog.Error("failed to get categories", "error", err)
 				return nil, rollback(tx, errors.Wrap(err, 0))
 			}
-			if len(cats) == len(catNames) {
+			if len(cats) > 0 {
 				filteredSites = append(filteredSites, s)
 			}
 		}

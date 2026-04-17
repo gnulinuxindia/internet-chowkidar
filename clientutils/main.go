@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"runtime/debug"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -119,8 +120,11 @@ func FetchAndRun(config Config, db *bitcask.Bitcask) error {
 		return err
 	}
 
-	catStr := strings.Join(config.CheckCategories, ",")
-	sitesList, err := GetRequest(config.Server + "/sites?category=" + catStr)
+	sitesURL := config.Server + "/sites"
+	if !slices.Contains(config.CheckCategories, "all") {
+		sitesURL += "?category=" + strings.Join(config.CheckCategories, ",")
+	}
+	sitesList, err := GetRequest(sitesURL)
 	if err != nil {
 		return err
 	}
@@ -185,23 +189,26 @@ func FetchAndRun(config Config, db *bitcask.Bitcask) error {
 		if tk.Blocking == nil {
 			blocked = false
 			fmt.Println("Site " + domain.String() + " reported as not blocked")
-		}
-		switch t := tk.Blocking.(type) {
-		case bool:
-			if t {
+		} else {
+			switch t := tk.Blocking.(type) {
+			case bool:
+				blocked = t
+			case *string:
 				blocked = true
+				if t != nil {
+					fmt.Println("Site " + domain.String() + " blocked: " + *t)
+				}
+			case string:
+				blocked = true
+				fmt.Println("Site " + domain.String() + " blocked: " + t)
+			default:
+				blocked = true
+			}
+			if blocked {
 				fmt.Println("Site " + domain.String() + " reported as blocked")
-				fmt.Println(*tk.BlockingReason)
 			} else {
-				blocked = false
 				fmt.Println("Site " + domain.String() + " reported as not blocked")
 			}
-		case *string:
-			blocked = true
-			fmt.Println("Site " + domain.String() + " reported as blocked")
-			fmt.Println(*tk.BlockingReason)
-		default:
-			return errors.New("Could not parse block status")
 		}
 		type BlockStruct struct {
 			SiteID    int  `json:"site_id"`

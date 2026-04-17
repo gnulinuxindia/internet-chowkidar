@@ -254,14 +254,24 @@ func runSetupWizard(a fyne.App, confPath string, clientID int) error {
 			categoryContainer.Objects = nil
 			categoryChecks = nil
 
+			// "All" option that toggles every other checkbox
+			allCheck := widget.NewCheck("All categories", nil)
+			allCheck.Checked = true
+			categoryContainer.Add(allCheck)
+
 			for _, cat := range gjsonArr {
 				catName := cat.String()
 				check := widget.NewCheck(catName, nil)
-				if catName == "all" {
-					check.Checked = true // Select only ALL category by default
-				}
+				check.Checked = true
 				categoryChecks = append(categoryChecks, check)
 				categoryContainer.Add(check)
+			}
+
+			allCheck.OnChanged = func(checked bool) {
+				for _, c := range categoryChecks {
+					c.Checked = checked
+					c.Refresh()
+				}
 			}
 
 			categoryContainer.Refresh()
@@ -287,16 +297,17 @@ func runSetupWizard(a fyne.App, confPath string, clientID int) error {
 			statusLabel.SetText(fmt.Sprintf("✅ City validated: %s", city))
 
 		case 2: // Categories
+			allSelected := true
 			vars.CheckCategories = []string{}
 			for _, check := range categoryChecks {
 				if check.Checked {
 					vars.CheckCategories = append(vars.CheckCategories, check.Text)
+				} else {
+					allSelected = false
 				}
 			}
 
-			if len(vars.CheckCategories) == 0 {
-				dialog.ShowInformation("No categories selected",
-					"No categories were selected. All categories will be monitored by default.", w)
+			if len(vars.CheckCategories) == 0 || allSelected {
 				vars.CheckCategories = []string{"all"}
 			}
 
