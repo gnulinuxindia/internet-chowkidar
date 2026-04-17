@@ -141,52 +141,52 @@ release:
 
     **Debian/Ubuntu:**
     ```bash
-    wget https://github.com/gnulinuxindia/internet-chowkidar/releases/download/{{ .Tag }}/chowkidar-cli_{{ .Version }}_linux_amd64.deb
-    sudo dpkg -i chowkidar-cli_{{ .Version }}_linux_amd64.deb
+    wget https://github.com/gnulinuxindia/internet-chowkidar/releases/download/{{ .Tag }}/{{ .ProjectName }}-cli_{{ .Version }}_linux_amd64.deb
+    sudo dpkg -i {{ .ProjectName }}-cli_{{ .Version }}_linux_amd64.deb
     ```
 
     **Fedora/RHEL:**
     ```bash
-    wget https://github.com/gnulinuxindia/internet-chowkidar/releases/download/{{ .Tag }}/chowkidar-cli_{{ .Version }}_linux_amd64.rpm
-    sudo rpm -i chowkidar-cli_{{ .Version }}_linux_amd64.rpm
+    wget https://github.com/gnulinuxindia/internet-chowkidar/releases/download/{{ .Tag }}/{{ .ProjectName }}-cli_{{ .Version }}_linux_amd64.rpm
+    sudo rpm -i {{ .ProjectName }}-cli_{{ .Version }}_linux_amd64.rpm
     ```
 
     **Alpine:**
     ```bash
-    wget https://github.com/gnulinuxindia/internet-chowkidar/releases/download/{{ .Tag }}/chowkidar-cli_{{ .Version }}_linux_amd64.apk
-    sudo apk add --allow-untrusted chowkidar-cli_{{ .Version }}_linux_amd64.apk
+    wget https://github.com/gnulinuxindia/internet-chowkidar/releases/download/{{ .Tag }}/{{ .ProjectName }}-cli_{{ .Version }}_linux_amd64.apk
+    sudo apk add --allow-untrusted {{ .ProjectName }}-cli_{{ .Version }}_linux_amd64.apk
     ```
 
     **macOS (Intel):**
     ```bash
-    wget https://github.com/gnulinuxindia/internet-chowkidar/releases/download/{{ .Tag }}/chowkidar-cli_{{ .Version }}_darwin_amd64.tar.gz
-    tar -xzf chowkidar-cli_{{ .Version }}_darwin_amd64.tar.gz
+    wget https://github.com/gnulinuxindia/internet-chowkidar/releases/download/{{ .Tag }}/{{ .ProjectName }}-cli_{{ .Version }}_darwin_amd64.tar.gz
+    tar -xzf {{ .ProjectName }}-cli_{{ .Version }}_darwin_amd64.tar.gz
     sudo mv chowkidar /usr/local/bin/
     ```
 
     **macOS (Apple Silicon):**
     ```bash
-    wget https://github.com/gnulinuxindia/internet-chowkidar/releases/download/{{ .Tag }}/chowkidar-cli_{{ .Version }}_darwin_arm64.tar.gz
-    tar -xzf chowkidar-cli_{{ .Version }}_darwin_arm64.tar.gz
+    wget https://github.com/gnulinuxindia/internet-chowkidar/releases/download/{{ .Tag }}/{{ .ProjectName }}-cli_{{ .Version }}_darwin_arm64.tar.gz
+    tar -xzf {{ .ProjectName }}-cli_{{ .Version }}_darwin_arm64.tar.gz
     sudo mv chowkidar /usr/local/bin/
     ```
 
     **Windows:**
-    - [Download chowkidar-cli_{{ .Version }}_windows_amd64.zip](https://github.com/gnulinuxindia/internet-chowkidar/releases/download/{{ .Tag }}/chowkidar-cli_{{ .Version }}_windows_amd64.zip)
+    - [Download {{ .ProjectName }}-cli_{{ .Version }}_windows_amd64.zip](https://github.com/gnulinuxindia/internet-chowkidar/releases/download/{{ .Tag }}/{{ .ProjectName }}-cli_{{ .Version }}_windows_amd64.zip)
     - Extract and add to PATH
 
     #### GUI
 
     **Debian/Ubuntu:**
     ```bash
-    wget https://github.com/gnulinuxindia/internet-chowkidar/releases/download/{{ .Tag }}/chowkidar-gui_{{ .Version }}_linux_amd64.deb
-    sudo dpkg -i chowkidar-gui_{{ .Version }}_linux_amd64.deb
+    wget https://github.com/gnulinuxindia/internet-chowkidar/releases/download/{{ .Tag }}/{{ .ProjectName }}-gui_{{ .Version }}_linux_amd64.deb
+    sudo dpkg -i {{ .ProjectName }}-gui_{{ .Version }}_linux_amd64.deb
     ```
 
     **Fedora/RHEL:**
     ```bash
-    wget https://github.com/gnulinuxindia/internet-chowkidar/releases/download/{{ .Tag }}/chowkidar-gui_{{ .Version }}_linux_amd64.rpm
-    sudo rpm -i chowkidar-gui_{{ .Version }}_linux_amd64.rpm
+    wget https://github.com/gnulinuxindia/internet-chowkidar/releases/download/{{ .Tag }}/{{ .ProjectName }}-gui_{{ .Version }}_linux_amd64.rpm
+    sudo rpm -i {{ .ProjectName }}-gui_{{ .Version }}_linux_amd64.rpm
     ```
 
     **macOS (Universal):**
