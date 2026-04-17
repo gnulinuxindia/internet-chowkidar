@@ -1,0 +1,72 @@
+---
+- name: Deploy Internet Chowkidar API
+  hosts: internet-chowkidar
+  become: true
+
+  vars:
+    app_dir: /opt/internet-chowkidar
+    app_user: inetc
+    binary_src: "{{ playbook_dir }}/../main"
+
+  tasks:
+    - name: Load secrets
+      community.sops.load_vars:
+        file: secrets.yml
+
+    - name: Create app user
+      ansible.builtin.user:
+        name: "{{ app_user }}"
+        system: true
+        shell: /usr/sbin/nologin
+        create_home: false
+
+    - name: Create app directory
+      ansible.builtin.file:
+        path: "{{ app_dir }}"
+        state: directory
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        mode: "0750"
+
+    - name: Copy binary
+      ansible.builtin.copy:
+        src: "{{ binary_src }}"
+        dest: "{{ app_dir }}/main"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        mode: "0755"
+      notify: Restart backend
+
+    - name: Copy migrations
+      ansible.builtin.copy:
+        src: "{{ playbook_dir }}/../migrations/"
+        dest: "{{ app_dir }}/migrations/"
+        owner: "{{ app_user }}"
+        group: "{{ app_user }}"
+        mode: "0640"
+      notify: Restart backend
+
+    - name: Install systemd unit
+      ansible.builtin.template:
+        src: files/internet-chowkidar.service.j2
+        dest: /etc/systemd/system/internet-chowkidar.service
+        mode: "0644"
+      notify:
+        - Reload systemd
+        - Restart backend
+
+    - name: Enable and start backend
+      ansible.builtin.systemd:
+        name: internet-chowkidar
+        enabled: true
+        state: started
+
+  handlers:
+    - name: Reload systemd
+      ansible.builtin.systemd:
+        daemon_reload: true
+
+    - name: Restart backend
+      ansible.builtin.systemd:
+        name: internet-chowkidar
+        state: restarted

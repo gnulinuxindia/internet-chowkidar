@@ -128,4 +128,12 @@ release-local: release-cli release-gui
 	@echo "✅ Local release build complete!"
 	@echo "Check dist/ directory for packages"
 
+## build-api: Cross-compile API binary for Linux
+build-api:
+	GOOS=linux GOARCH=amd64 CGO_ENABLED=0 go build -ldflags="$(LDFLAGS)" -o main .
+
+## deploy: Build and deploy API to production
+deploy: build-api
+	ANSIBLE_VARS_ENABLED=host_group_vars,community.sops.sops ansible-playbook -i deploy/inventory.yml deploy/playbook.yml
+
 .DEFAULT_GOAL := help

@@ -1,0 +1,6 @@
+all:
+  hosts:
+    internet-chowkidar:
+      ansible_host: 192.168.0.51
+      ansible_user: root
+      ansible_ssh_private_key_file: ~/.ssh/id_ed25519

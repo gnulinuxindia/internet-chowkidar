@@ -1,0 +1,20 @@
+[Unit]
+Description=Internet Chowkidar API
+After=network.target
+
+[Service]
+ExecStart=/opt/internet-chowkidar/main
+WorkingDirectory=/opt/internet-chowkidar
+Restart=always
+RestartSec=5
+User=inetc
+Group=inetc
+Environment=PORT=9969
+Environment=LISTEN=0.0.0.0
+Environment=DATABASE_URL={{ database_url }}
+Environment=DATABASE_DRIVER=postgres
+Environment=API_KEY={{ api_key }}
+Environment=ENV=production
+
+[Install]
+WantedBy=multi-user.target
