@@ -53,6 +53,7 @@ func GetRequestWithUserAgent(url string, userAgent string) (string, error) {
 	// Some servers (like ipinfo.io) may return HTML instead of JSON if they detect certain User-Agents
 	// Using the default Go HTTP client User-Agent works best for most API requests
 	r.Header.Set("Accept", "application/json")
+	r.Header.Set("Accept-Language", "en-US,en;q=0.9")
 
 	// Only set User-Agent if explicitly provided (required for some APIs like Nominatim)
 	if userAgent != "" {
