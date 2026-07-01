@@ -2,6 +2,7 @@
   "name": "web",
   "version": "0.1.0",
   "private": true,
+  "packageManager": "pnpm@10.17.1",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -21,6 +22,12 @@
     "react-dom": "19.2.3",
     "react-map-gl": "^8.1.0",
     "tailwind-merge": "^3.4.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "sharp",
+      "unrs-resolver"
+    ]
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
