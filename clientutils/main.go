@@ -122,7 +122,7 @@ func FetchAndRun(config Config, db *bitcask.Bitcask) error {
 
 	sitesURL := config.Server + "/sites"
 	if !slices.Contains(config.CheckCategories, "all") {
-		sitesURL += "?category=" + strings.Join(config.CheckCategories, ",")
+		sitesURL += "?limit=0&category=" + strings.Join(config.CheckCategories, ",")
 	}
 	sitesList, err := GetRequest(sitesURL)
 	if err != nil {
