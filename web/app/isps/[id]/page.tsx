@@ -15,11 +15,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const isp = await getISP(id);
     return {
       title: isp.name,
-      description: `View websites blocked by ${isp.name} in India.`,
+      description: `See websites reported as blocked by .`,
     };
   } catch {
     return {
-      title: "ISP Not Found",
+      title: "ISP not found",
     };
   }
 }
@@ -102,7 +102,7 @@ export default async function ISPDetailPage({ params }: PageProps) {
                       <circle cx="12" cy="12" r="10" />
                       <path d="M12 6v6l4 2" />
                     </svg>
-                    Updated: {formatDate(isp.updated_at)}
+                    Last updated: {formatDate(isp.updated_at)}
                   </div>
                 )}
               </div>
@@ -117,24 +117,23 @@ export default async function ISPDetailPage({ params }: PageProps) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Counter
               endValue={isp.blocks?.length || 0}
-              label="Sites Blocked"
-              variant="blocked"
+              label="Sites with block reports"
             />
             <Counter
               endValue={isp.blocks?.reduce((acc, b) => acc + b.block_reports, 0) || 0}
-              label="Total Block Reports"
+              label="Block reports"
               variant="blocked"
             />
             <Counter
               endValue={isp.blocks?.reduce((acc, b) => acc + b.unblock_reports, 0) || 0}
-              label="Total Unblock Reports"
+              label="Unblock reports"
               variant="unblocked"
             />
           </div>
         </div>
       </section>
 
-      {/* Blocked Sites List */}
+      {/* Reported blocked sites List */}
       <section className="py-8">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <h2 className="text-xl font-bold mb-6 flex items-center gap-3">
@@ -170,7 +169,7 @@ export default async function ISPDetailPage({ params }: PageProps) {
                           {block.domain}
                         </h3>
                         <p className="text-sm text-muted-foreground">
-                          Last reported: {formatDate(block.last_reported_at)}
+                          Last report: {formatDate(block.last_reported_at)}
                         </p>
                       </div>
                     </div>
@@ -180,13 +179,13 @@ export default async function ISPDetailPage({ params }: PageProps) {
                         <p className="font-mono font-bold text-[oklch(0.8_0.2_25)] tabular-nums">
                           {block.block_reports.toLocaleString()}
                         </p>
-                        <p className="text-xs text-muted-foreground">Blocks</p>
+                        <p className="text-xs text-muted-foreground">Block reports</p>
                       </div>
                       <div className="text-right">
                         <p className="font-mono font-bold text-[oklch(0.8_0.18_145)] tabular-nums">
                           {block.unblock_reports.toLocaleString()}
                         </p>
-                        <p className="text-xs text-muted-foreground">Unblocks</p>
+                        <p className="text-xs text-muted-foreground">Unblock reports</p>
                       </div>
                       <svg
                         viewBox="0 0 24 24"
@@ -214,7 +213,7 @@ export default async function ISPDetailPage({ params }: PageProps) {
                 <circle cx="12" cy="12" r="10" />
                 <path d="M9 12l2 2 4-4" />
               </svg>
-              <p>No blocked sites data available.</p>
+              <p>No site reports are available for this ISP yet.</p>
             </div>
           )}
         </div>

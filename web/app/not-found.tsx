@@ -10,9 +10,9 @@ export default function NotFound() {
           <div className="h-1 w-24 mx-auto bg-gradient-to-r from-primary via-accent to-primary rounded-full" />
         </div>
 
-        <h2 className="text-2xl font-bold mb-4">Page Not Found</h2>
+        <h2 className="text-2xl font-bold mb-4">Page not found</h2>
         <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-          The page you&apos;re looking for doesn&apos;t exist or has been moved.
+          This page does not exist, or it may have moved.
         </p>
 
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -28,7 +28,7 @@ export default function NotFound() {
                 <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
                 <path d="M9 22V12h6v10" />
               </svg>
-              Go Home
+              Go home
             </Link>
           </Button>
           <Button asChild variant="outline">
@@ -43,7 +43,7 @@ export default function NotFound() {
                 <circle cx="12" cy="12" r="10" />
                 <path d="M12 6v6l4 2" />
               </svg>
-              View Sites
+              View blocked sites
             </Link>
           </Button>
         </div>

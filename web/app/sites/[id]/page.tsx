@@ -17,11 +17,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const site = await getSite(id);
     return {
       title: site.domain,
-      description: `View blocking reports for ${site.domain} across Indian ISPs.`,
+      description: `See blocking reports for  across Indian ISPs.`,
     };
   } catch {
     return {
-      title: "Site Not Found",
+      title: "Site not found",
     };
   }
 }
@@ -108,7 +108,7 @@ export default async function SiteDetailPage({ params }: PageProps) {
                   <path d="M15 3h6v6" />
                   <path d="M10 14L21 3" />
                 </svg>
-                Visit Site
+                Open Website
               </a>
             </Button>
           </div>
@@ -121,17 +121,17 @@ export default async function SiteDetailPage({ params }: PageProps) {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <Counter
               endValue={site.block_reports}
-              label="Block Reports"
+              label="Block reports"
               variant="blocked"
             />
             <Counter
               endValue={site.unblock_reports}
-              label="Unblock Reports"
+              label="Unblock reports"
               variant="unblocked"
             />
             <Counter
               endValue={site.blocked_by_isps?.length || 0}
-              label="ISPs Blocking"
+              label="ISPs reporting blocks"
               variant="neutral"
             />
           </div>
@@ -153,7 +153,7 @@ export default async function SiteDetailPage({ params }: PageProps) {
                 <circle cx="12" cy="12" r="10" />
                 <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
               </svg>
-              Geographic Distribution
+              Where blocks were reported
             </h2>
             <SiteMap isps={site.blocked_by_isps} />
           </div>
@@ -174,7 +174,7 @@ export default async function SiteDetailPage({ params }: PageProps) {
               <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
               <path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12" />
             </svg>
-            Blocked by ISPs ({site.blocked_by_isps?.length || 0})
+            ISPs reporting this site as blocked ({site.blocked_by_isps?.length || 0})
           </h2>
 
           {site.blocked_by_isps && site.blocked_by_isps.length > 0 ? (
@@ -206,13 +206,13 @@ export default async function SiteDetailPage({ params }: PageProps) {
                         <p className="font-mono font-bold text-[oklch(0.8_0.2_25)] tabular-nums">
                           {isp.block_reports.toLocaleString()}
                         </p>
-                        <p className="text-xs text-muted-foreground">Blocks</p>
+                        <p className="text-xs text-muted-foreground">Block reports</p>
                       </div>
                       <div className="text-right">
                         <p className="font-mono font-bold text-[oklch(0.8_0.18_145)] tabular-nums">
                           {isp.unblock_reports.toLocaleString()}
                         </p>
-                        <p className="text-xs text-muted-foreground">Unblocks</p>
+                        <p className="text-xs text-muted-foreground">Unblock reports</p>
                       </div>
                       <svg
                         viewBox="0 0 24 24"
@@ -239,7 +239,7 @@ export default async function SiteDetailPage({ params }: PageProps) {
               >
                 <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z" />
               </svg>
-              <p>No ISP blocking data available.</p>
+              <p>No ISP reports are available for this site yet.</p>
             </div>
           )}
         </div>

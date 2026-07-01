@@ -102,7 +102,7 @@ export function SitesTable({ sites }: SitesTableProps) {
             <path d="M21 21l-4.35-4.35" />
           </svg>
           <Input
-            placeholder="Search domains or categories..."
+            placeholder="Search domains or categories"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10 bg-card border-border"
@@ -139,7 +139,7 @@ export function SitesTable({ sites }: SitesTableProps) {
                   onClick={() => toggleSort("blocks")}
                 >
                   <div className="flex items-center justify-end gap-2">
-                    Blocks
+                    Block reports
                     {sortBy === "blocks" && (
                       <span className="text-primary">
                         {sortOrder === "asc" ? "↑" : "↓"}
@@ -147,13 +147,13 @@ export function SitesTable({ sites }: SitesTableProps) {
                     )}
                   </div>
                 </TableHead>
-                <TableHead className="text-right">Unblocks</TableHead>
+                <TableHead className="text-right">Unblock reports</TableHead>
                 <TableHead
                   className="cursor-pointer hover:text-primary transition-colors"
                   onClick={() => toggleSort("date")}
                 >
                   <div className="flex items-center gap-2">
-                    Last Reported
+                    Last report
                     {sortBy === "date" && (
                       <span className="text-primary">
                         {sortOrder === "asc" ? "↑" : "↓"}
@@ -161,7 +161,7 @@ export function SitesTable({ sites }: SitesTableProps) {
                     )}
                   </div>
                 </TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-right">Details</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -274,7 +274,7 @@ export function SitesTable({ sites }: SitesTableProps) {
             <circle cx="11" cy="11" r="8" />
             <path d="M21 21l-4.35-4.35" />
           </svg>
-          <p>No sites found matching your search.</p>
+          <p>No sites match your search.</p>
         </div>
       )}
     </div>

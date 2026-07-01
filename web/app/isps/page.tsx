@@ -5,7 +5,7 @@ import { ISPsTable } from "@/components/isps-table";
 export const metadata: Metadata = {
   title: "ISPs",
   description:
-    "View all Internet Service Providers in India and their website blocking patterns.",
+    "Compare Indian ISPs by reported website-blocking activity.",
 };
 
 export default async function ISPsPage() {
@@ -34,7 +34,7 @@ export default async function ISPsPage() {
                 <span className="text-primary">Internet Service Providers</span>
               </h1>
               <p className="text-muted-foreground mt-1">
-                ISPs across India and their blocking patterns
+                Indian ISPs and their reported blocking activity
               </p>
             </div>
           </div>
@@ -45,7 +45,7 @@ export default async function ISPsPage() {
               <span className="text-2xl font-bold font-mono text-primary tabular-nums">
                 {isps.length.toLocaleString()}
               </span>
-              <span className="text-sm text-muted-foreground">Total ISPs</span>
+              <span className="text-sm text-muted-foreground">Tracked ISPs</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-2xl font-bold font-mono text-[oklch(0.8_0.2_25)] tabular-nums">
@@ -54,7 +54,7 @@ export default async function ISPsPage() {
                   .toLocaleString()}
               </span>
               <span className="text-sm text-muted-foreground">
-                Total Block Reports
+                Block Reports
               </span>
             </div>
           </div>

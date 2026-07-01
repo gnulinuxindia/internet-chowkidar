@@ -5,7 +5,7 @@ import { SitesTable } from "@/components/sites-table";
 export const metadata: Metadata = {
   title: "Blocked Sites",
   description:
-    "View all websites blocked by ISPs in India. Track internet censorship in real-time.",
+    "Browse reported website blocks across Indian ISPs.",
 };
 
 export default async function SitesPage() {
@@ -34,7 +34,7 @@ export default async function SitesPage() {
                 <span className="text-primary">Blocked Sites</span>
               </h1>
               <p className="text-muted-foreground mt-1">
-                Websites blocked by ISPs across India
+                Reported website blocks across Indian ISPs
               </p>
             </div>
           </div>
@@ -45,7 +45,7 @@ export default async function SitesPage() {
               <span className="text-2xl font-bold font-mono text-primary tabular-nums">
                 {sites.length.toLocaleString()}
               </span>
-              <span className="text-sm text-muted-foreground">Total Sites</span>
+              <span className="text-sm text-muted-foreground">Tracked Sites</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-2xl font-bold font-mono text-[oklch(0.8_0.2_25)] tabular-nums">
@@ -54,7 +54,7 @@ export default async function SitesPage() {
                   .toLocaleString()}
               </span>
               <span className="text-sm text-muted-foreground">
-                Total Block Reports
+                Block Reports
               </span>
             </div>
           </div>

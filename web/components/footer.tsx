@@ -27,8 +27,7 @@ export function Footer() {
               </span>
             </Link>
             <p className="text-sm text-muted-foreground max-w-md">
-              Monitoring internet censorship in India. We track which websites
-              are blocked by ISPs to promote transparency and internet freedom.
+              Tracking internet censorship in India with public reports on ISP website blocking.
             </p>
             <p className="text-xs text-muted-foreground mt-4">
               Made during{" "}
@@ -55,7 +54,7 @@ export function Footer() {
                   href="/sites"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Blocked Sites
+                  Blocked sites
                 </Link>
               </li>
               <li>
@@ -99,7 +98,7 @@ export function Footer() {
                   rel="noopener noreferrer"
                   className="text-sm text-muted-foreground hover:text-primary transition-colors"
                 >
-                  Report an Issue
+                  Report an issue
                 </a>
               </li>
             </ul>
@@ -109,7 +108,7 @@ export function Footer() {
         <div className="mt-12 pt-8 border-t border-border/50">
           <p className="text-xs text-center text-muted-foreground">
             {new Date().getFullYear()} {config.websiteName}. Open source under
-            MIT License.
+            MIT license.
           </p>
         </div>
       </div>

@@ -32,9 +32,9 @@ export default function Error({
           </div>
         </div>
 
-        <h2 className="text-2xl font-bold mb-4">Something went wrong</h2>
+        <h2 className="text-2xl font-bold mb-4">Something went wrong.</h2>
         <p className="text-muted-foreground mb-8 max-w-md mx-auto">
-          An error occurred while loading this page. Please try again.
+          This page could not be loaded. Try again, or return to the home page.
         </p>
 
         <Button onClick={reset} className="glow-cyber">
@@ -48,7 +48,7 @@ export default function Error({
             <path d="M1 4v6h6M23 20v-6h-6" />
             <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" />
           </svg>
-          Try Again
+          Try again
         </Button>
       </div>
     </div>

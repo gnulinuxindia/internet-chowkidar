@@ -14,7 +14,7 @@ export function AdminLogin() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!key.trim()) {
-      setError("API key is required");
+      setError("Enter an API key to continue.");
       return;
     }
     setApiKey(key.trim());
@@ -36,15 +36,15 @@ export function AdminLogin() {
               <path d="M7 11V7a5 5 0 0 1 10 0v4" />
             </svg>
           </div>
-          <CardTitle className="text-xl">Admin Access</CardTitle>
-          <CardDescription>Enter your API key to continue</CardDescription>
+          <CardTitle className="text-xl">Admin access</CardTitle>
+          <CardDescription>Use your API key to manage reports, sites, and categories.</CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
               <Input
                 type="password"
-                placeholder="API Key"
+                placeholder="API key"
                 value={key}
                 onChange={(e) => {
                   setKey(e.target.value);
@@ -55,7 +55,7 @@ export function AdminLogin() {
               {error && <p className="text-sm text-destructive mt-2">{error}</p>}
             </div>
             <Button type="submit" className="w-full">
-              Login
+              Log in
             </Button>
           </form>
         </CardContent>

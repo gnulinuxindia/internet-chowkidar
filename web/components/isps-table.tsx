@@ -98,7 +98,7 @@ export function ISPsTable({ isps }: ISPsTableProps) {
             <path d="M21 21l-4.35-4.35" />
           </svg>
           <Input
-            placeholder="Search ISPs..."
+            placeholder="Search ISPs"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-10 bg-card border-border"
@@ -121,7 +121,7 @@ export function ISPsTable({ isps }: ISPsTableProps) {
                   onClick={() => toggleSort("name")}
                 >
                   <div className="flex items-center gap-2">
-                    ISP Name
+                    ISP name
                     {sortBy === "name" && (
                       <span className="text-primary">
                         {sortOrder === "asc" ? "↑" : "↓"}
@@ -134,7 +134,7 @@ export function ISPsTable({ isps }: ISPsTableProps) {
                   onClick={() => toggleSort("blocks")}
                 >
                   <div className="flex items-center justify-end gap-2">
-                    Total Blocks
+                    Block reports
                     {sortBy === "blocks" && (
                       <span className="text-primary">
                         {sortOrder === "asc" ? "↑" : "↓"}
@@ -142,13 +142,13 @@ export function ISPsTable({ isps }: ISPsTableProps) {
                     )}
                   </div>
                 </TableHead>
-                <TableHead className="text-right">Total Unblocks</TableHead>
+                <TableHead className="text-right">Unblock reports</TableHead>
                 <TableHead
                   className="cursor-pointer hover:text-primary transition-colors"
                   onClick={() => toggleSort("date")}
                 >
                   <div className="flex items-center gap-2">
-                    Last Reported
+                    Last report
                     {sortBy === "date" && (
                       <span className="text-primary">
                         {sortOrder === "asc" ? "↑" : "↓"}
@@ -156,7 +156,7 @@ export function ISPsTable({ isps }: ISPsTableProps) {
                     )}
                   </div>
                 </TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="text-right">Details</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
@@ -256,7 +256,7 @@ export function ISPsTable({ isps }: ISPsTableProps) {
             <circle cx="11" cy="11" r="8" />
             <path d="M21 21l-4.35-4.35" />
           </svg>
-          <p>No ISPs found matching your search.</p>
+          <p>No ISPs match your search.</p>
         </div>
       )}
     </div>

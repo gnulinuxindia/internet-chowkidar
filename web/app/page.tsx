@@ -20,7 +20,7 @@ export default function HomePage() {
                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75" />
                 <span className="relative inline-flex rounded-full h-2 w-2 bg-primary" />
               </span>
-              Monitoring Internet Freedom in India
+              Tracking Internet Censorship in India
             </span>
           </div>
 
@@ -33,17 +33,11 @@ export default function HomePage() {
 
           {/* Subtitle */}
           <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto mb-4 animate-slide-up opacity-0 delay-300">
-            We notice when{" "}
-            <span className="text-[oklch(0.8_0.2_25)] font-semibold relative">
-              ISPs block
-              <span className="absolute bottom-0 left-0 right-0 h-0.5 bg-[oklch(0.8_0.2_25)]" />
-            </span>
-            .
+            See where Indian ISPs are blocking access online.
           </p>
 
           <p className="text-lg text-muted-foreground max-w-xl mx-auto mb-12 animate-slide-up opacity-0 delay-400">
-            Tracking censorship across Indian internet service providers.
-            Transparent data for a free internet.
+            Transparent reports on website blocking across Indian internet service providers.
           </p>
 
           {/* CTA Buttons */}
@@ -64,7 +58,7 @@ export default function HomePage() {
                   <circle cx="12" cy="12" r="10" />
                   <path d="M12 6v6l4 2" />
                 </svg>
-                See What&apos;s Blocked
+                Browse Blocked Sites
               </Link>
             </Button>
             <Button
@@ -84,7 +78,7 @@ export default function HomePage() {
                   <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" />
                   <path d="M22 6l-10 7L2 6" />
                 </svg>
-                View ISPs
+                Compare ISPs
               </Link>
             </Button>
           </div>
@@ -110,10 +104,10 @@ export default function HomePage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-4xl font-bold mb-4">
-              <span className="text-primary">Why This Matters</span>
+              <span className="text-primary">Why this matters</span>
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-              Internet censorship affects millions. We provide transparency.
+              Internet censorship affects public access to information. We make blocking reports easier to inspect and compare.
             </p>
           </div>
 
@@ -132,9 +126,9 @@ export default function HomePage() {
                     <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
                   </svg>
                 ),
-                title: "Track Blocked Sites",
+                title: "Track blocked sites",
                 description:
-                  "See which websites are being blocked by ISPs across India in real-time.",
+                  "Browse reported website blocks across Indian ISPs.",
               },
               {
                 icon: (
@@ -149,9 +143,9 @@ export default function HomePage() {
                     <path d="M3.27 6.96L12 12.01l8.73-5.05M12 22.08V12" />
                   </svg>
                 ),
-                title: "ISP Analysis",
+                title: "ISP analysis",
                 description:
-                  "Compare different ISPs and understand their blocking patterns.",
+                  "Compare ISPs by reported blocks, unblocks, and recent activity.",
               },
               {
                 icon: (
@@ -166,9 +160,9 @@ export default function HomePage() {
                     <path d="M9 12l2 2 4-4" />
                   </svg>
                 ),
-                title: "Community Reports",
+                title: "Community reports",
                 description:
-                  "Crowdsourced data from users across the country ensures accuracy.",
+                  "Community reports help surface patterns that would otherwise stay hidden.",
               },
             ].map((feature, i) => (
               <div
@@ -191,11 +185,10 @@ export default function HomePage() {
         <div className="absolute inset-0 grid-bg opacity-50" />
         <div className="relative z-10 mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold mb-6">
-            Notice Something <span className="text-[oklch(0.8_0.2_25)]">Blocked</span>?
+            Found a Blocked Website?
           </h2>
           <p className="text-lg text-muted-foreground mb-8 max-w-2xl mx-auto">
-            Help us track internet censorship. Report blocked sites and
-            contribute to a more transparent internet.
+            Send a report when a website looks blocked on your connection. Your submission helps make the dataset more complete.
           </p>
           <Button
             asChild
@@ -213,7 +206,7 @@ export default function HomePage() {
                 <path d="M22 2L11 13" />
                 <path d="M22 2L15 22L11 13L2 9L22 2Z" />
               </svg>
-              Suggest a Blocked Site
+              Submit a report
             </Link>
           </Button>
         </div>
