@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -23,6 +23,8 @@ export function SitesTable({ sites }: SitesTableProps) {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<"domain" | "blocks" | "date">("blocks");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 25;
 
   const filteredAndSortedSites = useMemo(() => {
     let filtered = sites.filter(
@@ -53,6 +55,19 @@ export function SitesTable({ sites }: SitesTableProps) {
 
     return filtered;
   }, [sites, search, sortBy, sortOrder]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredAndSortedSites.length / pageSize));
+  const currentPageForView = Math.min(currentPage, totalPages);
+  const pageStart = (currentPageForView - 1) * pageSize;
+  const paginatedSites = filteredAndSortedSites.slice(pageStart, pageStart + pageSize);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, sortBy, sortOrder]);
+
+  useEffect(() => {
+    setCurrentPage((page) => Math.min(page, totalPages));
+  }, [totalPages]);
 
   const toggleSort = (column: "domain" | "blocks" | "date") => {
     if (sortBy === column) {
@@ -94,7 +109,8 @@ export function SitesTable({ sites }: SitesTableProps) {
           />
         </div>
         <p className="text-sm text-muted-foreground">
-          {filteredAndSortedSites.length} sites found
+          Showing {filteredAndSortedSites.length === 0 ? 0 : pageStart + 1}-
+          {Math.min(pageStart + pageSize, filteredAndSortedSites.length)} of {filteredAndSortedSites.length} sites
         </p>
       </div>
 
@@ -149,7 +165,7 @@ export function SitesTable({ sites }: SitesTableProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredAndSortedSites.map((site, index) => (
+              {paginatedSites.map((site, index) => (
                 <TableRow
                   key={site.id}
                   className="border-border hover:bg-secondary/50 transition-colors animate-slide-up opacity-0"
@@ -217,6 +233,34 @@ export function SitesTable({ sites }: SitesTableProps) {
           </Table>
         </div>
       </div>
+
+      {filteredAndSortedSites.length > pageSize && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground">
+            Page {currentPageForView} of {totalPages}
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+              disabled={currentPageForView === 1}
+            >
+              Previous
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+              disabled={currentPageForView === totalPages}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
 
       {filteredAndSortedSites.length === 0 && (
         <div className="text-center py-12 text-muted-foreground">

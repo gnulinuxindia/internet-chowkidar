@@ -3,6 +3,11 @@ import type { Category, Site, SiteSuggestion, SiteInput, ResolveSuggestionInput 
 
 const API_URL = config.apiUrl;
 
+function listUrl(path: string, limit = 0): string {
+  const params = new URLSearchParams({ limit: String(limit) });
+  return API_URL + path + "?" + params.toString();
+}
+
 // Categories
 export async function getCategories(): Promise<Category[]> {
   const res = await fetch(`${API_URL}/categories`);
@@ -42,8 +47,8 @@ export async function deleteCategory(apiKey: string, id: number): Promise<void> 
 }
 
 // Sites
-export async function getSites(limit = 100): Promise<Site[]> {
-  const res = await fetch(`${API_URL}/sites?limit=${limit}`);
+export async function getSites(limit = 0): Promise<Site[]> {
+  const res = await fetch(listUrl("/sites", limit));
   if (!res.ok) throw new Error("Failed to fetch sites");
   return res.json();
 }
@@ -64,8 +69,8 @@ export async function deleteSite(apiKey: string, id: number): Promise<void> {
 }
 
 // Site Suggestions
-export async function getSuggestions(): Promise<SiteSuggestion[]> {
-  const res = await fetch(`${API_URL}/sites/suggestions`);
+export async function getSuggestions(limit = 0): Promise<SiteSuggestion[]> {
+  const res = await fetch(listUrl("/sites/suggestions", limit));
   if (!res.ok) throw new Error("Failed to fetch suggestions");
   return res.json();
 }

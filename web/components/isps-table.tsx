@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useState, useMemo } from "react";
+import { useEffect, useState, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -22,6 +22,8 @@ export function ISPsTable({ isps }: ISPsTableProps) {
   const [search, setSearch] = useState("");
   const [sortBy, setSortBy] = useState<"name" | "blocks" | "date">("blocks");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 25;
 
   const filteredAndSortedISPs = useMemo(() => {
     let filtered = isps.filter((isp) =>
@@ -48,6 +50,19 @@ export function ISPsTable({ isps }: ISPsTableProps) {
 
     return filtered;
   }, [isps, search, sortBy, sortOrder]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredAndSortedISPs.length / pageSize));
+  const currentPageForView = Math.min(currentPage, totalPages);
+  const pageStart = (currentPageForView - 1) * pageSize;
+  const paginatedISPs = filteredAndSortedISPs.slice(pageStart, pageStart + pageSize);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [search, sortBy, sortOrder]);
+
+  useEffect(() => {
+    setCurrentPage((page) => Math.min(page, totalPages));
+  }, [totalPages]);
 
   const toggleSort = (column: "name" | "blocks" | "date") => {
     if (sortBy === column) {
@@ -90,7 +105,8 @@ export function ISPsTable({ isps }: ISPsTableProps) {
           />
         </div>
         <p className="text-sm text-muted-foreground">
-          {filteredAndSortedISPs.length} ISPs found
+          Showing {filteredAndSortedISPs.length === 0 ? 0 : pageStart + 1}-
+          {Math.min(pageStart + pageSize, filteredAndSortedISPs.length)} of {filteredAndSortedISPs.length} ISPs
         </p>
       </div>
 
@@ -144,7 +160,7 @@ export function ISPsTable({ isps }: ISPsTableProps) {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {filteredAndSortedISPs.map((isp, index) => (
+              {paginatedISPs.map((isp, index) => (
                 <TableRow
                   key={isp.id}
                   className="border-border hover:bg-secondary/50 transition-colors animate-slide-up opacity-0"
@@ -199,6 +215,34 @@ export function ISPsTable({ isps }: ISPsTableProps) {
           </Table>
         </div>
       </div>
+
+      {filteredAndSortedISPs.length > pageSize && (
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-sm text-muted-foreground">
+            Page {currentPageForView} of {totalPages}
+          </p>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((page) => Math.max(1, page - 1))}
+              disabled={currentPageForView === 1}
+            >
+              Previous
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setCurrentPage((page) => Math.min(totalPages, page + 1))}
+              disabled={currentPageForView === totalPages}
+            >
+              Next
+            </Button>
+          </div>
+        </div>
+      )}
 
       {filteredAndSortedISPs.length === 0 && (
         <div className="text-center py-12 text-muted-foreground">
