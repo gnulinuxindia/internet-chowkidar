@@ -1,10 +1,12 @@
 package main
 
 import (
-	utils "github.com/gnulinuxindia/internet-chowkidar/clientutils"
-	"github.com/urfave/cli/v2"
+	"log"
 	"os"
 	"os/signal"
+
+	utils "github.com/gnulinuxindia/internet-chowkidar/clientutils"
+	"github.com/urfave/cli/v2"
 )
 
 func cliInit(conf, data string) *cli.App {
@@ -38,12 +40,19 @@ func cliInit(conf, data string) *cli.App {
 			if err != nil {
 				return cli.Exit(err.Error(), 1)
 			}
-			defer db.Close()
+			defer func() {
+				if err := db.Close(); err != nil {
+					log.Printf("failed to close database: %v", err)
+				}
+			}()
 			done := make(chan os.Signal, 1)
 			signal.Notify(done, os.Interrupt)
 			go func() {
 				<-done
-				db.Close()
+				if err := db.Close(); err != nil {
+					log.Printf("failed to close database during shutdown: %v", err)
+					os.Exit(1)
+				}
 				os.Exit(0)
 			}()
 			err = utils.Run(cCtx.String("config"), db, &updateConf, &stopSync)

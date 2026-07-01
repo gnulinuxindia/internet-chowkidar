@@ -25,12 +25,19 @@ func main() {
 		fmt.Printf("Failed to open database: %v\n", err)
 		return
 	}
-	defer db.Close()
+	defer func() {
+		if err := db.Close(); err != nil {
+			fmt.Printf("Failed to close database: %v\n", err)
+		}
+	}()
 	done := make(chan os.Signal, 1)
 	signal.Notify(done, os.Interrupt)
 	go func() {
 		<-done
-		db.Close()
+		if err := db.Close(); err != nil {
+			fmt.Printf("Failed to close database during shutdown: %v\n", err)
+			os.Exit(1)
+		}
 		os.Exit(0)
 	}()
 

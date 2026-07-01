@@ -1,25 +1,26 @@
 package utils
 
 import (
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"log"
 	"os"
+	"path/filepath"
 	"runtime/debug"
 	"slices"
 	"strconv"
 	"strings"
 	"time"
-	"path/filepath"
-	"context"
 
-	"github.com/tidwall/gjson"
-	"github.com/urfave/cli/v2"
-	"go.mills.io/bitcask/v2"
 	"github.com/ooni/probe-engine/pkg/engine"
 	"github.com/ooni/probe-engine/pkg/experiment/webconnectivity"
 	"github.com/ooni/probe-engine/pkg/kvstore"
 	"github.com/ooni/probe-engine/pkg/model"
-	"errors"
+	"github.com/tidwall/gjson"
+	"github.com/urfave/cli/v2"
+	"go.mills.io/bitcask/v2"
 )
 
 func Version() string {
@@ -120,16 +121,16 @@ func FetchAndRun(config Config, db *bitcask.Bitcask) error {
 		return err
 	}
 
-	sitesURL := config.Server + "/sites"
+	sitesURL := config.Server + "/sites?limit=0"
 	if !slices.Contains(config.CheckCategories, "all") {
-		sitesURL += "?limit=0&category=" + strings.Join(config.CheckCategories, ",")
+		sitesURL += "&category=" + strings.Join(config.CheckCategories, ",")
 	}
 	sitesList, err := GetRequest(sitesURL)
 	if err != nil {
 		return err
 	}
 	if !gjson.Valid(sitesList) {
-		return err
+		return errors.New("server returned invalid JSON for sites list")
 	}
 	domains := gjson.Get(sitesList, "#.ping_url").Array()
 
@@ -138,7 +139,11 @@ func FetchAndRun(config Config, db *bitcask.Bitcask) error {
 	if err != nil {
 		return err
 	}
-	defer os.RemoveAll(stateDir)
+	defer func() {
+		if err := os.RemoveAll(stateDir); err != nil {
+			log.Printf("failed to remove temporary state directory %q: %v", stateDir, err)
+		}
+	}()
 
 	kvStore, err := kvstore.NewFS(filepath.Join(stateDir, "kvstore"))
 	if err != nil {
@@ -157,7 +162,11 @@ func FetchAndRun(config Config, db *bitcask.Bitcask) error {
 	if err != nil {
 		return err
 	}
-	defer sess.Close()
+	defer func() {
+		if err := sess.Close(); err != nil {
+			log.Printf("failed to close OONI session: %v", err)
+		}
+	}()
 
 	// Bootstrap: discover probe services and fetch the test-helper list.
 	if err := sess.MaybeLookupBackendsContext(ctx); err != nil {
@@ -167,7 +176,7 @@ func FetchAndRun(config Config, db *bitcask.Bitcask) error {
 		return err
 	}
 
-	if sess.ProbeASNString() != strings.Split(config.ISP, " ")[0]{
+	if sess.ProbeASNString() != strings.Split(config.ISP, " ")[0] {
 		return errors.New("Test is being run from an ISP different from the ISP configured. It will start running when you go back home")
 	}
 
@@ -252,7 +261,7 @@ func FetchAndRun(config Config, db *bitcask.Bitcask) error {
 	return nil
 }
 
-func testWebsite(url string, ctx context.Context, sess *engine.Session, measurer model.ExperimentMeasurer) (*model.Measurement, error){
+func testWebsite(url string, ctx context.Context, sess *engine.Session, measurer model.ExperimentMeasurer) (*model.Measurement, error) {
 	measurement := &model.Measurement{
 		DataFormatVersion:    "0.2.0",
 		Input:                model.MeasurementInput(url),
@@ -261,8 +270,8 @@ func testWebsite(url string, ctx context.Context, sess *engine.Session, measurer
 		ProbeCC:              sess.ProbeCC(),
 		ProbeIP:              "127.0.0.1", // never store the real IP
 		ReportID:             "", // We aren't uploading
-		SoftwareName:    "InternetChowkidar",
-		SoftwareVersion: "1.0.0",
+		SoftwareName:          "InternetChowkidar",
+		SoftwareVersion:       "1.0.0",
 		TestName:             measurer.ExperimentName(),
 		TestVersion:          measurer.ExperimentVersion(),
 		TestStartTime:        time.Now().UTC().Format("2006-01-02 15:04:05"),

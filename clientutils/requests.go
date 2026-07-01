@@ -27,11 +27,13 @@ func PostRequest(url string, data []byte, contenttype string) (string, error) {
 		return "", err0
 	}
 
-	defer res.Body.Close()
-
 	body, err1 := io.ReadAll(res.Body)
+	closeErr := res.Body.Close()
 	if err1 != nil {
 		return "", err1
+	}
+	if closeErr != nil {
+		return "", closeErr
 	}
 
 	return string(body), nil
@@ -66,11 +68,13 @@ func GetRequestWithUserAgent(url string, userAgent string) (string, error) {
 		return "", err0
 	}
 
-	defer res.Body.Close()
-
 	body, err1 := io.ReadAll(res.Body)
+	closeErr := res.Body.Close()
 	if err1 != nil {
 		return "", err1
+	}
+	if closeErr != nil {
+		return "", closeErr
 	}
 	return string(body), nil
 }
