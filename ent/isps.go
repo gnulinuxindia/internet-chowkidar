@@ -27,6 +27,8 @@ type Isps struct {
 	Longitude float64 `json:"longitude,omitempty"`
 	// Name holds the value of the "name" field.
 	Name string `json:"name,omitempty"`
+	// City holds the value of the "city" field.
+	City string `json:"city,omitempty"`
 	// Edges holds the relations/edges for other nodes in the graph.
 	// The values are being populated by the IspsQuery when eager-loading is set.
 	Edges        IspsEdges `json:"edges"`
@@ -60,7 +62,7 @@ func (*Isps) scanValues(columns []string) ([]any, error) {
 			values[i] = new(sql.NullFloat64)
 		case isps.FieldID:
 			values[i] = new(sql.NullInt64)
-		case isps.FieldName:
+		case isps.FieldName, isps.FieldCity:
 			values[i] = new(sql.NullString)
 		case isps.FieldCreatedAt, isps.FieldUpdatedAt:
 			values[i] = new(sql.NullTime)
@@ -114,6 +116,12 @@ func (_m *Isps) assignValues(columns []string, values []any) error {
 				return fmt.Errorf("unexpected type %T for field name", values[i])
 			} else if value.Valid {
 				_m.Name = value.String
+			}
+		case isps.FieldCity:
+			if value, ok := values[i].(*sql.NullString); !ok {
+				return fmt.Errorf("unexpected type %T for field city", values[i])
+			} else if value.Valid {
+				_m.City = value.String
 			}
 		default:
 			_m.selectValues.Set(columns[i], values[i])
@@ -170,6 +178,9 @@ func (_m *Isps) String() string {
 	builder.WriteString(", ")
 	builder.WriteString("name=")
 	builder.WriteString(_m.Name)
+	builder.WriteString(", ")
+	builder.WriteString("city=")
+	builder.WriteString(_m.City)
 	builder.WriteByte(')')
 	return builder.String()
 }

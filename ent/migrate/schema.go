@@ -85,6 +85,7 @@ var (
 		{Name: "latitude", Type: field.TypeFloat64},
 		{Name: "longitude", Type: field.TypeFloat64},
 		{Name: "name", Type: field.TypeString},
+		{Name: "city", Type: field.TypeString},
 	}
 	// IspsTable holds the schema information for the "isps" table.
 	IspsTable = &schema.Table{

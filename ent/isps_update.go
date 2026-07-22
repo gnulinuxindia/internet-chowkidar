@@ -91,6 +91,20 @@ func (_u *IspsUpdate) SetNillableName(v *string) *IspsUpdate {
 	return _u
 }
 
+// SetCity sets the "city" field.
+func (_u *IspsUpdate) SetCity(v string) *IspsUpdate {
+	_u.mutation.SetCity(v)
+	return _u
+}
+
+// SetNillableCity sets the "city" field if the given value is not nil.
+func (_u *IspsUpdate) SetNillableCity(v *string) *IspsUpdate {
+	if v != nil {
+		_u.SetCity(*v)
+	}
+	return _u
+}
+
 // AddIspBlockIDs adds the "isp_blocks" edge to the Blocks entity by IDs.
 func (_u *IspsUpdate) AddIspBlockIDs(ids ...int) *IspsUpdate {
 	_u.mutation.AddIspBlockIDs(ids...)
@@ -194,6 +208,9 @@ func (_u *IspsUpdate) sqlSave(ctx context.Context) (_node int, err error) {
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(isps.FieldName, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.City(); ok {
+		_spec.SetField(isps.FieldCity, field.TypeString, value)
 	}
 	if _u.mutation.IspBlocksCleared() {
 		edge := &sqlgraph.EdgeSpec{
@@ -318,6 +335,20 @@ func (_u *IspsUpdateOne) SetName(v string) *IspsUpdateOne {
 func (_u *IspsUpdateOne) SetNillableName(v *string) *IspsUpdateOne {
 	if v != nil {
 		_u.SetName(*v)
+	}
+	return _u
+}
+
+// SetCity sets the "city" field.
+func (_u *IspsUpdateOne) SetCity(v string) *IspsUpdateOne {
+	_u.mutation.SetCity(v)
+	return _u
+}
+
+// SetNillableCity sets the "city" field if the given value is not nil.
+func (_u *IspsUpdateOne) SetNillableCity(v *string) *IspsUpdateOne {
+	if v != nil {
+		_u.SetCity(*v)
 	}
 	return _u
 }
@@ -455,6 +486,9 @@ func (_u *IspsUpdateOne) sqlSave(ctx context.Context) (_node *Isps, err error) {
 	}
 	if value, ok := _u.mutation.Name(); ok {
 		_spec.SetField(isps.FieldName, field.TypeString, value)
+	}
+	if value, ok := _u.mutation.City(); ok {
+		_spec.SetField(isps.FieldCity, field.TypeString, value)
 	}
 	if _u.mutation.IspBlocksCleared() {
 		edge := &sqlgraph.EdgeSpec{

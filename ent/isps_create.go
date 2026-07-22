@@ -67,6 +67,12 @@ func (_c *IspsCreate) SetName(v string) *IspsCreate {
 	return _c
 }
 
+// SetCity sets the "city" field.
+func (_c *IspsCreate) SetCity(v string) *IspsCreate {
+	_c.mutation.SetCity(v)
+	return _c
+}
+
 // AddIspBlockIDs adds the "isp_blocks" edge to the Blocks entity by IDs.
 func (_c *IspsCreate) AddIspBlockIDs(ids ...int) *IspsCreate {
 	_c.mutation.AddIspBlockIDs(ids...)
@@ -144,6 +150,9 @@ func (_c *IspsCreate) check() error {
 	if _, ok := _c.mutation.Name(); !ok {
 		return &ValidationError{Name: "name", err: errors.New(`ent: missing required field "Isps.name"`)}
 	}
+	if _, ok := _c.mutation.City(); !ok {
+		return &ValidationError{Name: "city", err: errors.New(`ent: missing required field "Isps.city"`)}
+	}
 	return nil
 }
 
@@ -189,6 +198,10 @@ func (_c *IspsCreate) createSpec() (*Isps, *sqlgraph.CreateSpec) {
 	if value, ok := _c.mutation.Name(); ok {
 		_spec.SetField(isps.FieldName, field.TypeString, value)
 		_node.Name = value
+	}
+	if value, ok := _c.mutation.City(); ok {
+		_spec.SetField(isps.FieldCity, field.TypeString, value)
+		_node.City = value
 	}
 	if nodes := _c.mutation.IspBlocksIDs(); len(nodes) > 0 {
 		edge := &sqlgraph.EdgeSpec{

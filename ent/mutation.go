@@ -1810,6 +1810,7 @@ type IspsMutation struct {
 	longitude         *float64
 	addlongitude      *float64
 	name              *string
+	city              *string
 	clearedFields     map[string]struct{}
 	isp_blocks        map[int]struct{}
 	removedisp_blocks map[int]struct{}
@@ -2137,6 +2138,42 @@ func (m *IspsMutation) ResetName() {
 	m.name = nil
 }
 
+// SetCity sets the "city" field.
+func (m *IspsMutation) SetCity(s string) {
+	m.city = &s
+}
+
+// City returns the value of the "city" field in the mutation.
+func (m *IspsMutation) City() (r string, exists bool) {
+	v := m.city
+	if v == nil {
+		return
+	}
+	return *v, true
+}
+
+// OldCity returns the old "city" field's value of the Isps entity.
+// If the Isps object wasn't provided to the builder, the object is fetched from the database.
+// An error is returned if the mutation operation is not UpdateOne, or the database query fails.
+func (m *IspsMutation) OldCity(ctx context.Context) (v string, err error) {
+	if !m.op.Is(OpUpdateOne) {
+		return v, errors.New("OldCity is only allowed on UpdateOne operations")
+	}
+	if m.id == nil || m.oldValue == nil {
+		return v, errors.New("OldCity requires an ID field in the mutation")
+	}
+	oldValue, err := m.oldValue(ctx)
+	if err != nil {
+		return v, fmt.Errorf("querying old value for OldCity: %w", err)
+	}
+	return oldValue.City, nil
+}
+
+// ResetCity resets all changes to the "city" field.
+func (m *IspsMutation) ResetCity() {
+	m.city = nil
+}
+
 // AddIspBlockIDs adds the "isp_blocks" edge to the Blocks entity by ids.
 func (m *IspsMutation) AddIspBlockIDs(ids ...int) {
 	if m.isp_blocks == nil {
@@ -2225,7 +2262,7 @@ func (m *IspsMutation) Type() string {
 // order to get all numeric fields that were incremented/decremented, call
 // AddedFields().
 func (m *IspsMutation) Fields() []string {
-	fields := make([]string, 0, 5)
+	fields := make([]string, 0, 6)
 	if m.created_at != nil {
 		fields = append(fields, isps.FieldCreatedAt)
 	}
@@ -2240,6 +2277,9 @@ func (m *IspsMutation) Fields() []string {
 	}
 	if m.name != nil {
 		fields = append(fields, isps.FieldName)
+	}
+	if m.city != nil {
+		fields = append(fields, isps.FieldCity)
 	}
 	return fields
 }
@@ -2259,6 +2299,8 @@ func (m *IspsMutation) Field(name string) (ent.Value, bool) {
 		return m.Longitude()
 	case isps.FieldName:
 		return m.Name()
+	case isps.FieldCity:
+		return m.City()
 	}
 	return nil, false
 }
@@ -2278,6 +2320,8 @@ func (m *IspsMutation) OldField(ctx context.Context, name string) (ent.Value, er
 		return m.OldLongitude(ctx)
 	case isps.FieldName:
 		return m.OldName(ctx)
+	case isps.FieldCity:
+		return m.OldCity(ctx)
 	}
 	return nil, fmt.Errorf("unknown Isps field %s", name)
 }
@@ -2321,6 +2365,13 @@ func (m *IspsMutation) SetField(name string, value ent.Value) error {
 			return fmt.Errorf("unexpected type %T for field %s", value, name)
 		}
 		m.SetName(v)
+		return nil
+	case isps.FieldCity:
+		v, ok := value.(string)
+		if !ok {
+			return fmt.Errorf("unexpected type %T for field %s", value, name)
+		}
+		m.SetCity(v)
 		return nil
 	}
 	return fmt.Errorf("unknown Isps field %s", name)
@@ -2412,6 +2463,9 @@ func (m *IspsMutation) ResetField(name string) error {
 		return nil
 	case isps.FieldName:
 		m.ResetName()
+		return nil
+	case isps.FieldCity:
+		m.ResetCity()
 		return nil
 	}
 	return fmt.Errorf("unknown Isps field %s", name)

@@ -24,6 +24,8 @@ const (
 	FieldLongitude = "longitude"
 	// FieldName holds the string denoting the name field in the database.
 	FieldName = "name"
+	// FieldCity holds the string denoting the city field in the database.
+	FieldCity = "city"
 	// EdgeIspBlocks holds the string denoting the isp_blocks edge name in mutations.
 	EdgeIspBlocks = "isp_blocks"
 	// Table holds the table name of the isps in the database.
@@ -45,6 +47,7 @@ var Columns = []string{
 	FieldLatitude,
 	FieldLongitude,
 	FieldName,
+	FieldCity,
 }
 
 // ValidColumn reports if the column name is valid (part of the table columns).
@@ -97,6 +100,11 @@ func ByLongitude(opts ...sql.OrderTermOption) OrderOption {
 // ByName orders the results by the name field.
 func ByName(opts ...sql.OrderTermOption) OrderOption {
 	return sql.OrderByField(FieldName, opts...).ToFunc()
+}
+
+// ByCity orders the results by the city field.
+func ByCity(opts ...sql.OrderTermOption) OrderOption {
+	return sql.OrderByField(FieldCity, opts...).ToFunc()
 }
 
 // ByIspBlocksCount orders the results by isp_blocks count.

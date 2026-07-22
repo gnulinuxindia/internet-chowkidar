@@ -80,6 +80,11 @@ func Name(v string) predicate.Isps {
 	return predicate.Isps(sql.FieldEQ(FieldName, v))
 }
 
+// City applies equality check predicate on the "city" field. It's identical to CityEQ.
+func City(v string) predicate.Isps {
+	return predicate.Isps(sql.FieldEQ(FieldCity, v))
+}
+
 // CreatedAtEQ applies the EQ predicate on the "created_at" field.
 func CreatedAtEQ(v time.Time) predicate.Isps {
 	return predicate.Isps(sql.FieldEQ(FieldCreatedAt, v))
@@ -303,6 +308,71 @@ func NameEqualFold(v string) predicate.Isps {
 // NameContainsFold applies the ContainsFold predicate on the "name" field.
 func NameContainsFold(v string) predicate.Isps {
 	return predicate.Isps(sql.FieldContainsFold(FieldName, v))
+}
+
+// CityEQ applies the EQ predicate on the "city" field.
+func CityEQ(v string) predicate.Isps {
+	return predicate.Isps(sql.FieldEQ(FieldCity, v))
+}
+
+// CityNEQ applies the NEQ predicate on the "city" field.
+func CityNEQ(v string) predicate.Isps {
+	return predicate.Isps(sql.FieldNEQ(FieldCity, v))
+}
+
+// CityIn applies the In predicate on the "city" field.
+func CityIn(vs ...string) predicate.Isps {
+	return predicate.Isps(sql.FieldIn(FieldCity, vs...))
+}
+
+// CityNotIn applies the NotIn predicate on the "city" field.
+func CityNotIn(vs ...string) predicate.Isps {
+	return predicate.Isps(sql.FieldNotIn(FieldCity, vs...))
+}
+
+// CityGT applies the GT predicate on the "city" field.
+func CityGT(v string) predicate.Isps {
+	return predicate.Isps(sql.FieldGT(FieldCity, v))
+}
+
+// CityGTE applies the GTE predicate on the "city" field.
+func CityGTE(v string) predicate.Isps {
+	return predicate.Isps(sql.FieldGTE(FieldCity, v))
+}
+
+// CityLT applies the LT predicate on the "city" field.
+func CityLT(v string) predicate.Isps {
+	return predicate.Isps(sql.FieldLT(FieldCity, v))
+}
+
+// CityLTE applies the LTE predicate on the "city" field.
+func CityLTE(v string) predicate.Isps {
+	return predicate.Isps(sql.FieldLTE(FieldCity, v))
+}
+
+// CityContains applies the Contains predicate on the "city" field.
+func CityContains(v string) predicate.Isps {
+	return predicate.Isps(sql.FieldContains(FieldCity, v))
+}
+
+// CityHasPrefix applies the HasPrefix predicate on the "city" field.
+func CityHasPrefix(v string) predicate.Isps {
+	return predicate.Isps(sql.FieldHasPrefix(FieldCity, v))
+}
+
+// CityHasSuffix applies the HasSuffix predicate on the "city" field.
+func CityHasSuffix(v string) predicate.Isps {
+	return predicate.Isps(sql.FieldHasSuffix(FieldCity, v))
+}
+
+// CityEqualFold applies the EqualFold predicate on the "city" field.
+func CityEqualFold(v string) predicate.Isps {
+	return predicate.Isps(sql.FieldEqualFold(FieldCity, v))
+}
+
+// CityContainsFold applies the ContainsFold predicate on the "city" field.
+func CityContainsFold(v string) predicate.Isps {
+	return predicate.Isps(sql.FieldContainsFold(FieldCity, v))
 }
 
 // HasIspBlocks applies the HasEdge predicate on the "isp_blocks" edge.
