@@ -20,7 +20,7 @@ interface ISPsTableProps {
 
 export function ISPsTable({ isps }: ISPsTableProps) {
   const [search, setSearch] = useState("");
-  const [sortBy, setSortBy] = useState<"name" | "blocks" | "date">("blocks");
+  const [sortBy, setSortBy] = useState<"name" | "city" | "blocks" | "date">("blocks");
   const [sortOrder, setSortOrder] = useState<"asc" | "desc">("desc");
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 25;
@@ -35,6 +35,9 @@ export function ISPsTable({ isps }: ISPsTableProps) {
       switch (sortBy) {
         case "name":
           comparison = a.name.localeCompare(b.name);
+          break;
+        case "city":
+          comparison = a.name.localeCompare(b.city);
           break;
         case "blocks":
           comparison = a.block_reports - b.block_reports;
@@ -64,7 +67,7 @@ export function ISPsTable({ isps }: ISPsTableProps) {
     setCurrentPage((page) => Math.min(page, totalPages));
   }, [totalPages]);
 
-  const toggleSort = (column: "name" | "blocks" | "date") => {
+  const toggleSort = (column: "name" | "city" | "blocks" | "date") => {
     if (sortBy === column) {
       setSortOrder(sortOrder === "asc" ? "desc" : "asc");
     } else {
@@ -131,6 +134,19 @@ export function ISPsTable({ isps }: ISPsTableProps) {
                 </TableHead>
                 <TableHead
                   className="cursor-pointer hover:text-primary transition-colors text-right"
+                  onClick={() => toggleSort("city")}
+                >
+                  <div className="flex items-center justify-end gap-2">
+                    City
+                    {sortBy === "city" && (
+                      <span className="text-primary">
+                        {sortOrder === "asc" ? "↑" : "↓"}
+                      </span>
+                    )}
+                  </div>
+                </TableHead>
+                <TableHead
+                  className="cursor-pointer hover:text-primary transition-colors text-right"
                   onClick={() => toggleSort("blocks")}
                 >
                   <div className="flex items-center justify-end gap-2">
@@ -173,6 +189,11 @@ export function ISPsTable({ isps }: ISPsTableProps) {
                       </div>
                       <span className="font-medium">{isp.name}</span>
                     </div>
+                  </TableCell>
+                  <TableCell className="text-right">
+                    <span className="font-medium">
+                      {isp.city}
+                    </span>
                   </TableCell>
                   <TableCell className="text-right">
                     <span className="font-mono font-bold text-[oklch(0.8_0.2_25)] tabular-nums">
