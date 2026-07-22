@@ -33,6 +33,7 @@ func (i *ispRepositoryImpl) CreateISP(ctx context.Context, isp *genapi.ISPInput)
 
 	existing, err := tx.Isps.Query().Where(
 		isps.Name(isp.Name),
+		isps.City(isp.City),
 		isps.LatitudeEQ(float64(isp.Latitude)),
 		isps.LongitudeEQ(float64(isp.Longitude)),
 	).First(ctx)
@@ -40,6 +41,7 @@ func (i *ispRepositoryImpl) CreateISP(ctx context.Context, isp *genapi.ISPInput)
 	if errors.As(err, &entErr) {
 		newIsp, err := i.db.Isps.Create().
 			SetName(isp.Name).
+			SetCity(isp.City).
 			SetLatitude(float64(isp.Latitude)).
 			SetLongitude(float64(isp.Longitude)).
 			Save(ctx)
@@ -77,6 +79,7 @@ func (i *ispRepositoryImpl) GetAllISPs(ctx context.Context, params genapi.ListIS
 		apiIsp := genapi.ISP{
 			ID:             genapi.NewOptInt(isp.ID),
 			Name:           genapi.NewOptString(isp.Name),
+			City:           genapi.NewOptString(isp.City),
 			Latitude:       genapi.NewOptFloat32(float32(isp.Latitude)),
 			Longitude:      genapi.NewOptFloat32(float32(isp.Longitude)),
 			BlockReports:   genapi.NewOptInt(0),

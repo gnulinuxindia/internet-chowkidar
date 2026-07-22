@@ -29,6 +29,7 @@ func (i *ispServiceImpl) CreateIsp(ctx context.Context, req *genapi.ISPInput) (*
 	return &genapi.ISP{
 		ID:        genapi.NewOptInt(isp.ID),
 		Name:      genapi.NewOptString(isp.Name),
+		City:      genapi.NewOptString(isp.City),
 		Latitude:  genapi.NewOptFloat32(float32(isp.Latitude)),
 		Longitude: genapi.NewOptFloat32(float32(isp.Longitude)),
 	}, nil
@@ -66,6 +67,7 @@ func (i *ispServiceImpl) GetISP(ctx context.Context, params genapi.GetISPParams)
 	details := &genapi.ISPDetails{
 		ID:        isp.ID,
 		Name:      isp.Name,
+		City:      isp.City,
 		Latitude:  float32(isp.Latitude),
 		Longitude: float32(isp.Longitude),
 		Blocks:    make([]genapi.ISPBlock, len(blocks)),

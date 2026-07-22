@@ -16,6 +16,7 @@ func (Isps) Fields() []ent.Field {
 		field.Float("latitude"),
 		field.Float("longitude"),
 		field.String("name"),
+		field.String("city"),
 	}
 }
 
