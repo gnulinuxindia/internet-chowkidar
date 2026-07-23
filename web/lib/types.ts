@@ -13,6 +13,7 @@ export interface Site {
 export interface ISP {
   id: number;
   name: string;
+  city: string;
   latitude: number;
   longitude: number;
   block_reports: number;

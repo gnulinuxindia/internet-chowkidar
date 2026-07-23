@@ -63,17 +63,17 @@ export default async function ISPDetailPage({ params }: PageProps) {
             >
               <path d="M9 18l6-6-6-6" />
             </svg>
-            <span className="text-foreground">{isp.name}</span>
+            <span className="text-foreground">{isp.name} | {isp.city}</span>
           </nav>
 
           {/* Title */}
           <div className="flex items-start gap-4">
             <div className="h-16 w-16 rounded-xl bg-primary/10 border border-primary/30 flex items-center justify-center text-primary text-2xl font-bold shrink-0">
-              {isp.name.charAt(0).toUpperCase()}
+              {isp.name.charAt(0).toUpperCase()} | {isp.city.charAt(0).toUpperCase()}
             </div>
             <div>
               <h1 className="text-3xl md:text-4xl font-bold mb-2">
-                <span className="text-primary">{isp.name}</span>
+                <span className="text-primary">{isp.name} | {isp.city}</span>
               </h1>
 
               <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
